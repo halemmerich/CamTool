@@ -12,7 +12,6 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
 
 public class ImageFile implements SourceFile {
 
@@ -33,7 +32,7 @@ public class ImageFile implements SourceFile {
 			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
 			
 			for (ExifIFD0Directory directory : directories) {
-				Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME);
+				Date date = directory.getDate(ExifIFD0Directory.TAG_DATETIME);
 				if (date != null) {
 					return date.toInstant();
 				}
