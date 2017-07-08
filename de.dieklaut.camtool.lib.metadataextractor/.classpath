@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="metadata-extractor-2.10.1.jar" sourcepath="metadata-extractor-2.10.1-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
