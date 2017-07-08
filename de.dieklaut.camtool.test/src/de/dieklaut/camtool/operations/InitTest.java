@@ -33,7 +33,7 @@ public class InitTest extends FileBasedTest{
 	@Test
 	public void testFolderCreation() throws IOException {
 		Init init = new Init();
-		init.perform(new Context(getTestFolder()));
+		init.perform(Context.create(getTestFolder()));
 		assertEquals(1, getTestFolder().toFile().list().length);
 		for (Path current : filesToMove) {
 			assertFalse(current.toFile().exists());
