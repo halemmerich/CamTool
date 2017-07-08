@@ -43,7 +43,11 @@ public class Context implements AutoCloseable{
 	}
 
 	@Override
-	public void close() throws Exception {
-		properties.store(Files.newOutputStream(root.resolve(Constants.FILE_PROPERTIES)), "Properties for the CamTool");
+	public void close() {
+		try {
+			properties.store(Files.newOutputStream(root.resolve(Constants.FILE_PROPERTIES)), "Properties for the CamTool");
+		} catch (IOException e) {
+			Logger.log("Storing the properties file failed", e);
+		}
 	}
 }

@@ -19,6 +19,6 @@ public class Logger {
 
 	public static void log(String message, IOException e) {
 		log(message, Level.ERROR);
-		e.printStackTrace(System.out);
+		e.printStackTrace(System.err);
 	}
 }

@@ -6,6 +6,12 @@ import java.util.List;
 
 import de.dieklaut.camtool.cmdlinewrapper.OperationWrapper;
 
+/**
+ * This class holds all available features reachable from the command line.
+ * 
+ * @author mboonk
+ *
+ */
 public class Engine {
 	private List<OperationWrapper> availableOperations;
 	

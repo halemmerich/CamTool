@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 
 public interface Group {
-	public SourceFile getSourceFile();
 
 	/**
 	 * @return a collection of all files belonging to this group

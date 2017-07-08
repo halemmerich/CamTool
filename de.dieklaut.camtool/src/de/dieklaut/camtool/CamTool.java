@@ -16,7 +16,7 @@ import de.dieklaut.camtool.cmdlinewrapper.OperationWrapper;
 public class CamTool {
 
 	private static final String APPLICATION_NAME = "camtool";
-	private static final String APPLICATION_USAGE = APPLICATION_NAME + " <> <options>";
+	private static final String APPLICATION_USAGE = APPLICATION_NAME + " <action> <options>";
 
 	private static HelpFormatter formatter = new HelpFormatter();
 
