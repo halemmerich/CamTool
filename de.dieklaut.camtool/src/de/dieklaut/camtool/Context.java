@@ -6,32 +6,48 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class Context implements AutoCloseable{
+public class Context{
 	
 	private Path root;
 	private Properties properties;
+	
+	public static boolean isInitialized(Path root){
+		return root.resolve(Constants.AUTOMATION_FILE_NAME).toFile().exists();
+	}
+	
+	public static Context create(Path root) throws IOException {
+		if (!root.toFile().isDirectory()) {
+			throw new IllegalArgumentException("Give root path " + root + " is not a directory");
+		}
+		
+		if (isInitialized(root)) {
+			throw new IllegalArgumentException("Give root path " + root + " already contains automation marker file");
+		}
+		
+		Files.createFile(root.resolve(Constants.AUTOMATION_FILE_NAME));
+		return new Context(root);
+	}
 	
 	public Context(Path root) {
 		this.root = root;
 		if (!root.toFile().isDirectory()) {
 			throw new IllegalArgumentException("Give root path " + root + " is not a directory");
 		}
+		
+		if (!isInitialized(root)) {
+			throw new IllegalArgumentException("Give root path " + root + " does not contain automation marker file");
+		}
+		
 		properties = new Properties();
 		
 		Path propertiesPath = root.resolve(Constants.FILE_PROPERTIES);
 		if (propertiesPath.toFile().exists()) {
-			InputStream inStream;
-			try {
-				inStream = Files.newInputStream(propertiesPath);
+			try (InputStream inStream = Files.newInputStream(propertiesPath)){
 				properties.load(inStream);
 			} catch (IOException e) {
 				Logger.log("The properties file could not be read", e);
 			}
 		}
-	}
-	
-	public boolean isInitialized() {
-		return root.resolve(Constants.AUTOMATION_FILE_NAME).toFile().exists();
 	}
 	
 	public int getFormatVersion() {
@@ -41,9 +57,8 @@ public class Context implements AutoCloseable{
 	public Path getRoot() {
 		return root;
 	}
-
-	@Override
-	public void close() {
+	
+	public void store() {
 		try {
 			properties.store(Files.newOutputStream(root.resolve(Constants.FILE_PROPERTIES)), "Properties for the CamTool");
 		} catch (IOException e) {

@@ -14,9 +14,6 @@ public class Init extends AbstractOperation{
 
 	@Override
 	public void perform(Context context) {
-		if (context.isInitialized()) {
-			throw new IllegalArgumentException("This context is already initialized");
-		}
 		try (Stream<Path> files = Files.list(context.getRoot())) {
 			Path originalFolder = Files.createDirectory(Paths.get(context.getRoot().toString(), Constants.FOLDER_ORIGINAL));
 			files.forEach(file -> {

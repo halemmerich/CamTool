@@ -1,5 +1,8 @@
 package de.dieklaut.camtool;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.apache.commons.cli.CommandLine;
@@ -60,10 +63,37 @@ public class CamTool {
 					formatter.printHelp(APPLICATION_USAGE, options);
 					return;
 				}
+				Context context = null;
+				Path workingDir = Paths.get("").toAbsolutePath();
+				if (operation instanceof InitWrapper) {
+					try {
+						context = Context.create(workingDir);
+					} catch (IOException e) {
+						Logger.log("Context could not be created", e);
+					}
+				} else {
+					context = findContext(workingDir);
+				}
+				operation.getOperation(cmd).perform(context);
 			} catch (ParseException e) {
 				formatter.printHelp(APPLICATION_USAGE, options);
 			}
 		}
+	}
+
+	private static Context findContext(Path workingDir) {
+		if (Context.isInitialized(workingDir)) {
+			return new Context(workingDir);
+		}
+		
+		while (workingDir.getParent() != null) {
+			workingDir = workingDir.getParent();
+			if (Context.isInitialized(workingDir)) {
+				return new Context(workingDir);
+			}
+		}
+		
+		throw new IllegalArgumentException("Could not find a context at " + workingDir + " or at any parent");
 	}
 
 	private static void printGenericHelp() {
