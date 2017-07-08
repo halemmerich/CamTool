@@ -1,6 +1,5 @@
 package de.dieklaut.camtool;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,7 +16,7 @@ public class Logger {
 		System.out.println(format.format(Calendar.getInstance().toInstant()) + " - " + level + " - " + message);
 	}
 
-	public static void log(String message, IOException e) {
+	public static void log(String message, Exception e) {
 		log(message, Level.ERROR);
 		e.printStackTrace(System.err);
 	}

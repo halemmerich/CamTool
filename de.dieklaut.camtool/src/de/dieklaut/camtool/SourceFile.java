@@ -1,6 +1,6 @@
 package de.dieklaut.camtool;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * A {@link SourceFile} is the initial artifact of a {@link Group}
@@ -8,5 +8,5 @@ import java.util.Date;
  *
  */
 public interface SourceFile {
-	public Date getCreationDate();
+	public Instant getCreationDate();
 }
