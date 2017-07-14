@@ -35,7 +35,7 @@ public class Init extends AbstractOperation {
 			files.forEach(file -> {
 				try {
 					String timestamp = FileUtils.getTimestamp(FileUtils.getCreationDate(file));
-					Path destination = timelineFolder.resolve(timestamp + "_" + file.getFileName().toString());
+					Path destination = timelineFolder.resolve(timestamp + "_" + file.getFileName());
 					Files.createSymbolicLink(destination, destination.relativize(timelineFolder));
 					file.toFile().setReadOnly();
 				} catch (IOException | FileOperationException e) {

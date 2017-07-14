@@ -19,9 +19,9 @@ public class FileUtilsTest {
 		
 		Path toDelete = Files.createDirectory(Paths.get(testFolder.toString(), "testfolder"));
 		Files.createFile(Paths.get(testFolder.toString(), "testfolder", "testfile"));
-		FileUtils.deleteRecursive(toDelete);
+		FileUtils.deleteRecursive(toDelete, false);
 		assertEquals(0, testFolder.toFile().list().length);
 		
-		FileUtils.deleteRecursive(testFolder);
+		FileUtils.deleteRecursive(testFolder, false);
 	}
 }

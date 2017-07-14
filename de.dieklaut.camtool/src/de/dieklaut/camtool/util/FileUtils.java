@@ -25,7 +25,7 @@ public class FileUtils {
 			Metadata metadata = ImageMetadataReader.readMetadata(Files.newInputStream(filePath));
 
 			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
-			
+
 			for (ExifIFD0Directory directory : directories) {
 				Date date = directory.getDate(ExifIFD0Directory.TAG_DATETIME);
 				if (date != null) {
@@ -33,27 +33,43 @@ public class FileUtils {
 				}
 			}
 		} catch (ImageProcessingException | IOException e) {
-			Logger.log("Could not parse image file exif data for a creation date, falling back to file creation date", e, Level.DEBUG);
+			Logger.log("Could not parse image file exif data for a creation date, falling back to file creation date",
+					e, Level.DEBUG);
 		}
-		
+
 		try {
 			return Files.readAttributes(filePath, BasicFileAttributes.class).creationTime().toInstant();
 		} catch (IOException e) {
 			throw new FileOperationException("Could not get the creation date from file " + filePath, e);
 		}
 	}
+
+	/**
+	 * @param path
+	 *            the {@link Path} to be deleted
+	 * @param force
+	 *            set to true, if read only files should be deleted
+	 * @throws FileOperationException
+	 */
+	public static void deleteRecursive(Path path, boolean force) throws FileOperationException {
+		deleteRecursive(path, path, force);
+	}
 	
-	public static void deleteRecursive(Path path) throws FileOperationException {
+	private static void deleteRecursive(Path path, Path originalPath, boolean force) throws FileOperationException {
 		File candidate = path.toFile();
+		
+		if (force && !Files.isSymbolicLink(path)) {
+			candidate.setWritable(true);
+		}
 
 		if (candidate.delete()) {
 			return;
 		}
-		
+
 		try {
 			Files.list(path).forEach(file -> {
 				try {
-					deleteRecursive(file);
+					deleteRecursive(file, originalPath, force);
 				} catch (FileOperationException e) {
 					Logger.log("Error during delete", e);
 				}
@@ -61,10 +77,10 @@ public class FileUtils {
 		} catch (IOException e) {
 			throw new FileOperationException("Could get list of files for " + path, e);
 		}
-		
-		//Delete directory if empty
-		try (DirectoryStream<Path> directoryCandidate = Files.newDirectoryStream(path)){
-			if (!directoryCandidate.iterator().hasNext()){
+
+		// Delete directory if empty
+		try (DirectoryStream<Path> directoryCandidate = Files.newDirectoryStream(path)) {
+			if (!directoryCandidate.iterator().hasNext()) {
 				candidate.delete();
 				return;
 			}
@@ -72,9 +88,9 @@ public class FileUtils {
 			throw new FileOperationException("Could not delete directory " + path, e);
 		}
 	}
-	
+
 	public static String getTimestamp(Instant instant) {
 		return Long.toString(instant.toEpochMilli());
-		
+
 	}
 }
