@@ -82,4 +82,12 @@ public class Context {
 			Logger.log("Storing the properties file failed", e);
 		}
 	}
+
+	public Path getOriginals() {
+		return root.resolve(Constants.FOLDER_ORIGINAL);
+	}
+
+	public Path getTimeLine() {
+		return root.resolve(Constants.FOLDER_TIMELINE);
+	}
 }

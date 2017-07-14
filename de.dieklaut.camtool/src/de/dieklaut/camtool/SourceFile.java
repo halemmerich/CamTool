@@ -8,5 +8,5 @@ import java.time.Instant;
  *
  */
 public interface SourceFile {
-	public Instant getCreationDate();
+	public Instant getCreationDate() throws FileOperationException;
 }

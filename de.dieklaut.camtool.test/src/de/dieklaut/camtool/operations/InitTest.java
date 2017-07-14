@@ -6,10 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
+import java.nio.file.LinkOption;
+import java.nio.file.attribute.BasicFileAttributes;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,27 +16,41 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.FileBasedTest;
 
-public class InitTest extends FileBasedTest{
+public class InitTest extends FileBasedTest {
 
-	List<Path> filesToMove;
-	
+	String[] fileNames = new String[] { "File1.asdf", "File2.bla", "File3" };
+	long[] timestamps = new long[fileNames.length];
+
 	@Before
 	public void setUp() throws IOException {
-		filesToMove = new LinkedList<>();
-		filesToMove.add(Files.createFile(Paths.get(getTestFolder().toString(), "File1")));
-		filesToMove.add(Files.createFile(Paths.get(getTestFolder().toString(), "File2")));
-		filesToMove.add(Files.createFile(Paths.get(getTestFolder().toString(), "File3")));
+		for (int i = 0; i < fileNames.length; i++) {
+			Files.createFile(getTestFolder().resolve(fileNames[i]));
+			timestamps[i] = Files.readAttributes(getTestFolder().resolve(fileNames[i]), BasicFileAttributes.class).creationTime().toInstant().toEpochMilli();
+		}
 	}
-	
+
 	@Test
 	public void testFolderCreation() throws IOException {
 		Init init = new Init();
-		init.perform(Context.create(getTestFolder()));
-		assertEquals(1, getTestFolder().toFile().list().length);
-		for (Path current : filesToMove) {
-			assertFalse(current.toFile().exists());
-			Path moved = current.getFileName();
-			assertTrue(Paths.get(getTestFolder().toString(), Constants.FOLDER_ORIGINAL, moved.toString()).toFile().exists());
+		Context context = Context.create(getTestFolder());
+		init.perform(context);
+
+		assertTrue(context.getRoot().equals(getTestFolder()));
+		// expects originals and timeline folder
+		assertTrue(getTestFolder().resolve(Constants.AUTOMATION_FILE_NAME).toFile().exists());
+		assertEquals(3, getTestFolder().toFile().list().length);
+
+		// checks that all files are moved
+		assertEquals(getTestFolder().resolve(Constants.FOLDER_ORIGINAL), context.getOriginals());
+		for (String current : fileNames) {
+			assertFalse(getTestFolder().resolve(current).toFile().exists());
+			assertTrue(getTestFolder().resolve(Constants.FOLDER_ORIGINAL).resolve(current).toFile().exists());
+		}
+
+		assertEquals(getTestFolder().resolve(Constants.FOLDER_TIMELINE), context.getTimeLine());
+		// checks that the timeline was created
+		for (int i = 0; i < fileNames.length; i++) {
+			assertTrue(Files.exists(context.getTimeLine().resolve(Long.toString(timestamps[i]) + "_" + fileNames[i])));
 		}
 	}
 }

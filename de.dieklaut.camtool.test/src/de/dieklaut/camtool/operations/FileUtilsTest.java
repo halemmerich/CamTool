@@ -9,11 +9,12 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class FileUtilsTest {
 	@Test
-	public void deleteRecursiveTest() throws IOException {
+	public void deleteRecursiveTest() throws IOException, FileOperationException {
 		Path testFolder = Files.createTempDirectory("test");
 		
 		Path toDelete = Files.createDirectory(Paths.get(testFolder.toString(), "testfolder"));
