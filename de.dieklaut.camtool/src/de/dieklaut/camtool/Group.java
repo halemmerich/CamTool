@@ -1,6 +1,5 @@
 package de.dieklaut.camtool;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 
@@ -9,7 +8,7 @@ public interface Group {
 	/**
 	 * @return a collection of all files belonging to this group
 	 */
-	public Collection<File> getAllFiles();
+	public Collection<Path> getAllFiles();
 
 	/**
 	 * Perform all necessary steps for creating the final result of this group

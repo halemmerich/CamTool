@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -13,13 +13,13 @@ public class FileBasedTest {
 
 	private static Path testFolder;
 
-	@BeforeClass
-	public static void setUpClass() throws IOException {
+	@Before
+	public void setUpClass() throws IOException {
 		testFolder = Files.createTempDirectory("test");
 	}
 
-	@AfterClass
-	public static void tearDownClass() throws IOException, FileOperationException {
+	@After
+	public void tearDownClass() throws IOException, FileOperationException {
 		FileUtils.deleteRecursive(testFolder, true);
 	}
 	
