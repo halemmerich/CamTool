@@ -1,10 +1,9 @@
 package de.dieklaut.camtool.operations;
 
 import de.dieklaut.camtool.Context;
-import de.dieklaut.camtool.Sorting;
 
 /**
- * This flattens the file structure of a {@link Sorting}
+ * This flattens the file structure of a sorting
  * @author mboonk
  *
  */

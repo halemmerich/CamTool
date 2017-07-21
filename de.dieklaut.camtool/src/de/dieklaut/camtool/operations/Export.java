@@ -1,10 +1,9 @@
 package de.dieklaut.camtool.operations;
 
 import de.dieklaut.camtool.Context;
-import de.dieklaut.camtool.Sorting;
 
 /**
- * This exports the rendering results of a {@link Sorting} into an arbitrary folder.
+ * This exports the rendering results of a sorting into an arbitrary folder.
  * @author mboonk
  *
  */

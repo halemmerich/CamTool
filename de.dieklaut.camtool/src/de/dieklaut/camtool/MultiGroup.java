@@ -2,7 +2,6 @@ package de.dieklaut.camtool;
 
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * This stores multiple files belonging together but essentially not the same.
@@ -12,17 +11,10 @@ import java.util.HashSet;
  * @author mboonk
  *
  */
-public class MultiGroup implements Group {
+public class MultiGroup extends AbstractGroup {
 
-	private Collection<Path> paths;
-
-	public MultiGroup(Collection<Path> paths) {
-		this.paths = paths;
-	}
-
-	@Override
-	public Collection<Path> getAllFiles() {
-		return new HashSet<>(paths);
+	public MultiGroup(Collection<Path> elements) {
+		super(elements);
 	}
 
 	@Override
@@ -38,13 +30,12 @@ public class MultiGroup implements Group {
 	}
 
 	@Override
-	public void moveToFolder(Path destination) {
-		// TODO Auto-generated method stub
-
+	public String toString() {
+		return "MultiGroup:\n" + getAllFiles();
 	}
 
 	@Override
-	public String toString() {
-		return "MultiGroup:\n" + getAllFiles();
+	public String getType() {
+		return "multi";
 	}
 }

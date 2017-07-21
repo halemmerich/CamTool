@@ -2,8 +2,6 @@ package de.dieklaut.camtool;
 
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This stores a single logical artifact, e.g. a single raw image file or
@@ -14,18 +12,10 @@ import java.util.Set;
  * @author mboonk
  *
  */
-public class SingleGroup implements Group {
+public class SingleGroup extends AbstractGroup {
 
-	private Set<Path> files;
-
-	public SingleGroup(Set<Path> containedFiles) {
-		files = new HashSet<>();
-		files.addAll(containedFiles);
-	}
-
-	@Override
-	public Collection<Path> getAllFiles() {
-		return new HashSet<Path>(files);
+	public SingleGroup(Collection<Path> elements) {
+		super(elements);
 	}
 
 	@Override
@@ -40,13 +30,12 @@ public class SingleGroup implements Group {
 	}
 
 	@Override
-	public void moveToFolder(Path destination) {
-		// TODO Auto-generated method stub
-
+	public String toString() {
+		return "SingleGroup: " + getAllFiles();
 	}
 
 	@Override
-	public String toString() {
-		return "SingleGroup: " + getAllFiles();
+	public String getType() {
+		return "single";
 	}
 }

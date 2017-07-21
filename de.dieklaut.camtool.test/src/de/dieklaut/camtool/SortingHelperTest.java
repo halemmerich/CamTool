@@ -9,7 +9,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-public class SortingTest extends FileBasedTest {
+public class SortingHelperTest extends FileBasedTest {
 	
 	@Test
 	public void testConstructorComplexStructure() throws IOException {
@@ -26,8 +26,8 @@ public class SortingTest extends FileBasedTest {
 		Files.createFile(subdir.resolve("file4.ARW"));
 		Files.createFile(subdir.resolve("file4.JPG"));
 		
-		Sorting sorting = new Sorting(getTestFolder());
-		assertEquals(3, sorting.getGroups().size());
+		Collection<Group> sorting = SortingHelper.identifyGroups(getTestFolder());
+		assertEquals(3, sorting.size());
 		
 	}
 
@@ -36,10 +36,10 @@ public class SortingTest extends FileBasedTest {
 		Path subdir = Files.createDirectory(getTestFolder().resolve("subdir"));
 		Path file4arw = Files.createFile(subdir.resolve("file4.ARW"));
 		Path file4jpg = Files.createFile(subdir.resolve("file4.JPG"));
-		
-		Sorting sorting = new Sorting(getTestFolder());
-		assertEquals(1, sorting.getGroups().size());
-		Group group = sorting.getGroups().iterator().next();
+
+		Collection<Group> sorting = SortingHelper.identifyGroups(getTestFolder());
+		assertEquals(1, sorting.size());
+		Group group = sorting.iterator().next();
 		Collection<Path> files = group.getAllFiles();
 
 		assertEquals(2, files.size());
@@ -51,10 +51,10 @@ public class SortingTest extends FileBasedTest {
 	public void testConstructorSingleGroup() throws IOException {
 		Path file1arw = Files.createFile(getTestFolder().resolve("file1.ARW"));
 		Path file1jpg = Files.createFile(getTestFolder().resolve("file1.JPG"));
-		
-		Sorting sorting = new Sorting(getTestFolder());
-		assertEquals(1, sorting.getGroups().size());
-		Group group = sorting.getGroups().iterator().next();
+
+		Collection<Group> sorting = SortingHelper.identifyGroups(getTestFolder());
+		assertEquals(1, sorting.size());
+		Group group = sorting.iterator().next();
 		Collection<Path> files = group.getAllFiles();
 
 		assertEquals(2, files.size());
@@ -69,10 +69,10 @@ public class SortingTest extends FileBasedTest {
 		Path file2arw = Files.createFile(getTestFolder().resolve("file2.ARW"));
 		Path file3arw = Files.createFile(getTestFolder().resolve("file3.ARW"));
 		Path file4arw = Files.createFile(getTestFolder().resolve("file4.ARW"));
-		
-		Sorting sorting = new Sorting(getTestFolder());
-		assertEquals(1, sorting.getGroups().size());
-		Group group = sorting.getGroups().iterator().next();
+
+		Collection<Group> sorting = SortingHelper.identifyGroups(getTestFolder());
+		assertEquals(1, sorting.size());
+		Group group = sorting.iterator().next();
 		Collection<Path> files = group.getAllFiles();
 
 		assertEquals(4, files.size());

@@ -10,28 +10,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Sorting {
-	
-	private Path sortingPath;
-	private Collection<Group> groups;
+public class SortingHelper {
 
-	public Sorting(Path rootFolder) throws IOException {
-		sortingPath = rootFolder;
-		
-		groups = identifyGroups(sortingPath);
-	}
-	
-	public Collection<Group> getGroups(){
-		return new HashSet<>(groups);
-	}
+	public static Collection<Group> identifyGroups(Path path) throws IOException {
 
-	private Collection<Group> identifyGroups(Path path) throws IOException {
-		
 		Collection<Group> groups = new HashSet<>();
 		Collection<Path> pathsUsed = new HashSet<>();
-		
+
 		Set<Path> collections = new HashSet<>();
-		
+
 		Files.list(path).forEach(currentPath -> {
 			if (Files.isDirectory(currentPath)) {
 				Collection<Group> identifiedGroups;
@@ -51,7 +38,7 @@ public class Sorting {
 				}
 			}
 		});
-		
+
 		for (Path current : collections) {
 			Set<Path> paths = new HashSet<>();
 			paths.add(current);
@@ -61,10 +48,10 @@ public class Sorting {
 			MultiGroup newGroup = new MultiGroup(paths);
 			groups.add(newGroup);
 			pathsUsed.addAll(newGroup.getAllFiles());
-		}		
+		}
 
 		Map<String, Set<Path>> groupNamesToPaths = new HashMap<>();
-		
+
 		Files.list(path).forEach(currentPath -> {
 			if (Files.isDirectory(currentPath)) {
 				return;
@@ -72,7 +59,7 @@ public class Sorting {
 			if (Collections.frequency(pathsUsed, currentPath) > 0) {
 				return;
 			}
-			
+
 			String currentFileName = currentPath.getFileName().toString();
 			String currentGroupName = currentFileName;
 			if (currentFileName.contains(".")) {
@@ -83,11 +70,11 @@ public class Sorting {
 			}
 			groupNamesToPaths.get(currentGroupName).add(currentPath);
 		});
-		
+
 		for (String currentGroupName : groupNamesToPaths.keySet()) {
 			groups.add(new SingleGroup(groupNamesToPaths.get(currentGroupName)));
 		}
-		
+
 		return groups;
 	}
 

@@ -93,4 +93,16 @@ public class FileUtils {
 		return Long.toString(instant.toEpochMilli());
 
 	}
+
+	public static Path moveSymlink(Path current, Path destination) throws IOException {
+		Path symlinkTarget = destination.relativize(current.toRealPath());
+		Path newLink = Files.createSymbolicLink(destination.resolve(current.getFileName()), symlinkTarget);
+		Files.delete(current);
+		return newLink;
+	}
+
+	public static long getTimestampPortion(Path current) {
+		String filename = current.getFileName().toString();
+		return Long.parseLong(filename.substring(0, filename.indexOf('_')));
+	}
 }
