@@ -34,10 +34,10 @@ public class Init extends AbstractOperation {
 					.createDirectory(Paths.get(context.getRoot().toString(), Constants.FOLDER_TIMELINE));
 			files.forEach(file -> {
 				try {
+					//TODO handle sub folders
 					String timestamp = FileUtils.getTimestamp(FileUtils.getCreationDate(file));
 					Path destination = timelineFolder.resolve(timestamp + "_" + file.getFileName());
-					Files.createSymbolicLink(destination, destination.relativize(timelineFolder));
-					file.toFile().setReadOnly();
+					Files.createSymbolicLink(destination, timelineFolder.relativize(file));
 				} catch (IOException | FileOperationException e) {
 					Logger.log("Linking file " + file + " to " + Constants.FOLDER_TIMELINE + " did cause an error", e);
 				}
