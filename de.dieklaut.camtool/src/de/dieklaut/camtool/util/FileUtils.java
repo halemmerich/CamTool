@@ -38,7 +38,7 @@ public class FileUtils {
 		}
 
 		try {
-			return Files.readAttributes(filePath, BasicFileAttributes.class).creationTime().toInstant();
+			return Files.readAttributes(filePath, BasicFileAttributes.class).lastModifiedTime().toInstant();
 		} catch (IOException e) {
 			throw new FileOperationException("Could not get the creation date from file " + filePath, e);
 		}
