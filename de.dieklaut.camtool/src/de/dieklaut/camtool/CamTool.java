@@ -15,6 +15,7 @@ import org.apache.commons.cli.ParseException;
 
 import de.dieklaut.camtool.cmdlinewrapper.InitWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.OperationWrapper;
+import de.dieklaut.camtool.cmdlinewrapper.RenderWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.SortWrapper;
 
 public class CamTool {
@@ -28,7 +29,7 @@ public class CamTool {
 	
 	private static Options options = new Options().addOption(helpOption);
 	
-	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper());
+	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(), new RenderWrapper());
 	
 	private CamTool() {
 		//Prevent instantiation

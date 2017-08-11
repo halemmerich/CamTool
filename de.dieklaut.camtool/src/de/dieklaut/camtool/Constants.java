@@ -14,4 +14,5 @@ public interface Constants {
 	public static final String PROPERTY_VERSION_FILE_FORMAT = "FileFormat";
 	public static final String CURRENT_VERSION_FILE_FORMAT = "1";
 	public static final String FILE_PROPERTIES = ".properties";
+	public static final String DEFAULT_SORTING_NAME = "normal";
 }
