@@ -3,6 +3,8 @@ package de.dieklaut.camtool;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import de.dieklaut.camtool.renderjob.RenderJob;
+
 /**
  * This stores multiple files belonging together but essentially not the same.
  * This could be the source files for a panorama or a HDR-Stack. These files
@@ -18,7 +20,7 @@ public class MultiGroup extends AbstractGroup {
 	}
 
 	@Override
-	public Result render() {
+	public RenderJob getRenderJob() {
 		// TODO Auto-generated method stub
 		return null;
 	}

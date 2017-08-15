@@ -3,6 +3,8 @@ package de.dieklaut.camtool;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import de.dieklaut.camtool.renderjob.RenderJob;
+
 /**
  * A group is an envelope for multiple files belonging together. They are expected to be on the same file hierarchy level.
  * 
@@ -19,7 +21,7 @@ public interface Group{
 	/**
 	 * Perform all necessary steps for creating the final result of this group
 	 */
-	public Result render();
+	public RenderJob getRenderJob();
 	
 	/**
 	 * @return true, iff this group has been marked as deleted

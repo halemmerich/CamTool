@@ -62,4 +62,14 @@ public class FileUtilsTest extends FileBasedTest {
 		assertEquals(1501103070993l, FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS")).toEpochMilli());
 		assertEquals(1501103071000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("XAVC.MP4")).toEpochMilli());
 	}
+	
+	@Test
+	public void testRemoveSuffix() {
+		assertEquals("test.jpg",FileUtils.removeSuffix("test.jpg.arw"));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testRemoveSuffixNoDot() {
+		FileUtils.removeSuffix("test");
+	}
 }

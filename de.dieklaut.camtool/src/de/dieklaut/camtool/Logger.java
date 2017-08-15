@@ -8,7 +8,7 @@ public class Logger {
 	private static Level discardIfBelow = Level.INFO;
 	
 	public enum Level {
-		DEBUG, INFO, ERROR
+		DEBUG, INFO, WARNING, ERROR
 	}
 	
 	public static void log(String message, Level level) {
