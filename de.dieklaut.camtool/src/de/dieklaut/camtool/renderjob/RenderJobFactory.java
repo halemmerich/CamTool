@@ -3,6 +3,7 @@ package de.dieklaut.camtool.renderjob;
 import java.nio.file.Path;
 
 import de.dieklaut.camtool.FileTypeHelper;
+import de.dieklaut.camtool.RawTherapeeWrapper;
 
 public class RenderJobFactory {
 	
@@ -29,7 +30,7 @@ public class RenderJobFactory {
 	public RenderJob forFile(Path mainFile, Path ... helperFiles) {
 		if (FileTypeHelper.isRawImageFile(mainFile)) {
 			if (useRawtherapee) {
-				return new RawtherapeeRenderJob(mainFile, helperFiles);
+				return new RawTherapeeRenderJob(new RawTherapeeWrapper(), mainFile, helperFiles);
 			} else if (useLinkRenderer) {
 				return new LinkRenderJob(mainFile);
 			}
