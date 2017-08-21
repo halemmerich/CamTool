@@ -96,7 +96,8 @@ public class FileUtils {
 
 	public static Path moveSymlink(Path current, Path destination) throws IOException {
 		Path symlinkTarget = destination.relativize(current.toRealPath());
-		Path newLink = Files.createSymbolicLink(destination.resolve(current.getFileName()), symlinkTarget);
+		Path newSymlink = destination.resolve(current.getFileName());
+		Path newLink = Files.createSymbolicLink(newSymlink, symlinkTarget);
 		Files.delete(current);
 		return newLink;
 	}
@@ -104,6 +105,11 @@ public class FileUtils {
 	public static long getTimestampPortion(Path current) {
 		String filename = current.getFileName().toString();
 		return Long.parseLong(filename.substring(0, filename.indexOf('_')));
+	}
+
+	public static String getNamePortion(Path current) {
+		String filename = current.getFileName().toString();
+		return filename.substring(filename.indexOf('_'));
 	}
 
 	public static String removeSuffix(String fileName) {

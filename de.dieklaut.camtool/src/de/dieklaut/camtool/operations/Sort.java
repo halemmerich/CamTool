@@ -10,6 +10,7 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
+import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -24,6 +25,8 @@ public class Sort extends AbstractOperation {
 
 	private String name = "normal";
 	private boolean moveCollectionsToFolder = false;
+	private boolean moveAllGroupsToFolder = false;
+
 	private boolean detectBracketedShots = false;
 	private boolean detectSeries = false;
 
@@ -56,7 +59,7 @@ public class Sort extends AbstractOperation {
 				combineSeries(sorting);
 			}
 			
-			if (moveCollectionsToFolder) {
+			if (moveCollectionsToFolder || moveAllGroupsToFolder) {
 				moveCollections(sorting, sortingFolder);
 			}
 			
@@ -77,8 +80,15 @@ public class Sort extends AbstractOperation {
 
 	private void moveCollections(Collection<Group> groups, Path sortingFolder) {
 		for (Group group : groups) {
-			if (!group.hasOwnFolder()) {
+			if ((group instanceof MultiGroup || moveAllGroupsToFolder) && !group.hasOwnFolder()) {
 				Path destination = group.getContainingFolder().resolve(buildGroupName(group));
+				if(!Files.exists(destination)) {
+					try {
+						Files.createDirectory(destination);
+					} catch (IOException e) {
+						throw new IllegalStateException("Moving group has failed", e);
+					}
+				}
 				group.moveToFolder(sortingFolder.resolve(destination));
 			}
 		}
@@ -86,13 +96,15 @@ public class Sort extends AbstractOperation {
 
 	private String buildGroupName(Group group) {
 		long currentMin = Long.MAX_VALUE;
+		String currentName = "";
 		for (Path current: group.getAllFiles()) {
 			long stamp = FileUtils.getTimestampPortion(current);
 			if (stamp < currentMin) {
 				currentMin = stamp;
+				currentName = FileUtils.getNamePortion(current);
 			}
 		}
-		return currentMin + "_" + group.getType();
+		return currentMin + "_" + group.getType() + "_" + currentName;
 	}
 
 	public void setName(String name) {
@@ -109,6 +121,10 @@ public class Sort extends AbstractOperation {
 
 	public void setDetectSeries(boolean detectSeries) {
 		this.detectSeries = detectSeries;
+	}
+	
+	public void setMoveAllGroupsToFolder(boolean moveAllGroupsToFolder) {
+		this.moveAllGroupsToFolder = moveAllGroupsToFolder;
 	}
 
 }
