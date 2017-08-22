@@ -101,7 +101,7 @@ public class CamTool {
 	}
 
 	private static void printGenericHelp() {
-		System.out.println("Available actions: ");
+		System.out.println("Available operations: ");
 		for (OperationWrapper wrapper : engine.getOperationWrappers()) {
 			System.out.println("    " + wrapper.getName() + "\t" + wrapper.getHelp());
 		}

@@ -3,6 +3,7 @@ package de.dieklaut.camtool;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import de.dieklaut.camtool.renderjob.CopyJob;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
 import de.dieklaut.camtool.renderjob.RenderJobFactory;

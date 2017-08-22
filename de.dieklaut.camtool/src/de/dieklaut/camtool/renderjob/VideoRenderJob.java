@@ -1,8 +1,6 @@
-package de.dieklaut.camtool;
+package de.dieklaut.camtool.renderjob;
 
 import java.nio.file.Path;
-
-import de.dieklaut.camtool.renderjob.RenderJob;
 
 public class VideoRenderJob implements RenderJob {
 

@@ -1,10 +1,8 @@
-package de.dieklaut.camtool;
+package de.dieklaut.camtool.renderjob;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import de.dieklaut.camtool.renderjob.RenderJob;
 
 public class CopyJob implements RenderJob {
 
