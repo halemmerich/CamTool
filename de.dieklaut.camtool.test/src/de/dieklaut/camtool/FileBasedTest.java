@@ -11,15 +11,15 @@ import de.dieklaut.camtool.util.FileUtils;
 
 public class FileBasedTest {
 
-	private static Path testFolder;
+	private Path testFolder;
 
 	@Before
-	public void setUpClass() throws IOException {
+	public void setUpTestFolder() throws IOException {
 		testFolder = Files.createTempDirectory("test");
 	}
 
 	@After
-	public void tearDownClass() throws IOException, FileOperationException {
+	public void tearDownTestFolder() throws IOException, FileOperationException {
 		FileUtils.deleteRecursive(testFolder, true);
 	}
 	

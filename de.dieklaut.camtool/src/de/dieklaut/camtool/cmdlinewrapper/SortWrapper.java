@@ -23,7 +23,8 @@ public class SortWrapper extends AbstractWrapper {
 
 	@Override
 	public Options getOptions() {
-		Options options = new Options().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").build());
+		Options options = super.getOptions();
+		options.addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").build());
 		options.addOption(Option.builder(OPT_DETECT_BRACKETED_SHORT).longOpt(OPT_DETECT_BRACKETED).desc("Detect bracketed shots and put them into a collection").build());
 		options.addOption(Option.builder(OPT_DETECT_SERIES_SHORT).longOpt(OPT_DETECT_SERIES).desc("Detect series shots and put them into a collection").build());
 		options.addOption(Option.builder(OPT_DETECT_MOVE_ALL_GROUPS_SHORT).longOpt(OPT_DETECT_MOVE_ALL_GROUPS).desc("Move all detected groups into their own folder").build());

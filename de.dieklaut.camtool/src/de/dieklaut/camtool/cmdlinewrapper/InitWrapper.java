@@ -11,7 +11,7 @@ public class InitWrapper extends AbstractWrapper {
 
 	@Override
 	public Options getOptions() {
-		return new Options();
+		return super.getOptions();
 	}
 
 	@Override
