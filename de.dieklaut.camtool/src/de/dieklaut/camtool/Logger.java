@@ -22,7 +22,7 @@ public class Logger {
 		log(message, e, Level.ERROR);
 	}
 
-	public static void log(String message, Exception e, Level level) {
+	public static void log(String message, Throwable e, Level level) {
 		if (!printStackTraces) {
 			message += ": " + e.getClass().getName() + ", " + e.getMessage();
 		}
