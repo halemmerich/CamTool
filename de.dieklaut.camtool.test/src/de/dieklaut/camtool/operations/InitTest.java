@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,18 +14,23 @@ import org.junit.Test;
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.FileBasedTest;
+import de.dieklaut.camtool.FileOperationException;
+import de.dieklaut.camtool.TestFileHelper;
+import de.dieklaut.camtool.util.FileUtils;
 
 public class InitTest extends FileBasedTest {
-
-	String[] fileNames = new String[] { "File1.asdf", "File2.bla", "File3" };
-	long[] timestamps = new long[fileNames.length];
-	Path [] paths = new Path[fileNames.length];
+	
+	String[] fileNames = new String[] { "NEX5R.ARW", "NEX5R.JPG", "A7II.ARW", "A7II.JPG", "noexif.png", "XAVC.MP4",
+			"AVCHD.MTS", "neutral.pp3", "neutral_deleted.pp3", "empty.file" };
+	String[] timestamps = new String[] { "1499496795", "1499496795", "1499498030", "1499498030", "1500055432", "1501094414", "1501103070",
+			"1502471392", "1502471659", "1503427257" };
+	Path[] paths = new Path[fileNames.length];
 
 	@Before
-	public void setUp() throws IOException {
+	public void setUp() throws IOException, FileOperationException {
 		for (int i = 0; i < fileNames.length; i++) {
-			paths[i] = Files.createFile(getTestFolder().resolve(fileNames[i]));
-			timestamps[i] = Files.readAttributes(getTestFolder().resolve(fileNames[i]), BasicFileAttributes.class).creationTime().toInstant().toEpochMilli();
+			paths[i] = Files.copy(TestFileHelper.getTestResource(fileNames[i]), getTestFolder().resolve(fileNames[i]));
+			timestamps[i] = FileUtils.getTimestamp(paths[i]);
 		}
 	}
 	
@@ -51,10 +55,9 @@ public class InitTest extends FileBasedTest {
 		assertEquals(getTestFolder().resolve(Constants.FOLDER_TIMELINE), context.getTimeLine());
 		// checks that the timeline was created
 		for (int i = 0; i < fileNames.length; i++) {
-			assertTrue(Files.exists(context.getTimeLine().resolve(Long.toString(timestamps[i]) + "_" + fileNames[i])));
-			assertEquals(context.getOriginals().resolve(fileNames[i]).toRealPath(), context.getTimeLine().resolve(Long.toString(timestamps[i]) + "_" + fileNames[i]).toRealPath());
+			String expectedFilename = timestamps[i] + "_" + fileNames[i];
+			assertTrue("File " + expectedFilename + " does not exist", Files.exists(context.getTimeLine().resolve(expectedFilename)));
+			assertEquals(context.getOriginals().resolve(fileNames[i]).toRealPath(), context.getTimeLine().resolve(timestamps[i] + "_" + fileNames[i]).toRealPath());
 		}
 	}
-	
-	//TODO implement test for correct handling of subfolders in original folder
 }

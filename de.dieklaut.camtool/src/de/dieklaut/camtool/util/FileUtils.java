@@ -91,7 +91,10 @@ public class FileUtils {
 
 	public static String getTimestamp(Instant instant) {
 		return Long.toString(instant.toEpochMilli());
-
+	}
+	
+	public static String getTimestamp(Path file) throws FileOperationException {
+		return getTimestamp(getCreationDate(file));
 	}
 
 	public static Path moveSymlink(Path current, Path destination) throws IOException {
