@@ -56,11 +56,19 @@ public class FileUtilsTest extends FileBasedTest {
 	}
 	
 	@Test
-	public void testGetTimestamp() throws FileOperationException {
+	public void testGetCreationDate() throws FileOperationException {
 		assertEquals(1499505230000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("A7II.ARW")).toEpochMilli());
 		assertEquals(1499503995000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("NEX5R.ARW")).toEpochMilli());
 		assertEquals(1501103070993l, FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS")).toEpochMilli());
 		assertEquals(1501103071000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("XAVC.MP4")).toEpochMilli());
+	}
+	
+	@Test
+	public void testGetTimestamp() throws FileOperationException {
+		assertEquals("1499505230000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("A7II.ARW"))));
+		assertEquals("1499503995000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("NEX5R.ARW"))));
+		assertEquals("1501103070993", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS"))));
+		assertEquals("1501103071000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("XAVC.MP4"))));
 	}
 	
 	@Test
