@@ -5,7 +5,7 @@ import java.nio.file.Path;
 public class FileTypeHelper {
 
 	private static String [] rawFileSuffixes = new String [] {"arw", "nef"};
-	private static String [] videoFileSuffixes = new String [] {"mp4", "mpg", "avi", "avchd", "mkv"};
+	private static String [] videoFileSuffixes = new String [] {"mp4", "mpg", "avi", "avchd", "mkv", "mts"};
 	
 	private static boolean endsWithOne(Path path, String ... strings) {
 		for (String current : strings) {

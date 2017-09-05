@@ -10,6 +10,14 @@ public class DefaultRenderJobFactoryProvider implements RenderJobFactoryProvider
 	private boolean useRawtherapee = false;
 	private boolean useLinkRenderer = true;
 	
+	public void setUseRawtherapee(boolean useRawtherapee) {
+		this.useRawtherapee = useRawtherapee;
+	}
+
+	public void setUseLinkRenderer(boolean useLinkRenderer) {
+		this.useLinkRenderer = useLinkRenderer;
+	}
+	
 	@Override
 	public RenderJob forFile(Path mainFile, Path ... helperFiles) {
 		if (FileTypeHelper.isRawImageFile(mainFile)) {

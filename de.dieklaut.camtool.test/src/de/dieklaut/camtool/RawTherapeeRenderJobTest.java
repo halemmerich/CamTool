@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.exec.CommandLine;
 import org.junit.Test;
 
 import de.dieklaut.camtool.renderjob.RawTherapeeRenderJob;
@@ -19,7 +20,7 @@ public class RawTherapeeRenderJobTest{
 		Path destination = Paths.get("whatever");
 		Path sidecar = Paths.get("test.pp3");
 		
-		ExternalTool checkCommandlineCall = new ExternalTool() {
+		RawTherapeeWrapper checkCommandlineCall = new RawTherapeeWrapper() {
 			
 			@Override
 			public boolean process() {
@@ -28,8 +29,8 @@ public class RawTherapeeRenderJobTest{
 			}
 
 			@Override
-			public String getCommandLine() {
-				return "";
+			public CommandLine getCommandLine() {
+				return null;
 			}
 		};
 		

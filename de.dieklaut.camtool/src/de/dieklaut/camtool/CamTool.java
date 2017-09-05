@@ -13,10 +13,14 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.cmdlinewrapper.InitWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.OperationWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.RenderWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.SortWrapper;
+import de.dieklaut.camtool.operations.Operation;
+import de.dieklaut.camtool.renderjob.DefaultRenderJobFactoryProvider;
+import de.dieklaut.camtool.renderjob.RenderJobFactory;
 
 public class CamTool {
 
@@ -37,6 +41,8 @@ public class CamTool {
 	}
 	
 	public static void main(String [] args) {
+		Logger.setDiscardIfBelow(Level.TRACE);
+		
 		if (args.length == 0) {
 			printGenericHelp();
 		} else if (args[0].startsWith("-")) {
@@ -46,30 +52,30 @@ public class CamTool {
 			
 			//extract action and move args
 
-			OperationWrapper operation = null;
+			OperationWrapper operationWrapper = null;
 			for (OperationWrapper op : engine.getOperationWrappers()) {
 				if (op.getName().toLowerCase().equals(args[0].toLowerCase())){
-					operation = op;
+					operationWrapper = op;
 					break;
 				}
 			}
 			
-			if (operation == null) {
+			if (operationWrapper == null) {
 				Logger.log("No operation found on command line", Logger.Level.ERROR);
 			}
 			
 			CommandLineParser parser = new DefaultParser();
 			
 			try {
-				Options operationOptions = operation.getOptions();
+				Options operationOptions = operationWrapper.getOptions();
 				CommandLine cmd = parser.parse(operationOptions, Arrays.copyOfRange(args, 1, args.length));
 				if (cmd.hasOption(helpOption.getOpt())){
-					printOperationHelp(operation.getName(), operationOptions);
+					printOperationHelp(operationWrapper.getName(), operationOptions);
 					return;
 				}
 				Context context = null;
 				Path workingDir = Paths.get("").toAbsolutePath();
-				if (operation instanceof InitWrapper) {
+				if (operationWrapper instanceof InitWrapper) {
 					try {
 						context = Context.create(workingDir);
 					} catch (IOException e) {
@@ -78,7 +84,14 @@ public class CamTool {
 				} else {
 					context = findContext(workingDir);
 				}
-				operation.getOperation(cmd).perform(context);
+				
+				DefaultRenderJobFactoryProvider jobfactory = new DefaultRenderJobFactoryProvider();
+				jobfactory.setUseRawtherapee(true);
+				RenderJobFactory.setFactoryInstance(jobfactory);
+				
+				Operation operation = operationWrapper.getOperation(cmd);
+				Logger.log("Performing operation " + operation.getName(), Level.INFO);
+				operation.perform(context);
 			} catch (ParseException e) {
 				formatter.printHelp(APPLICATION_NAME + " " + APPLICATION_ACTION + " " + APPLICATION_OPTIONS, options);
 			}

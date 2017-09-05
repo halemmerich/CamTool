@@ -26,7 +26,7 @@ public class RenderTest extends FileBasedTest {
 	@Test
 	public void testPerform() throws IOException, FileOperationException {
 		RenderJobFactory.getInstance();
-		RenderJobFactory.replaceFactoryInstance(new RenderJobFactoryProvider() {
+		RenderJobFactory.setFactoryInstance(new RenderJobFactoryProvider() {
 			@Override
 			public RenderJob forFile(Path mainFile, Path... helperFiles) {
 				return new DummyRawRenderJob(mainFile);

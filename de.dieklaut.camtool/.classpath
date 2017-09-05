@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/de.dieklaut.camtool.lib.apache.cli"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/de.dieklaut.camtool.lib.metadataextractor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/de.dieklaut.camtool.lib.apache.exec"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -3,6 +3,8 @@ package de.dieklaut.camtool;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.exec.CommandLine;
+
 public class RawTherapeeWrapper extends ExternalTool {
 	
 	String commandLine = "rawtherapee-cli";
@@ -29,19 +31,38 @@ public class RawTherapeeWrapper extends ExternalTool {
 		this.subsampling = subsampling;
 	}
 
+	/*
 	@Override
-	public String getCommandLine() {
-		String commandline = "rawtherapee-cli";
-		commandline += " -o " + '"' + outputFilePath + '"';
-		commandline += " -j" + quality;
-		commandline += " -js" + subsampling;
+	public CommandLine getCommandLine() {
+		CommandLine commandline = new CommandLine("rawtherapee-cli");
+		commandline.addArgument("-o " + '"' + outputFilePath + '"');
+		commandline.addArgument("-j" + quality);
+		commandline.addArgument("-js" + subsampling);
 
-		commandline += " -d";
+		commandline.addArgument("-d");
 		for (String current : profileOptions) {
-			commandline += " -p " + '"' + current + '"';
+			commandline.addArgument("-p " + '"' + current + '"');
 		}
 		
-		commandline += " -c " + '"' + inputFilePath + '"';
+		commandline.addArgument("-c " + '"' + inputFilePath + '"');
+		return commandline;
+	}*/
+	@Override
+	public CommandLine getCommandLine() {
+		CommandLine commandline = new CommandLine("rawtherapee-cli");
+		commandline.addArgument("-o");
+		commandline.addArgument(outputFilePath, false);
+		commandline.addArgument("-j" + Integer.toString(quality));
+		commandline.addArgument("-js" + Integer.toString(subsampling));
+
+		commandline.addArgument("-d");
+		for (String current : profileOptions) {
+			commandline.addArgument("-p");
+			commandline.addArgument(current);
+		}
+		
+		commandline.addArgument("-c");
+		commandline.addArgument(inputFilePath, false);
 		return commandline;
 	}
 

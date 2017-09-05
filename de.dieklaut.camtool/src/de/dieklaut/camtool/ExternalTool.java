@@ -1,10 +1,19 @@
 package de.dieklaut.camtool;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.PumpStreamHandler;
+
+import de.dieklaut.camtool.Logger.Level;
 
 public abstract class ExternalTool {
 	
-	public abstract String getCommandLine();
+	public abstract CommandLine getCommandLine();
 
 	/**
 	 * Executes the command line build by {@link #getCommandLine()}
@@ -12,16 +21,23 @@ public abstract class ExternalTool {
 	 * @return true, iff successfully processed
 	 */
 	public boolean process() {
-		ProcessBuilder pbuilder = new ProcessBuilder(getCommandLine());
-		Process process;
+		Executor executor = new DefaultExecutor();
 		try {
-			process = pbuilder.start();
-			int returnValue = process.waitFor();
+		    ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+		    PumpStreamHandler psh = new PumpStreamHandler(stdout);
+		    executor.setStreamHandler(psh);			
 			
-			if (returnValue != 0) {
-				throw new IllegalStateException("External tool failed with return code " + returnValue);
-			}
-		} catch (InterruptedException | IOException e) {
+		    try {
+		    	CommandLine commandLine = getCommandLine();
+				Logger.log("Process command line: " + commandLine.toString(), Level.TRACE);
+				executor.execute(commandLine);
+		    } catch (ExecuteException e) {
+		    	int exitValue = e.getExitValue();
+				Logger.log("Process return value: " + exitValue, Level.DEBUG);
+				Logger.log("Process output:\n" + stdout.toString(), Level.TRACE);
+				throw new IllegalStateException("External tool failed with return code " + exitValue);
+		    }
+		} catch (IOException e) {
 			throw new IllegalStateException("External tool failed", e);
 		}
 		return true;

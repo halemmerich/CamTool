@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="src" path="/de.dieklaut.camtool"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/de.dieklaut.camtool.lib.apache.exec"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/de.dieklaut.camtool.test"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

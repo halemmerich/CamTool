@@ -5,10 +5,18 @@ import java.util.Calendar;
 public class Logger {
 
 	private static boolean printStackTraces = false;
-	private static Level discardIfBelow = Level.INFO;
+	private static Level discardIfBelow = Level.WARNING;
 	
+	public static Level getDiscardIfBelow() {
+		return discardIfBelow;
+	}
+
+	public static void setDiscardIfBelow(Level discardIfBelow) {
+		Logger.discardIfBelow = discardIfBelow;
+	}
+
 	public enum Level {
-		DEBUG, INFO, WARNING, ERROR
+		TRACE, DEBUG, INFO, WARNING, ERROR
 	}
 	
 	public static void log(String message, Level level) {
