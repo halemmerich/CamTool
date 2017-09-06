@@ -120,7 +120,9 @@ public class Render extends AbstractOperation {
 		try {
 			Files.createDirectories(destination_medium);
 			Files.list(destination_full).forEach(file -> {
-				downsizeToMedium(file, destination_medium.resolve(file.getFileName()));
+				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
+					downsizeToMedium(file, destination_medium.resolve(file.getFileName()));
+				}
 			});
 		} catch (IOException e) {
 			throw new IllegalStateException("Creating medium size result files failed", e);
@@ -129,7 +131,9 @@ public class Render extends AbstractOperation {
 		try {
 			Files.createDirectories(destination_small);
 			Files.list(destination_full).forEach(file -> {
-				downsizeToSmall(file, destination_small.resolve(file.getFileName()));
+				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
+					downsizeToSmall(file, destination_small.resolve(file.getFileName()));
+				}
 			});
 		} catch (IOException e) {
 			throw new IllegalStateException("Creating small size result files failed", e);
