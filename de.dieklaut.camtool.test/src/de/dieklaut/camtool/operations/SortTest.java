@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.Test;
 
@@ -26,7 +27,7 @@ public class SortTest extends FileBasedTest {
 		Sort sort = new Sort();
 		sort.perform(context);
 
-		assertEquals(4, Files.list(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal")).count());
+		assertEquals(5, Files.list(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal")).count());
 		
 	}
 	@Test
@@ -43,10 +44,14 @@ public class SortTest extends FileBasedTest {
 		sort.setMoveAllGroupsToFolder(true);
 		sort.perform(context);
 
-		assertEquals(3, Files.list(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal")).count());
+		Path sortingFolder = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal");
+		assertEquals(4, Files.list(sortingFolder).count());
+		assertTrue(Files.exists(sortingFolder.resolve(Constants.SORTED_FILE_NAME)));
 		
-		Files.list(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal")).forEach(file -> {
-			assertTrue(Files.isDirectory(file));
+		Files.list(sortingFolder).forEach(file -> {
+			if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
+				assertTrue(Files.isDirectory(file));
+			}
 		});
 		
 	}

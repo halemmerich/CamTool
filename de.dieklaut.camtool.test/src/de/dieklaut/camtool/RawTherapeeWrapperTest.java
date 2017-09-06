@@ -1,12 +1,11 @@
 package de.dieklaut.camtool;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.exec.CommandLine;
 import org.junit.Test;
 
 public class RawTherapeeWrapperTest {
@@ -24,14 +23,6 @@ public class RawTherapeeWrapperTest {
 		wrapper.addProfileOption(sidecar.toString());
 		wrapper.setJpgQuality(95, 3);
 
-		CommandLine expected = new CommandLine("rawtherapee-cli");
-		expected.addArgument("-o \"whatever\"");
-		expected.addArgument("-j95");
-		expected.addArgument("-js3");
-		expected.addArgument("-d");
-		expected.addArgument("-p \"test.pp3\"");
-		expected.addArgument("-c \"test.arw\"");
-
-		assertEquals(expected.toString(), wrapper.getCommandLine().toString());
+		assertEquals("[rawtherapee-cli, -o, whatever, -j95, -js3, -d, -p, test.pp3, -c, test.arw]", wrapper.getCommandLine().toString());
 	}
 }

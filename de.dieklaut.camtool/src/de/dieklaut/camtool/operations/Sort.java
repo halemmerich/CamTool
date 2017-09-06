@@ -63,6 +63,7 @@ public class Sort extends AbstractOperation {
 				moveCollections(sorting, sortingFolder);
 			}
 			
+			Files.createFile(sortingFolder.resolve(Constants.SORTED_FILE_NAME));
 		} catch (IOException e) {
 			throw new IllegalStateException("A file operation failed", e);
 		}
