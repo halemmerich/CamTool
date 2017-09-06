@@ -7,6 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Collection;
 import java.util.Date;
 
@@ -90,7 +93,11 @@ public class FileUtils {
 	}
 
 	public static String getTimestamp(Instant instant) {
-		return Long.toString(instant.toEpochMilli());
+		DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
+		builder.appendPattern("yyyyMMddhhmmssSSS");
+		DateTimeFormatter formatter = builder.toFormatter();
+		formatter = formatter.withZone(ZoneOffset.ofHours(0));
+		return formatter.format(instant);
 	}
 	
 	public static String getTimestamp(Path file) throws FileOperationException {
