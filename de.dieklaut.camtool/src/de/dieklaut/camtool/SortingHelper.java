@@ -33,6 +33,9 @@ public class SortingHelper {
 				groups.addAll(identifiedGroups);
 			} else {
 				String currentFileName = currentPath.getFileName().toString();
+				if (currentFileName.equals(Constants.SORTED_FILE_NAME)) {
+					return;
+				}
 				if (currentFileName.endsWith(".camtool_collection")) {
 					collections.add(currentPath);
 				}
