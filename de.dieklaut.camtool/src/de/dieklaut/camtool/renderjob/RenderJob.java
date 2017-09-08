@@ -11,5 +11,10 @@ import de.dieklaut.camtool.Group;
  *
  */
 public interface RenderJob {
+	/**
+	 * Performs the rendering and stores the result at the given destination.
+	 * @param destination
+	 * @throws IOException
+	 */
 	public void store(Path destination) throws IOException;
 }
