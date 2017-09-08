@@ -27,28 +27,52 @@ public class CamToolTest extends FileBasedTest{
 	}
 
 	@Test
-	public void testNoArgs() {
+	public void callNoArgs() {
 		CamTool.main(new String[] {});
 	}
 
 	@Test
-	public void testHelp() {
+	public void callHelp() {
 		CamTool.main(new String[] {"-h"});
 	}
 	
 	@Test
-	public void testInitNoArgs() {
+	public void callInitNoArgs() {
 		CamTool.main(new String[] {"init"});
 	}
 	
 	@Test
-	public void testSortNoArgs() {
+	public void callSortNoArgs() {
 		CamTool.main(new String[] {"init"});
 		CamTool.main(new String[] {"sort"});
 	}
 	
 	@Test
-	public void testSortHelp() {
+	public void callSortHelp() {
+		CamTool.main(new String[] {"init"});
+		CamTool.main(new String[] {"sort", "-h"});
+	}
+	
+	@Test
+	public void callRenderNoArgs() {
+		CamTool.main(new String[] {"init"});
+		CamTool.main(new String[] {"sort"});
+	}
+	
+	@Test
+	public void callRenderHelp() {
+		CamTool.main(new String[] {"init"});
+		CamTool.main(new String[] {"sort", "-h"});
+	}
+	
+	@Test
+	public void callExportNoArgs() {
+		CamTool.main(new String[] {"init"});
+		CamTool.main(new String[] {"sort"});
+	}
+	
+	@Test
+	public void callExportHelp() {
 		CamTool.main(new String[] {"init"});
 		CamTool.main(new String[] {"sort", "-h"});
 	}
