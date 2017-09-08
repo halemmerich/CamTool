@@ -13,6 +13,7 @@ import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.util.FileUtils;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Analyses the {@link Constants#FOLDER_ORIGINAL} contents and creates a
@@ -70,13 +71,11 @@ public class Sort extends AbstractOperation {
 	}
 
 	private void combineSeries(Collection<Group> sorting) {
-		// TODO Auto-generated method stub
-		
+		throw new NotImplementedException();
 	}
 
 	private void combineBrackets(Collection<Group> sorting) {
-		// TODO Auto-generated method stub
-		
+		throw new NotImplementedException();
 	}
 
 	private void moveCollections(Collection<Group> groups, Path sortingFolder) {
