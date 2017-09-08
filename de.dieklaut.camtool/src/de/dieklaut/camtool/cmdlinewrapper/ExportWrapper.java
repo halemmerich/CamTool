@@ -21,9 +21,9 @@ public class ExportWrapper extends AbstractWrapper {
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions();
-		options.addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("The name for the sorting that should be exported").build());
-		options.addOption(Option.builder(OPT_TYPE_SHORT).longOpt(OPT_TYPE).desc("The type of the results that should be exported").build());
-		options.addOption(Option.builder(OPT_DESTINATION_SHORT).longOpt(OPT_DESTINATION).desc("The destination folder for the export").build());
+		options.addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("The name for the sorting that should be exported").hasArg().build());
+		options.addOption(Option.builder(OPT_TYPE_SHORT).longOpt(OPT_TYPE).desc("The type of the results that should be exported").hasArg().build());
+		options.addOption(Option.builder(OPT_DESTINATION_SHORT).longOpt(OPT_DESTINATION).desc("The destination folder for the export").hasArg().build());
 		return options;
 	}
 

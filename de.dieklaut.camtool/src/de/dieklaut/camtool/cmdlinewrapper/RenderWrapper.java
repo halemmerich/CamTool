@@ -15,7 +15,7 @@ public class RenderWrapper extends AbstractWrapper {
 
 	@Override
 	public Options getOptions() {
-		return super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").build());
+		return super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
 	}
 
 	@Override

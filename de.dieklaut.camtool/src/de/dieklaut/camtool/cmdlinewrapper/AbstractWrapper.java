@@ -10,7 +10,7 @@ public abstract class AbstractWrapper implements OperationWrapper{
 
 	@Override
 	public Options getOptions() {
-		return new Options().addOption(Option.builder(OPT_HELP_SHORT).longOpt(OPT_HELP).desc("Help for the " + getName() + " Operation").build());
+		return new Options().addOption(Option.builder(OPT_HELP_SHORT).longOpt(OPT_HELP).desc("Help for the " + getName().toLowerCase() + " Operation").build());
 	}
 	
 	@Override

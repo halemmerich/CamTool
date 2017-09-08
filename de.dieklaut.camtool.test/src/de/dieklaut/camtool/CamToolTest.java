@@ -5,12 +5,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.dieklaut.camtool.util.FileUtils;
 
 public class CamToolTest extends FileBasedTest{
 	
+	private static final String TEST = "test";
+
 	@Before
 	public void setUp() throws InterruptedException, IOException {
 		if (System.getenv("NEEDS_WORKING_DIR") == null) {
@@ -43,37 +46,81 @@ public class CamToolTest extends FileBasedTest{
 	
 	@Test
 	public void callSortNoArgs() {
-		CamTool.main(new String[] {"init"});
+		callInitNoArgs();
 		CamTool.main(new String[] {"sort"});
 	}
 	
 	@Test
 	public void callSortHelp() {
-		CamTool.main(new String[] {"init"});
+		callInitNoArgs();
 		CamTool.main(new String[] {"sort", "-h"});
+	}
+	
+	@Test
+	public void callSortWithName() {
+		CamTool.main(new String[] {"init"});
+		CamTool.main(new String[] {"sort", "-n", TEST});
+	}
+	
+	@Ignore("Not yet implemented")
+	@Test
+	public void callSortWithDetectBrackets() {
+		callInitNoArgs();
+		CamTool.main(new String[] {"sort", "-b"});
+	}
+
+	@Ignore("Not yet implemented")
+	@Test
+	public void callSortWithDetectSeries() {
+		callInitNoArgs();
+		CamTool.main(new String[] {"sort", "-s"});
+	}
+	
+	@Test
+	public void callSortWithMoveAllGroups() {
+		callInitNoArgs();
+		CamTool.main(new String[] {"sort", "-a"});
+	}
+	
+	@Test
+	public void callSortWithMoveCollections() {
+		callInitNoArgs();
+		CamTool.main(new String[] {"sort", "-c"});
 	}
 	
 	@Test
 	public void callRenderNoArgs() {
-		CamTool.main(new String[] {"init"});
-		CamTool.main(new String[] {"sort"});
+		callSortNoArgs();
+		CamTool.main(new String[] {"render"});
 	}
 	
 	@Test
 	public void callRenderHelp() {
-		CamTool.main(new String[] {"init"});
-		CamTool.main(new String[] {"sort", "-h"});
+		callInitNoArgs();
+		CamTool.main(new String[] {"render", "-h"});
+	}
+	
+	@Test
+	public void callRenderWithName() {
+		callSortWithName();
+		CamTool.main(new String[] {"render", "-n", TEST});
 	}
 	
 	@Test
 	public void callExportNoArgs() {
-		CamTool.main(new String[] {"init"});
-		CamTool.main(new String[] {"sort"});
+		callRenderNoArgs();
+		CamTool.main(new String[] {"export"});
 	}
 	
 	@Test
 	public void callExportHelp() {
-		CamTool.main(new String[] {"init"});
-		CamTool.main(new String[] {"sort", "-h"});
+		callRenderNoArgs();
+		CamTool.main(new String[] {"export", "-h"});
+	}
+	
+	@Test
+	public void callExportWithName() {
+		callRenderWithName();
+		CamTool.main(new String[] {"export", "-n", TEST});
 	}
 }
