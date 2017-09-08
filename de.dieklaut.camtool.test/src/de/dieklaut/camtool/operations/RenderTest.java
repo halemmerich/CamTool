@@ -52,11 +52,11 @@ public class RenderTest extends FileBasedTest {
 		
 		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
 		assertTrue(Files.exists(results));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.FOLDER_RESULT_FULL)));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.FOLDER_RESULT_FULL).resolve(timestamp + "_file.jpg")));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.FOLDER_RESULT_SOCIAL)));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.FOLDER_RESULT_SOCIAL).resolve(timestamp + "_file.jpg")));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.FOLDER_RESULT_WEB)));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.FOLDER_RESULT_WEB).resolve(timestamp + "_file.jpg")));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_FULL)));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_FULL).resolve(timestamp + "_file.jpg")));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_MEDIUM)));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_MEDIUM).resolve(timestamp + "_file.jpg")));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_SMALL)));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_SMALL).resolve(timestamp + "_file.jpg")));
 	}
 }

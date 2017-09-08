@@ -90,4 +90,8 @@ public class Context {
 	public Path getTimeLine() {
 		return root.resolve(Constants.FOLDER_TIMELINE);
 	}
+
+	public String getName() {
+		return root.getFileName().toString();
+	}
 }

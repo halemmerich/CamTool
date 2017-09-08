@@ -100,9 +100,9 @@ public class Render extends AbstractOperation {
 		}
 
 		Path results_sorting = context.getRoot().resolve(Constants.FOLDER_RESULTS).resolve(sortingName);
-		Path destination_full = results_sorting.resolve(Constants.FOLDER_RESULT_FULL);
-		Path destination_medium = results_sorting.resolve(Constants.FOLDER_RESULT_WEB);
-		Path destination_small = results_sorting.resolve(Constants.FOLDER_RESULT_SOCIAL);
+		Path destination_full = results_sorting.resolve(Constants.RENDER_TYPE_FULL);
+		Path destination_medium = results_sorting.resolve(Constants.RENDER_TYPE_MEDIUM);
+		Path destination_small = results_sorting.resolve(Constants.RENDER_TYPE_SMALL);
 
 		try {
 			Files.createDirectories(destination_full);
