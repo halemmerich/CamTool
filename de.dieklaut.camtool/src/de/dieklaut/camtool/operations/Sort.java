@@ -24,7 +24,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class Sort extends AbstractOperation {
 
-	private String name = "normal";
+	private String name = Constants.DEFAULT_SORTING_NAME;
 	private boolean moveCollectionsToFolder = false;
 	private boolean moveAllGroupsToFolder = false;
 

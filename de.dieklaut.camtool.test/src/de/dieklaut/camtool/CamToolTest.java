@@ -89,6 +89,18 @@ public class CamToolTest extends FileBasedTest{
 	}
 	
 	@Test
+	public void callCleanTrashNoArgs() {
+		callSortNoArgs();
+		CamTool.main(new String[] {"cleantrash"});
+	}
+	
+	@Test
+	public void callCleanTrashHelp() {
+		callInitNoArgs();
+		CamTool.main(new String[] {"cleantrash", "-h"});
+	}
+	
+	@Test
 	public void callRenderNoArgs() {
 		callSortNoArgs();
 		CamTool.main(new String[] {"render"});
