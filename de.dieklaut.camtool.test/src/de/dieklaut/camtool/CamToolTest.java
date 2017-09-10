@@ -141,4 +141,22 @@ public class CamToolTest extends FileBasedTest{
 		callSortNoArgs();
 		CamTool.main(new String[] {"updateunused"});
 	}
+	
+	@Test
+	public void callDeleteUnusedNoArgs() {
+		callSortNoArgs();
+		CamTool.main(new String[] {"deleteunused"});
+	}
+	
+	@Test
+	public void callDeleteUnusedNoAutoNoUnused() {
+		callSortNoArgs();
+		CamTool.main(new String[] {"deleteunused", "-n"});
+	}
+	
+	@Test
+	public void callDeleteUnusedNoAuto() {
+		callUpdateUnusedNoArgs();
+		CamTool.main(new String[] {"deleteunused", "-n"});
+	}
 }
