@@ -135,4 +135,10 @@ public class CamToolTest extends FileBasedTest{
 		callRenderWithName();
 		CamTool.main(new String[] {"export", "-n", TEST});
 	}
+	
+	@Test
+	public void callUpdateUnusedNoArgs() {
+		callSortNoArgs();
+		CamTool.main(new String[] {"updateunused"});
+	}
 }

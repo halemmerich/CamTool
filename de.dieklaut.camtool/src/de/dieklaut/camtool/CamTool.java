@@ -20,6 +20,7 @@ import de.dieklaut.camtool.cmdlinewrapper.InitWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.OperationWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.RenderWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.SortWrapper;
+import de.dieklaut.camtool.cmdlinewrapper.UpdateUnusedWrapper;
 import de.dieklaut.camtool.operations.Operation;
 import de.dieklaut.camtool.renderjob.DefaultRenderJobFactoryProvider;
 import de.dieklaut.camtool.renderjob.RenderJobFactory;
@@ -36,7 +37,7 @@ public class CamTool {
 	
 	private static Options options = new Options().addOption(helpOption);
 	
-	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(), new CleanTrashWrapper(), new RenderWrapper(), new ExportWrapper());
+	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(), new CleanTrashWrapper(), new RenderWrapper(), new ExportWrapper(), new UpdateUnusedWrapper());
 	
 	private CamTool() {
 		//Prevent instantiation
