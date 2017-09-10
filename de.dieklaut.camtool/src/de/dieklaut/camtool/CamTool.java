@@ -118,8 +118,14 @@ public class CamTool {
 
 	private static void printGenericHelp() {
 		System.out.println("Available operations: ");
+		int length = 0;
 		for (OperationWrapper wrapper : engine.getOperationWrappers()) {
-			System.out.println("    " + wrapper.getName() + "\t" + wrapper.getHelp());
+			if (wrapper.getName().length() > length) {
+				length = wrapper.getName().length();
+			}
+		}
+		for (OperationWrapper wrapper : engine.getOperationWrappers()) {
+			System.out.println(String.format(" %-" + (length + 3) + "s", wrapper.getName()) + wrapper.getHelp());
 		}
 	}
 
