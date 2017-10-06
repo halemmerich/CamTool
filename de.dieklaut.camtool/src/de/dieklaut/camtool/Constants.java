@@ -17,4 +17,6 @@ public interface Constants {
 	public static final String RENDER_TYPE_FULL = "full";
 	public static final String RENDER_TYPE_SMALL = "small";
 	public static final String DEFAULT_EXPORT_NAME = "export";
+	public static final String FILE_NAME_COLLECTION_SUFFIX = ".camtool_collection";
+	public static final String FILE_NAME_SERIES_SUFFIX = ".camtool_series";
 }

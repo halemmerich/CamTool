@@ -1,6 +1,8 @@
 package de.dieklaut.camtool;
 
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 
 import de.dieklaut.camtool.renderjob.RenderJob;
@@ -48,4 +50,19 @@ public interface Group{
 	 * @param destination the target directory
 	 */
 	public void moveToFolder(Path destination);
+	
+	/**
+	 * @return the creation timestamp for this group
+	 */
+	public Instant getTimestamp();
+	
+	/**
+	 * @return the creation duration for this group
+	 */
+	public Duration getDuration();
+	
+	/**
+	 * @return the name for this group
+	 */
+	public String getName();
 }

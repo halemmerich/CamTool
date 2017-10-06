@@ -1,3 +1,4 @@
+
 package de.dieklaut.camtool.operations;
 
 import static org.junit.Assert.assertEquals;

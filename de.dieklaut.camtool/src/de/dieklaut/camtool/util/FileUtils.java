@@ -6,6 +6,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +17,7 @@ import java.util.Date;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 
 import de.dieklaut.camtool.FileOperationException;
@@ -45,6 +47,24 @@ public class FileUtils {
 		} catch (IOException e) {
 			throw new FileOperationException("Could not get the creation date from file " + filePath, e);
 		}
+	}
+
+	public static Duration getCreationDuration(Path filePath) {
+		try {
+			Metadata metadata = ImageMetadataReader.readMetadata(Files.newInputStream(filePath));
+
+			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
+
+			for (ExifIFD0Directory directory : directories) {
+				double shutterspeed = directory.getDouble(ExifIFD0Directory.TAG_SHUTTER_SPEED);
+				Duration.ofNanos((long) (shutterspeed * 1000000));
+			}
+		} catch (ImageProcessingException | IOException | MetadataException e) {
+			Logger.log("Could not parse image file exif data for a creation date, falling back to file creation date",
+					e, Level.DEBUG);
+		}
+		
+		return Duration.ZERO;
 	}
 
 	/**
@@ -117,8 +137,19 @@ public class FileUtils {
 		return Long.parseLong(filename.substring(0, filename.indexOf('_')));
 	}
 
+	public static String getGroupName(Path current) {
+		return getGroupName(current.getFileName().toString());
+	}
+
+	public static String getGroupName(String filename) {
+		return filename.substring(0, filename.indexOf('.'));
+	}
+
 	public static String getNamePortion(Path current) {
-		String filename = current.getFileName().toString();
+		return getNamePortion(current.getFileName().toString());
+	}
+
+	public static String getNamePortion(String filename) {
 		return filename.substring(filename.indexOf('_'));
 	}
 

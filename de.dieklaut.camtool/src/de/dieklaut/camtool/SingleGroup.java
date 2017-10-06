@@ -1,12 +1,16 @@
 package de.dieklaut.camtool;
 
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.HashSet;
 
 import de.dieklaut.camtool.renderjob.CopyJob;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
 import de.dieklaut.camtool.renderjob.RenderJobFactory;
+import de.dieklaut.camtool.util.FileUtils;
 
 /**
  * This stores a single logical artifact, e.g. a single raw image file or
@@ -18,9 +22,19 @@ import de.dieklaut.camtool.renderjob.RenderJobFactory;
  *
  */
 public class SingleGroup extends AbstractGroup {
+	
+	private Collection<Path> elements;
+	private Instant cachedTimestamp;
+	private Duration cachedDuration;
 
 	public SingleGroup(Collection<Path> elements) {
-		super(elements);
+		this.elements = elements;
+	}
+	@Override
+	public Collection<Path> getAllFiles() {
+		Collection<Path> result = new HashSet<>();
+		result.addAll(elements);
+		return result;
 	}
 
 	@Override
@@ -30,14 +44,7 @@ public class SingleGroup extends AbstractGroup {
 		}
 		Collection<Path> elements = getAllFiles();
 		
-		Path toBeRendered = null;
-		
-		for (Path element : elements) {
-			if (FileTypeHelper.isRawImageFile(element) || FileTypeHelper.isVideoFile(element)) {
-				toBeRendered = element;
-				break;
-			}
-		}
+		Path toBeRendered = getPrimaryFile();
 		
 		if (toBeRendered != null) {
 			elements.remove(toBeRendered);
@@ -45,6 +52,22 @@ public class SingleGroup extends AbstractGroup {
 		}
 		
 		return new CopyJob(elements.iterator().next());
+	}
+	
+	private Path getPrimaryFile() {
+		Path toBeRendered = null;
+		for (Path element : getAllFiles()) {
+			if (FileTypeHelper.isRawImageFile(element) || FileTypeHelper.isVideoFile(element)) {
+				toBeRendered = element;
+				break;
+			}
+		}
+		
+		if (toBeRendered == null) {
+			return getAllFiles().iterator().next();
+		}
+		
+		return toBeRendered;
 	}
 
 	@Override
@@ -68,5 +91,28 @@ public class SingleGroup extends AbstractGroup {
 	@Override
 	public String getType() {
 		return "single";
+	}
+	
+	public Instant getTimestamp () {
+		try {
+			if (cachedTimestamp == null) {
+				cachedTimestamp = FileUtils.getCreationDate(getPrimaryFile());
+			}
+			return cachedTimestamp;
+		} catch (FileOperationException e) {
+			throw new IllegalStateException("Could not read creation date from primary file for group " + this, e);
+		}
+	}
+	
+	@Override
+	public Duration getDuration() {
+		if (cachedDuration == null) {
+			cachedDuration = FileUtils.getCreationDuration(getPrimaryFile());
+		}
+		return cachedDuration;
+	}
+	@Override
+	public String getName() {
+		return FileUtils.getGroupName(getPrimaryFile());
 	}
 }

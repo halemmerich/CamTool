@@ -13,7 +13,6 @@ import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.util.FileUtils;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Analyses the {@link Constants#FOLDER_ORIGINAL} contents and creates a
@@ -27,8 +26,6 @@ public class Sort extends AbstractOperation {
 	private String name = Constants.DEFAULT_SORTING_NAME;
 	private boolean moveCollectionsToFolder = false;
 	private boolean moveAllGroupsToFolder = false;
-
-	private boolean detectBracketedShots = false;
 	private boolean detectSeries = false;
 
 	@Override
@@ -51,13 +48,9 @@ public class Sort extends AbstractOperation {
 				}
 			});
 			Collection<Group> sorting = SortingHelper.identifyGroups(sortingFolder);
-
-			if (detectBracketedShots) {
-				combineBrackets(sorting);
-			}
 			
 			if (detectSeries) {
-				combineSeries(sorting);
+				SortingHelper.combineSeries(sorting);
 			}
 			
 			if (moveCollectionsToFolder || moveAllGroupsToFolder) {
@@ -68,14 +61,6 @@ public class Sort extends AbstractOperation {
 		} catch (IOException e) {
 			throw new IllegalStateException("A file operation failed", e);
 		}
-	}
-
-	private void combineSeries(Collection<Group> sorting) {
-		throw new NotImplementedException();
-	}
-
-	private void combineBrackets(Collection<Group> sorting) {
-		throw new NotImplementedException();
 	}
 
 	private void moveCollections(Collection<Group> groups, Path sortingFolder) {
@@ -113,10 +98,6 @@ public class Sort extends AbstractOperation {
 
 	public void setMoveCollectionsToFolder(boolean moveCollectionsToFolder) {
 		this.moveCollectionsToFolder = moveCollectionsToFolder;
-	}
-
-	public void setDetectBracketedShots(boolean detectBracketedShots) {
-		this.detectBracketedShots = detectBracketedShots;
 	}
 
 	public void setDetectSeries(boolean detectSeries) {

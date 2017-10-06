@@ -2,7 +2,11 @@ package de.dieklaut.camtool;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.junit.Test;
 
@@ -11,21 +15,23 @@ public class GroupTimestampComparatorTest {
 	public void testCompare() {
 		GroupTimestampComparator comp = new GroupTimestampComparator();
 
-		Group earlier = new SingleGroup(null) {
+		Collection<Path> elements = Arrays.asList(Paths.get("test.asdf"));
+		
+		Group earlier = new SingleGroup(elements) {
 			@Override
 			public Instant getTimestamp() {
 				return Instant.ofEpochSecond(5);
 			}
 		};
 
-		Group same = new SingleGroup(null) {
+		Group same = new SingleGroup(elements) {
 			@Override
 			public Instant getTimestamp() {
 				return Instant.ofEpochSecond(5);
 			}
 		};
 
-		Group later = new SingleGroup(null) {
+		Group later = new SingleGroup(elements) {
 			@Override
 			public Instant getTimestamp() {
 				return Instant.ofEpochSecond(6);
@@ -34,6 +40,31 @@ public class GroupTimestampComparatorTest {
 
 		assertEquals(-1, comp.compare(earlier, later));
 		assertEquals(0, comp.compare(earlier, same));
+		assertEquals(1, comp.compare(later, earlier));
+	}
+
+	@Test
+	public void testCompareIdenticalStamp() {
+		GroupTimestampComparator comp = new GroupTimestampComparator();
+
+		Collection<Path> elements1 = Arrays.asList(Paths.get("test1.asdf"));
+		Collection<Path> elements2 = Arrays.asList(Paths.get("test2.asdf"));
+		
+		Group earlier = new SingleGroup(elements1) {
+			@Override
+			public Instant getTimestamp() {
+				return Instant.ofEpochSecond(5);
+			}
+		};
+
+		Group later = new SingleGroup(elements2) {
+			@Override
+			public Instant getTimestamp() {
+				return Instant.ofEpochSecond(5);
+			}
+		};
+
+		assertEquals(-1, comp.compare(earlier, later));
 		assertEquals(1, comp.compare(later, earlier));
 	}
 }
