@@ -19,8 +19,10 @@ public class DefaultRenderJobFactoryProvider implements RenderJobFactoryProvider
 			if (useRawtherapee) {
 				return new RawTherapeeRenderJob(new RawTherapeeWrapper(), mainFile, helperFiles);
 			}
+		} else if (FileTypeHelper.isVideoFile(mainFile)) {
+			return new LinkRenderJob(mainFile);
 		}
 		
-		return new LinkRenderJob(mainFile);
+		return new CopyRenderJob(mainFile);
 	}
 }

@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
 
-import de.dieklaut.camtool.renderjob.CopyJob;
+import de.dieklaut.camtool.renderjob.CopyRenderJob;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
 import de.dieklaut.camtool.renderjob.RenderJobFactory;
@@ -51,7 +51,7 @@ public class SingleGroup extends AbstractGroup {
 			return RenderJobFactory.getInstance().forFile(toBeRendered, elements.toArray(new Path [elements.size()]));
 		}
 		
-		return new CopyJob(elements.iterator().next());
+		return new CopyRenderJob(elements.iterator().next());
 	}
 	
 	private Path getPrimaryFile() {

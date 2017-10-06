@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class CopyJob implements RenderJob {
+public class CopyRenderJob implements RenderJob {
 
 	private Path source;
 	
-	public CopyJob(Path source) {
+	public CopyRenderJob(Path source) {
 		this.source = source;
 	}
 
