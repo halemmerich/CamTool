@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import org.apache.commons.exec.CommandLine;
 import org.junit.Test;
 
+import de.dieklaut.camtool.external.RawTherapeeWrapper;
 import de.dieklaut.camtool.renderjob.RawTherapeeRenderJob;
 
 public class RawTherapeeRenderJobTest{

@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import de.dieklaut.camtool.external.RawTherapeeWrapper;
+
 public class RawTherapeeWrapperTest {
 
 	@Test

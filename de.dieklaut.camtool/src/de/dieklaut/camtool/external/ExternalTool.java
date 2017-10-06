@@ -1,4 +1,4 @@
-package de.dieklaut.camtool;
+package de.dieklaut.camtool.external;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 
+import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
 
 public abstract class ExternalTool {

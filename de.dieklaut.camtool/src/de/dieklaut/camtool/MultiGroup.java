@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import de.dieklaut.camtool.renderjob.MultiRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
 import de.dieklaut.camtool.util.FileUtils;
 

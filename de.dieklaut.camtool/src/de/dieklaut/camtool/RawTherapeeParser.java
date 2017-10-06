@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
+import de.dieklaut.camtool.Logger.Level;
+
 public class RawTherapeeParser {
 
 	public static boolean isDeleted(Path element) {
@@ -13,8 +15,7 @@ public class RawTherapeeParser {
 			profile.load(Files.newInputStream(element));
 			return Boolean.parseBoolean(profile.getProperty("InTrash"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.log("Failure while parsing RawTherapee ini", e, Level.WARNING);
 		}
 		return false;
 	}

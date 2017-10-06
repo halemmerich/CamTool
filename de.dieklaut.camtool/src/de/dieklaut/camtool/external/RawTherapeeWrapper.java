@@ -1,4 +1,4 @@
-package de.dieklaut.camtool;
+package de.dieklaut.camtool.external;
 
 import java.util.LinkedList;
 import java.util.List;

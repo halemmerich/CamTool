@@ -4,6 +4,7 @@ import java.nio.file.Path;
 
 import org.apache.commons.exec.CommandLine;
 
+import de.dieklaut.camtool.external.ExternalTool;
 import de.dieklaut.camtool.util.ImageResizer;
 
 public class ImagemagickResizer implements ImageResizer {

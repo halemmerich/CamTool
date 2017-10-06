@@ -1,10 +1,10 @@
-package de.dieklaut.camtool;
+package de.dieklaut.camtool.renderjob;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 
-import de.dieklaut.camtool.renderjob.RenderJob;
+import de.dieklaut.camtool.Group;
 
 public class MultiRenderJob implements RenderJob {
 

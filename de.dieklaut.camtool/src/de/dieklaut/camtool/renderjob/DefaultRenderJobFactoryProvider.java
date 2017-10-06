@@ -3,7 +3,7 @@ package de.dieklaut.camtool.renderjob;
 import java.nio.file.Path;
 
 import de.dieklaut.camtool.FileTypeHelper;
-import de.dieklaut.camtool.RawTherapeeWrapper;
+import de.dieklaut.camtool.external.RawTherapeeWrapper;
 
 public class DefaultRenderJobFactoryProvider implements RenderJobFactoryProvider {
 	

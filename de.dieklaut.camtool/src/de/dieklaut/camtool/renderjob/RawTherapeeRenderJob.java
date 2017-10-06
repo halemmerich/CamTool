@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import de.dieklaut.camtool.FileTypeHelper;
-import de.dieklaut.camtool.RawTherapeeWrapper;
+import de.dieklaut.camtool.external.RawTherapeeWrapper;
 
 public class RawTherapeeRenderJob implements RenderJob {
 
