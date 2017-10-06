@@ -105,8 +105,9 @@ public class SortingHelper {
 				finishCurrentSeries(currentSeries, foundSeriesGroups, groupsToBeRemoved);
 			}
 		}
-
-		finishCurrentSeries(currentSeries, foundSeriesGroups, groupsToBeRemoved);
+		if (!currentSeries.isEmpty()) {
+			finishCurrentSeries(currentSeries, foundSeriesGroups, groupsToBeRemoved);
+		}
 		
 		sorting.removeAll(groupsToBeRemoved);
 		

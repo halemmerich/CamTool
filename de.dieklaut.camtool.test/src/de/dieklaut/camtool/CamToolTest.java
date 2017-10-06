@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.dieklaut.camtool.util.FileUtils;
@@ -62,14 +61,6 @@ public class CamToolTest extends FileBasedTest{
 		CamTool.main(new String[] {"sort", "-n", TEST});
 	}
 	
-	@Ignore("Not yet implemented")
-	@Test
-	public void callSortWithDetectBrackets() {
-		callInitNoArgs();
-		CamTool.main(new String[] {"sort", "-b"});
-	}
-
-	@Ignore("Not yet implemented")
 	@Test
 	public void callSortWithDetectSeries() {
 		callInitNoArgs();
