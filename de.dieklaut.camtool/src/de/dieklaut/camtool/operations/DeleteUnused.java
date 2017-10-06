@@ -49,7 +49,7 @@ public class DeleteUnused extends AbstractOperation {
 		try {
 			Files.list(context.getTimeLine()).forEach(file -> {
 				try {
-					if (!Files.exists(Files.readSymbolicLink(file))) {
+					if (!Files.exists(context.getTimeLine().resolve(Files.readSymbolicLink(file)))) {
 						Files.delete(file);
 					}
 				} catch (IOException e) {
