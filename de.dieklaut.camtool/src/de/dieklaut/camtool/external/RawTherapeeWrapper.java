@@ -30,23 +30,7 @@ public class RawTherapeeWrapper extends ExternalTool {
 		this.quality = quality;
 		this.subsampling = subsampling;
 	}
-
-	/*
-	@Override
-	public CommandLine getCommandLine() {
-		CommandLine commandline = new CommandLine("rawtherapee-cli");
-		commandline.addArgument("-o " + '"' + outputFilePath + '"');
-		commandline.addArgument("-j" + quality);
-		commandline.addArgument("-js" + subsampling);
-
-		commandline.addArgument("-d");
-		for (String current : profileOptions) {
-			commandline.addArgument("-p " + '"' + current + '"');
-		}
-		
-		commandline.addArgument("-c " + '"' + inputFilePath + '"');
-		return commandline;
-	}*/
+	
 	@Override
 	public CommandLine getCommandLine() {
 		CommandLine commandline = new CommandLine("rawtherapee-cli");

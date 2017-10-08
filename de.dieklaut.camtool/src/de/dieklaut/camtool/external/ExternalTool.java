@@ -2,6 +2,7 @@ package de.dieklaut.camtool.external;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.StringJoiner;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -30,7 +31,7 @@ public abstract class ExternalTool {
 			
 		    try {
 		    	CommandLine commandLine = getCommandLine();
-				Logger.log("Process command line: " + commandLine.toString(), Level.TRACE);
+				Logger.log("Process command line: " + getAsString(commandLine), Level.TRACE);
 				executor.execute(commandLine);
 		    } catch (ExecuteException e) {
 		    	int exitValue = e.getExitValue();
@@ -42,5 +43,17 @@ public abstract class ExternalTool {
 			throw new IllegalStateException("External tool failed", e);
 		}
 		return true;
+	}
+
+	private String getAsString(CommandLine commandLine) {
+		StringJoiner joiner = new StringJoiner(" ");
+		for (String current : commandLine.toStrings()) {
+			if (current.contains(" ")) {
+				joiner.add('"' + current + '"');
+			} else {
+				joiner.add(current);
+			}
+		}
+		return joiner.toString();
 	}
 }

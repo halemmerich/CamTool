@@ -143,16 +143,28 @@ public class Render extends AbstractOperation {
 	private void downsizeToSmall(Path file, Path destination_small) {
 		if (FileTypeHelper.isVideoFile(file)) {
 			videoResizer.resize(maxDimensionVideoSmall, file, destination_small, qualityVideoSmall);
-		} else {
+		} else if (FileTypeHelper.isImageFile(file)) {
 			imageResizer.resize(maxDimensionSmall, file, destination_small, qualitySmall);
+		} else {
+			try {
+				Files.copy(file, destination_small);
+			} catch (IOException e) {
+				Logger.log("Could not fallback to copying for resizing to small", e, Level.WARNING);
+			}
 		}
 	}
 
 	private void downsizeToMedium(Path file, Path destination_medium) {
 		if (FileTypeHelper.isVideoFile(file)) {
 			videoResizer.resize(maxDimensionVideoMedium, file, destination_medium, qualityVideoMedium);
-		} else {
+		} else if (FileTypeHelper.isImageFile(file)) {
 			imageResizer.resize(maxDimensionMedium, file, destination_medium, qualityMedium);
+		} else {
+			try {
+				Files.copy(file, destination_medium);
+			} catch (IOException e) {
+				Logger.log("Could not fallback to copying for resizing to medium", e, Level.WARNING);
+			}
 		}
 	}
 

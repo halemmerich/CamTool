@@ -12,7 +12,7 @@ public class ImagemagickResizer implements ImageResizer {
 	@Override
 	public boolean resize(int maxDimension, Path sourceFile, Path destinationFile, int qualityPercentage) {
 		CommandLine commandline = new CommandLine("convert");
-		commandline.addArgument(sourceFile.toAbsolutePath().toString());
+		commandline.addArgument(sourceFile.toAbsolutePath().toString(), false);
 		commandline.addArgument("-strip");
 		commandline.addArgument("-quality");
 		commandline.addArgument(Integer.toString(qualityPercentage), false);
