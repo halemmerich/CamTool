@@ -6,10 +6,12 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
 
+import de.dieklaut.camtool.external.RawTherapeeWrapper;
 import de.dieklaut.camtool.renderjob.CopyRenderJob;
+import de.dieklaut.camtool.renderjob.LinkRenderJob;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
+import de.dieklaut.camtool.renderjob.RawTherapeeRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
-import de.dieklaut.camtool.renderjob.RenderJobFactory;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**
@@ -22,7 +24,7 @@ import de.dieklaut.camtool.util.FileUtils;
  *
  */
 public class SingleGroup extends AbstractGroup {
-	
+
 	private Collection<Path> elements;
 	private Instant cachedTimestamp;
 	private Duration cachedDuration;
@@ -30,6 +32,7 @@ public class SingleGroup extends AbstractGroup {
 	public SingleGroup(Collection<Path> elements) {
 		this.elements = elements;
 	}
+
 	@Override
 	public Collection<Path> getAllFiles() {
 		Collection<Path> result = new HashSet<>();
@@ -43,30 +46,52 @@ public class SingleGroup extends AbstractGroup {
 			return new NullRenderJob();
 		}
 		Collection<Path> elements = getAllFiles();
-		
+
 		Path toBeRendered = getPrimaryFile();
-		
+
 		if (toBeRendered != null) {
 			elements.remove(toBeRendered);
-			return RenderJobFactory.getInstance().forFile(toBeRendered, elements.toArray(new Path [elements.size()]));
+			return forFile(toBeRendered, elements.toArray(new Path[elements.size()]));
 		}
-		
+
 		return new CopyRenderJob(elements.iterator().next());
 	}
-	
+
+	private RenderJob forFile(Path mainFile, Path... helperFiles) {
+		if (FileTypeHelper.isRenderscript(mainFile)) {
+			return new RenderScriptRenderJob(mainFile, helperFiles);
+		} else if (FileTypeHelper.isRawImageFile(mainFile)) {
+			return new RawTherapeeRenderJob(new RawTherapeeWrapper(), mainFile, helperFiles);
+		} else if (FileTypeHelper.isVideoFile(mainFile)) {
+			return new LinkRenderJob(mainFile);
+		}
+
+		return new CopyRenderJob(mainFile);
+	}
+
 	private Path getPrimaryFile() {
 		Path toBeRendered = null;
 		for (Path element : getAllFiles()) {
-			if (FileTypeHelper.isRawImageFile(element) || FileTypeHelper.isVideoFile(element)) {
+			if (FileTypeHelper.isRenderscript(element)) {
 				toBeRendered = element;
 				break;
 			}
 		}
-		
+
+		if (toBeRendered == null) {
+			for (Path element : getAllFiles()) {
+				if (FileTypeHelper.isRawImageFile(element)
+						|| FileTypeHelper.isVideoFile(element)) {
+					toBeRendered = element;
+					break;
+				}
+			}
+		}
+
 		if (toBeRendered == null) {
 			return getAllFiles().iterator().next();
 		}
-		
+
 		return toBeRendered;
 	}
 
@@ -92,8 +117,8 @@ public class SingleGroup extends AbstractGroup {
 	public String getType() {
 		return "single";
 	}
-	
-	public Instant getTimestamp () {
+
+	public Instant getTimestamp() {
 		try {
 			if (cachedTimestamp == null) {
 				cachedTimestamp = FileUtils.getCreationDate(getPrimaryFile());
@@ -103,7 +128,7 @@ public class SingleGroup extends AbstractGroup {
 			throw new IllegalStateException("Could not read creation date from primary file for group " + this, e);
 		}
 	}
-	
+
 	@Override
 	public Duration getDuration() {
 		if (cachedDuration == null) {
@@ -111,6 +136,7 @@ public class SingleGroup extends AbstractGroup {
 		}
 		return cachedDuration;
 	}
+
 	@Override
 	public String getName() {
 		return FileUtils.getGroupName(getPrimaryFile());

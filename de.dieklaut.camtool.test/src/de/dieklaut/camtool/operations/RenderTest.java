@@ -13,10 +13,6 @@ import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.TestFileHelper;
-import de.dieklaut.camtool.renderjob.DummyRawRenderJob;
-import de.dieklaut.camtool.renderjob.RenderJob;
-import de.dieklaut.camtool.renderjob.RenderJobFactory;
-import de.dieklaut.camtool.renderjob.RenderJobFactoryProvider;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class RenderTest extends FileBasedTest {
@@ -24,14 +20,7 @@ public class RenderTest extends FileBasedTest {
 	private static final String TEST = "test";
 
 	@Test
-	public void testPerform() throws IOException, FileOperationException {
-		RenderJobFactory.setFactoryInstance(new RenderJobFactoryProvider() {
-			@Override
-			public RenderJob forFile(Path mainFile, Path... helperFiles) {
-				return new DummyRawRenderJob(mainFile);
-			}
-		});
-		
+	public void testPerform() throws IOException, FileOperationException {		
 		Context context = Context.create(getTestFolder());
 		
 		Path source = TestFileHelper.getTestResource("A7II.ARW");

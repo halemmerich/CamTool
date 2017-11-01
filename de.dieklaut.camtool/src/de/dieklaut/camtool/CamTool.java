@@ -23,8 +23,6 @@ import de.dieklaut.camtool.cmdlinewrapper.RenderWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.SortWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.UpdateUnusedWrapper;
 import de.dieklaut.camtool.operations.Operation;
-import de.dieklaut.camtool.renderjob.DefaultRenderJobFactoryProvider;
-import de.dieklaut.camtool.renderjob.RenderJobFactory;
 
 public class CamTool {
 
@@ -88,10 +86,6 @@ public class CamTool {
 				} else {
 					context = findContext(workingDir);
 				}
-				
-				DefaultRenderJobFactoryProvider jobfactory = new DefaultRenderJobFactoryProvider();
-				jobfactory.setUseRawtherapee(true);
-				RenderJobFactory.setFactoryInstance(jobfactory);
 				
 				Operation operation = operationWrapper.getOperation(cmd);
 				Logger.log("Performing operation " + operation.getName(), Level.INFO);

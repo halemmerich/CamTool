@@ -13,11 +13,8 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.FileOperationException;
+import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.TestFileHelper;
-import de.dieklaut.camtool.renderjob.DummyRawRenderJob;
-import de.dieklaut.camtool.renderjob.RenderJob;
-import de.dieklaut.camtool.renderjob.RenderJobFactory;
-import de.dieklaut.camtool.renderjob.RenderJobFactoryProvider;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class ExportTest extends FileBasedTest {
@@ -27,14 +24,8 @@ public class ExportTest extends FileBasedTest {
 	private Context context = null;
 
 	@Before
-	public void setUp() throws IOException, FileOperationException {
-		RenderJobFactory.getInstance();
-		RenderJobFactory.setFactoryInstance(new RenderJobFactoryProvider() {
-			@Override
-			public RenderJob forFile(Path mainFile, Path... helperFiles) {
-				return new DummyRawRenderJob(mainFile);
-			}
-		});
+	public void setUp() throws IOException, FileOperationException {		
+		SortingHelper.useRawTherapee = false;
 		
 		context  = Context.create(getTestFolder());
 		

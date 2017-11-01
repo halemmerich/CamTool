@@ -23,11 +23,12 @@ import de.dieklaut.camtool.util.FileUtils;
 public class MultiGroup extends AbstractGroup {
 
 	private Collection<Group> groups;
-	private Path markerFile;
+	private Path collectionFile;
+	private Path renderscriptFile;
 
-	public MultiGroup(Collection<Group> groups, Path markerFile) {
+	public MultiGroup(Collection<Group> groups, Path collectionFile) {
 		this.groups = groups;
-		this.markerFile = markerFile;
+		this.collectionFile = collectionFile;
 	}
 
 	public MultiGroup(Collection<Group> groups) {
@@ -38,7 +39,7 @@ public class MultiGroup extends AbstractGroup {
 			throw new IllegalStateException("No first element found while sorting groups, this should not happen");
 		}
 		
-		this.markerFile = first.get().getContainingFolder().resolve(first.get().getName() + Constants.FILE_NAME_COLLECTION_SUFFIX);
+		collectionFile = first.get().getContainingFolder().resolve(first.get().getName() + Constants.FILE_NAME_COLLECTION_SUFFIX);
 	}
 
 	@Override
@@ -74,13 +75,17 @@ public class MultiGroup extends AbstractGroup {
 		return new HashSet<>(groups);
 	}
 	
-	public Path getMarkerFile() {
-		return markerFile;
+	public Path getCollectionFile() {
+		return collectionFile;
 	}
 
 	@Override
 	public RenderJob getRenderJob() {
-		return new MultiRenderJob(groups);
+		if (renderscriptFile != null) {
+			return new RenderScriptMultiRenderJob(renderscriptFile, groups);	
+		} else {
+			return new MultiRenderJob(groups);
+		}
 	}
 
 	@Override
@@ -107,6 +112,10 @@ public class MultiGroup extends AbstractGroup {
 
 	@Override
 	public String getName() {
-		return FileUtils.getNamePortion(markerFile);
+		return FileUtils.getNamePortion(collectionFile);
+	}
+
+	public void setRenderscriptFile(Path renderscriptFile) {
+		this.renderscriptFile = renderscriptFile;
 	}
 }

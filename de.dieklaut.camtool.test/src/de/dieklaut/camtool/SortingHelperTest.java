@@ -68,7 +68,7 @@ public class SortingHelperTest extends FileBasedTest {
 		assertTrue(files.contains(file2arw));
 		assertTrue(files.contains(file3arw));
 		assertTrue(files.contains(file4arw));
-		assertEquals(collection, ((MultiGroup)group).getMarkerFile());
+		assertEquals(collection, ((MultiGroup)group).getCollectionFile());
 	}
 	
 	@Test
@@ -90,7 +90,7 @@ public class SortingHelperTest extends FileBasedTest {
 		
 		assertThat(group, new IsInstanceOf(MultiGroup.class));
 		
-		SeriesGroup seriesGroup = (SeriesGroup) group;
+		MultiGroup seriesGroup = (MultiGroup) group;
 		assertEquals(4, seriesGroup.getAllFiles().size());
 	}
 }
