@@ -16,6 +16,8 @@ import org.junit.Test;
 
 public class SortingHelperTest extends FileBasedTest {
 	
+	private static final DefaultSorter SORTER = new DefaultSorter();
+
 	@Test
 	public void testConstructorComplexStructure() throws IOException {
 		Files.createFile(getTestFolder().resolve("file1.ARW"));
@@ -31,7 +33,7 @@ public class SortingHelperTest extends FileBasedTest {
 		Files.createFile(subdir.resolve("file4.ARW"));
 		Files.createFile(subdir.resolve("file4.JPG"));
 		
-		Collection<Group> sorting = SortingHelper.identifyGroups(getTestFolder());
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(2, sorting.size());
 		
 	}
@@ -41,7 +43,7 @@ public class SortingHelperTest extends FileBasedTest {
 		Path file1arw = Files.createFile(getTestFolder().resolve("file1.ARW"));
 		Path file1jpg = Files.createFile(getTestFolder().resolve("file1.JPG"));
 
-		Collection<Group> sorting = SortingHelper.identifyGroups(getTestFolder());
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(1, sorting.size());
 		Group group = sorting.iterator().next();
 		Collection<Path> files = group.getAllFiles();
@@ -59,7 +61,7 @@ public class SortingHelperTest extends FileBasedTest {
 		Path file3arw = Files.createFile(getTestFolder().resolve("file3.ARW"));
 		Path file4arw = Files.createFile(getTestFolder().resolve("file4.ARW"));
 
-		Collection<Group> sorting = SortingHelper.identifyGroups(getTestFolder());
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(1, sorting.size());
 		Group group = sorting.iterator().next();
 		Collection<Path> files = group.getAllFiles();
@@ -81,7 +83,7 @@ public class SortingHelperTest extends FileBasedTest {
 			arw.add(Files.copy(TestFileHelper.getTestResource(sourcepath), getTestFolder().resolve(filename)));
 		}
 
-		Collection<Group> sorting = SortingHelper.identifyGroups(getTestFolder());
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		
 		SortingHelper.combineSeries(sorting);
 		

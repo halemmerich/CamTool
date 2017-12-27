@@ -4,6 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.operations.CleanTrash;
 import de.dieklaut.camtool.operations.Operation;
 
@@ -11,6 +12,11 @@ public class CleanTrashWrapper extends AbstractWrapper {
 	
 	private static final String OPT_NAME_SHORT = "n";
 	private static final String OPT_NAME = "name";
+	private Sorter sorter;
+	
+	public CleanTrashWrapper(Sorter sorter) {
+		this.sorter = sorter;
+	}
 
 	@Override
 	public Options getOptions() {
@@ -19,7 +25,7 @@ public class CleanTrashWrapper extends AbstractWrapper {
 
 	@Override
 	public Operation getOperation(CommandLine cmdLine) {
-		CleanTrash render = new CleanTrash();
+		CleanTrash render = new CleanTrash(sorter);
 		if (cmdLine.hasOption(OPT_NAME)) {
 			render.setName(cmdLine.getOptionValue(OPT_NAME));
 		}

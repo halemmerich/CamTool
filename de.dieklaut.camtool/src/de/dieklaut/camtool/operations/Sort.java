@@ -11,6 +11,7 @@ import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.MultiGroup;
+import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -27,6 +28,11 @@ public class Sort extends AbstractOperation {
 	private boolean moveCollectionsToFolder = false;
 	private boolean moveAllGroupsToFolder = false;
 	private boolean detectSeries = false;
+	private Sorter sorter;
+	
+	public Sort(Sorter sorter) {
+		this.sorter = sorter;
+	}
 
 	@Override
 	public void perform(Context context) {
@@ -47,7 +53,7 @@ public class Sort extends AbstractOperation {
 					Logger.log("Linking file " + file + " to " + Constants.FOLDER_TIMELINE + " did cause an error", e);
 				}
 			});
-			Collection<Group> sorting = SortingHelper.identifyGroups(sortingFolder);
+			Collection<Group> sorting = sorter.identifyGroups(sortingFolder);
 			
 			if (detectSeries) {
 				SortingHelper.combineSeries(sorting);

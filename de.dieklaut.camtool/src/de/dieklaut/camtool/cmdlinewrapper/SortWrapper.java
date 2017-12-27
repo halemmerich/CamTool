@@ -5,6 +5,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import de.dieklaut.camtool.Constants;
+import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.operations.Operation;
 import de.dieklaut.camtool.operations.Sort;
 
@@ -18,7 +19,12 @@ public class SortWrapper extends AbstractWrapper {
 	private static final String OPT_DETECT_SERIES = "series";
 	private static final String OPT_MOVE_ALL_GROUPS = "groups";
 	private static final String OPT_MOVE_COLLECTIONS = "collections";
+	private Sorter sorter;
 
+	public SortWrapper(Sorter sorter) {
+		this.sorter = sorter;
+	}
+	
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions();
@@ -31,7 +37,7 @@ public class SortWrapper extends AbstractWrapper {
 
 	@Override
 	public Operation getOperation(CommandLine cmdLine) {
-		Sort sort = new Sort();
+		Sort sort = new Sort(sorter);
 		if (cmdLine.hasOption(OPT_NAME)) {
 			sort.setName(cmdLine.getOptionValue(OPT_NAME));
 		}

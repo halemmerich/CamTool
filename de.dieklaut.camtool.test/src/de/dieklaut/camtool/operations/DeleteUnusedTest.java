@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
+import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.util.FileUtils;
@@ -35,7 +36,7 @@ public class DeleteUnusedTest extends FileBasedTest {
 		context = Context.create(getTestFolder());
 		new Init().perform(context);
 		
-		Sort sort = new Sort();
+		Sort sort = new Sort(new DefaultSorter());
 		sort.perform(context);
 		
 		Files.delete(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG"));

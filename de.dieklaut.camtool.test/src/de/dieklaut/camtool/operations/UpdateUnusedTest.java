@@ -12,11 +12,15 @@ import org.junit.Test;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
+import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.FileOperationException;
+import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class UpdateUnusedTest extends FileBasedTest {
+	
+	private static final Sorter SORTER = new DefaultSorter();
 	
 	private Context context;
 	private String timestamp_file3;
@@ -31,7 +35,7 @@ public class UpdateUnusedTest extends FileBasedTest {
 		context = Context.create(getTestFolder());
 		new Init().perform(context);
 		
-		Sort sort = new Sort();
+		Sort sort = new Sort(SORTER);
 		sort.perform(context);
 	}
 	

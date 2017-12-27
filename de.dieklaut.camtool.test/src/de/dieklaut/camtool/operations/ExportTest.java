@@ -11,9 +11,9 @@ import org.junit.Test;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
+import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.FileOperationException;
-import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.TestFileHelper;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -22,10 +22,12 @@ public class ExportTest extends FileBasedTest {
 	private static final String TEST = "test";
 	private String timestamp = null;
 	private Context context = null;
+	private DefaultSorter sorter;
 
 	@Before
 	public void setUp() throws IOException, FileOperationException {		
-		SortingHelper.useRawTherapee = false;
+		sorter = new DefaultSorter();
+		sorter.useRawTherapee = false;
 		
 		context  = Context.create(getTestFolder());
 		
@@ -33,11 +35,11 @@ public class ExportTest extends FileBasedTest {
 		Files.copy(source, getTestFolder().resolve("file.arw"));
 		
 		new Init().perform(context);
-		Sort sort = new Sort();
+		Sort sort = new Sort(sorter);
 		sort.setName(TEST);
 		sort.perform(context);
 		
-		Render render = new Render();
+		Render render = new Render(sorter);
 		render.setSortingName(TEST);
 		
 		render.perform(context);

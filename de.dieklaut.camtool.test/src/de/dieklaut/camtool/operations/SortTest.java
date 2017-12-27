@@ -12,9 +12,13 @@ import org.junit.Test;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
+import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
+import de.dieklaut.camtool.Sorter;
 
 public class SortTest extends FileBasedTest {
+	private static final Sorter SORTER = new DefaultSorter();
+	
 	@Test
 	public void test() throws IOException {
 		Files.createFile(getTestFolder().resolve("file1.ARW"));
@@ -25,7 +29,7 @@ public class SortTest extends FileBasedTest {
 		Context context = Context.create(getTestFolder());
 		new Init().perform(context);
 		
-		Sort sort = new Sort();
+		Sort sort = new Sort(SORTER);
 		sort.perform(context);
 
 		assertEquals(5, Files.list(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal")).count());
@@ -41,7 +45,7 @@ public class SortTest extends FileBasedTest {
 		Context context = Context.create(getTestFolder());
 		new Init().perform(context);
 		
-		Sort sort = new Sort();
+		Sort sort = new Sort(SORTER);
 		sort.setMoveAllGroupsToFolder(true);
 		sort.perform(context);
 

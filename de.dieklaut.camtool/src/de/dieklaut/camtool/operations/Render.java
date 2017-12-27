@@ -12,7 +12,7 @@ import de.dieklaut.camtool.FileTypeHelper;
 import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
-import de.dieklaut.camtool.SortingHelper;
+import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.renderjob.RenderJob;
 import de.dieklaut.camtool.util.CopyImageResizer;
 import de.dieklaut.camtool.util.CopyVideoResizer;
@@ -39,6 +39,12 @@ public class Render extends AbstractOperation {
 	private int maxDimensionMedium = 3000;
 	private int maxDimensionVideoMedium = 1920;
 	private int maxDimensionVideoSmall = 1280;
+
+	private Sorter sorter;
+	
+	public Render(Sorter sorter) {
+		this.sorter = sorter;
+	}
 
 	public void setSortingName(String sortingName) {
 		this.sortingName = sortingName;
@@ -88,8 +94,7 @@ public class Render extends AbstractOperation {
 	public void perform(Context context) {
 		Collection<Group> groups;
 		try {
-			groups = SortingHelper
-					.identifyGroups(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(sortingName));
+			groups = sorter.identifyGroups(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(sortingName));
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not read groups", e);
 		}

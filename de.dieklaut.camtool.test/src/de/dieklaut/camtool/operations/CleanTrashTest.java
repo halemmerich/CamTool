@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
+import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.TestFileHelper;
@@ -17,6 +18,7 @@ import de.dieklaut.camtool.util.FileUtils;
 
 public class CleanTrashTest extends FileBasedTest {
 
+	private static final DefaultSorter SORTER = new DefaultSorter();
 	private static final String TEST = "test";
 
 	@Test
@@ -32,7 +34,7 @@ public class CleanTrashTest extends FileBasedTest {
 		String timestamp2 = FileUtils.getTimestamp(FileUtils.getCreationDate(source));
 		
 		new Init().perform(context);
-		Sort sort = new Sort();
+		Sort sort = new Sort(SORTER);
 		sort.setName(TEST);
 		sort.perform(context);
 		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(TEST);
@@ -43,7 +45,7 @@ public class CleanTrashTest extends FileBasedTest {
 		assertTrue(Files.exists(sorting.resolve(timestamp + "_file.arw")));
 		assertTrue(Files.exists(sorting.resolve(timestamp + "_file.pp3")));
 		
-		CleanTrash cleanTrash = new CleanTrash();
+		CleanTrash cleanTrash = new CleanTrash(SORTER);
 		cleanTrash.setName(TEST);
 		cleanTrash.perform(context);
 		

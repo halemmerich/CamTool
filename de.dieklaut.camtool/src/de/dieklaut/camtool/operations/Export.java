@@ -19,7 +19,7 @@ public class Export extends AbstractOperation {
 	private String name = Constants.DEFAULT_SORTING_NAME;
 	private String type = Constants.RENDER_TYPE_FULL;
 	private Path destination = null;
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}

@@ -9,7 +9,7 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
-import de.dieklaut.camtool.SortingHelper;
+import de.dieklaut.camtool.Sorter;
 
 /**
  * Deletes all {@link Group}s marked as deleted
@@ -19,7 +19,12 @@ import de.dieklaut.camtool.SortingHelper;
 public class CleanTrash extends AbstractOperation {
 
 	private String sortingName = Constants.DEFAULT_SORTING_NAME;
+	private Sorter sorter;
 
+	public CleanTrash(Sorter sorter) {
+		this.sorter = sorter;
+	}
+	
 	public void setName(String sortingName) {
 		this.sortingName = sortingName;
 	}
@@ -30,8 +35,7 @@ public class CleanTrash extends AbstractOperation {
 		Path sortingFolder;
 		try {
 			sortingFolder = context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(sortingName);
-			groups = SortingHelper
-					.identifyGroups(sortingFolder);
+			groups = sorter.identifyGroups(sortingFolder);
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not read groups", e);
 		}

@@ -10,8 +10,10 @@ import org.junit.Test;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
+import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.FileOperationException;
+import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.TestFileHelper;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -27,11 +29,12 @@ public class RenderTest extends FileBasedTest {
 		Files.copy(source, getTestFolder().resolve("file.arw"));
 		
 		new Init().perform(context);
-		Sort sort = new Sort();
+		Sorter sorter = new DefaultSorter();
+		Sort sort = new Sort(sorter);
 		sort.setName(TEST);
 		sort.perform(context);
 		
-		Render render = new Render();
+		Render render = new Render(sorter);
 		render.setSortingName(TEST);
 		
 		render.perform(context);

@@ -36,7 +36,9 @@ public class CamTool {
 	
 	private static Options options = new Options().addOption(helpOption);
 	
-	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(), new CleanTrashWrapper(), new RenderWrapper(), new ExportWrapper(), new UpdateUnusedWrapper(), new DeleteUnusedWrapper());
+	private static Sorter sorter = new DefaultSorter();
+	
+	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(sorter), new CleanTrashWrapper(sorter), new RenderWrapper(sorter), new ExportWrapper(), new UpdateUnusedWrapper(), new DeleteUnusedWrapper());
 	
 	private CamTool() {
 		//Prevent instantiation
