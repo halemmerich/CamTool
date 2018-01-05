@@ -42,15 +42,19 @@ public class SortingHelperTest extends FileBasedTest {
 	public void testConstructorSingleGroup() throws IOException {
 		Path file1arw = Files.createFile(getTestFolder().resolve("file1.ARW"));
 		Path file1jpg = Files.createFile(getTestFolder().resolve("file1.JPG"));
+		Path file1arwpp3 = Files.createFile(getTestFolder().resolve("file1.ARW.pp3"));
+		Path file1jpgpp3 = Files.createFile(getTestFolder().resolve("file1.JPG.pp3"));
 
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(1, sorting.size());
 		Group group = sorting.iterator().next();
 		Collection<Path> files = group.getAllFiles();
 
-		assertEquals(2, files.size());
+		assertEquals(4, files.size());
 		assertTrue(files.contains(file1arw));
 		assertTrue(files.contains(file1jpg));
+		assertTrue(files.contains(file1arwpp3));
+		assertTrue(files.contains(file1jpgpp3));
 	}
 
 	@Test
