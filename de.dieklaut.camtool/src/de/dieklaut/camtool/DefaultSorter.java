@@ -9,8 +9,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.util.FileUtils;
 
+/**
+ * Default implementation sorting files into groups.
+ * @author mboonk
+ *
+ */
 public class DefaultSorter implements Sorter{
 
 	public boolean useRawTherapee = false;
@@ -32,7 +38,7 @@ public class DefaultSorter implements Sorter{
 		return groups;
 	}
 
-	private Map<String, Set<Path>> detectGroupNames(Path path, Collection<Path> camtoolFiles)
+	private static Map<String, Set<Path>> detectGroupNames(Path path, Collection<Path> camtoolFiles)
 			throws IOException {
 		Map<String, Set<Path>> groupNamesToPaths = new HashMap<>();
 		Files.list(path).forEach(currentPath -> {
@@ -100,6 +106,8 @@ public class DefaultSorter implements Sorter{
 					
 				if (group != null && group instanceof MultiGroup) {
 					((MultiGroup)group).setRenderscriptFile(camtoolFile);
+				} else {
+					Logger.log("Ignored camtool file " + camtoolFile + " because it does not belong to a multi group", Level.WARNING);
 				}
 			}
 		}
