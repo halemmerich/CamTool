@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.dieklaut.camtool.renderjob.RenderScriptMultiRenderJob;
+
 public class RenderScriptMultiRenderJobTest extends FileBasedTest{
 	private static final String DOESNT_EXIST_NULL = "doesntExist.null";
 

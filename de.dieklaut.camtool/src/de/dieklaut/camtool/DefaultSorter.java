@@ -38,7 +38,7 @@ public class DefaultSorter implements Sorter{
 		return groups;
 	}
 
-	private static Map<String, Set<Path>> detectGroupNames(Path path, Collection<Path> camtoolFiles)
+	public static Map<String, Set<Path>> detectGroupNames(Path path, Collection<Path> camtoolFiles)
 			throws IOException {
 		Map<String, Set<Path>> groupNamesToPaths = new HashMap<>();
 		Files.list(path).forEach(currentPath -> {
@@ -65,7 +65,7 @@ public class DefaultSorter implements Sorter{
 		return groupNamesToPaths;
 	}
 
-	private static void createSingleGroups(Collection<Group> groups, Map<String, Set<Path>> groupNamesToPaths,
+	public static void createSingleGroups(Collection<Group> groups, Map<String, Set<Path>> groupNamesToPaths,
 			Map<String, Group> groupNamesToGroup) {
 		for (String currentGroupName : groupNamesToPaths.keySet()) {
 			Set<Path> currentGroupPaths = groupNamesToPaths.get(currentGroupName);
@@ -84,7 +84,7 @@ public class DefaultSorter implements Sorter{
 	 * @param groupNamesToGroup
 	 * @throws IOException
 	 */
-	private static void createCollections(Collection<Group> groups, Collection<Path> camtoolFiles,
+	public static void createCollections(Collection<Group> groups, Collection<Path> camtoolFiles,
 			Map<String, Group> groupNamesToGroup) throws IOException {
 		for (Path camtoolFile : camtoolFiles) {
 			if (camtoolFile.getFileName().toString().endsWith(Constants.FILE_NAME_COLLECTION_SUFFIX)) {

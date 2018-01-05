@@ -21,7 +21,6 @@ import de.dieklaut.camtool.util.FileUtils;
 public class DeleteUnusedTest extends FileBasedTest {
 	
 	private Context context;
-	private String timestamp_file1_jpg;
 	private String timestamp_file1_arw;
 	private String timestamp_file2;
 	private String timestamp_file3;
@@ -29,7 +28,7 @@ public class DeleteUnusedTest extends FileBasedTest {
 	@Before
 	public void setUp() throws IOException, FileOperationException {
 		timestamp_file1_arw = FileUtils.getTimestamp(Files.createFile(getTestFolder().resolve("file1.ARW")));
-		timestamp_file1_jpg = FileUtils.getTimestamp(Files.createFile(getTestFolder().resolve("file1.JPG")));
+		Files.createFile(getTestFolder().resolve("file1.JPG"));
 		timestamp_file2 = FileUtils.getTimestamp(Files.createFile(getTestFolder().resolve("file2.ARW")));
 		timestamp_file3 = FileUtils.getTimestamp(Files.createFile(getTestFolder().resolve("file3.JPG")));
 		
@@ -57,7 +56,7 @@ public class DeleteUnusedTest extends FileBasedTest {
 		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_TIMELINE).resolve(timestamp_file3 + "_file3.JPG")));
 		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_ORIGINAL).resolve("file3.JPG")));
 		
-		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_TIMELINE).resolve(timestamp_file1_jpg + "_file1.JPG")));
+		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_TIMELINE).resolve(timestamp_file1_arw + "_file1.JPG")));
 		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_ORIGINAL).resolve("file1.JPG")));
 		
 		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_TIMELINE).resolve(timestamp_file1_arw + "_file1.ARW")));

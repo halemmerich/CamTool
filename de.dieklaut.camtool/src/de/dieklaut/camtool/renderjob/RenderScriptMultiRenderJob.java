@@ -1,4 +1,4 @@
-package de.dieklaut.camtool;
+package de.dieklaut.camtool.renderjob;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,8 +12,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import de.dieklaut.camtool.Group;
+import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
-import de.dieklaut.camtool.renderjob.RenderJob;
 
 public class RenderScriptMultiRenderJob implements RenderJob {
 

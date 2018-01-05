@@ -4,19 +4,22 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
-import de.dieklaut.camtool.FileOperationException;
+import de.dieklaut.camtool.DefaultSorter;
+import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class Init extends AbstractOperation {
-	
-	public Init() {
-		// TODO Auto-generated constructor stub
-	}
 
 	@Override
 	public void perform(Context context) {
@@ -29,19 +32,21 @@ public class Init extends AbstractOperation {
 	}
 
 	protected void createTimeLine(Context context) throws IOException {
-		try (Stream<Path> files = Files.list(context.getOriginals())) {
-			Path timelineFolder = Files
-					.createDirectory(Paths.get(context.getRoot().toString(), Constants.FOLDER_TIMELINE));
-			files.forEach(file -> {
-				try {
-					//TODO handle sub folders
-					String timestamp = FileUtils.getTimestamp(FileUtils.getCreationDate(file));
-					Path destination = timelineFolder.resolve(timestamp + "_" + file.getFileName());
-					Files.createSymbolicLink(destination, timelineFolder.relativize(file));
-				} catch (IOException | FileOperationException e) {
-					Logger.log("Linking file " + file + " to " + Constants.FOLDER_TIMELINE + " did cause an error", e);
-				}
-			});
+		
+		Path timelineFolder = Files
+				.createDirectory(Paths.get(context.getRoot().toString(), Constants.FOLDER_TIMELINE));
+		
+		Map<String, Set<Path>> groupNames = DefaultSorter.detectGroupNames(context.getOriginals(), Collections.emptyList());
+		
+		Collection<Group> groups = new HashSet<>();
+		DefaultSorter.createSingleGroups(groups, groupNames, new HashMap<>());
+		
+		for (Group group : groups) {
+			String timestamp = FileUtils.getTimestamp(group.getTimestamp());
+			for (Path current : group.getAllFiles()) {
+				Path destination = timelineFolder.resolve(timestamp + "_" + current.getFileName());
+				Files.createSymbolicLink(destination, timelineFolder.relativize(current));
+			}
 		}
 	}
 

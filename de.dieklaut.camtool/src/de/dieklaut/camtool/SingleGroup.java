@@ -12,6 +12,7 @@ import de.dieklaut.camtool.renderjob.LinkRenderJob;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
 import de.dieklaut.camtool.renderjob.RawTherapeeRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
+import de.dieklaut.camtool.renderjob.RenderScriptRenderJob;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**

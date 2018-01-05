@@ -1,4 +1,4 @@
-package de.dieklaut.camtool;
+package de.dieklaut.camtool.renderjob;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import org.apache.commons.exec.CommandLine;
 
 import de.dieklaut.camtool.external.ExternalTool;
-import de.dieklaut.camtool.renderjob.RenderJob;
 
 public class RenderScriptRenderJob implements RenderJob {
 

@@ -10,6 +10,7 @@ import java.util.Set;
 
 import de.dieklaut.camtool.renderjob.MultiRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
+import de.dieklaut.camtool.renderjob.RenderScriptMultiRenderJob;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**
