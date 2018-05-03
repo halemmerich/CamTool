@@ -12,7 +12,6 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
-import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.TestFileHelper;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -22,7 +21,7 @@ public class CleanTrashTest extends FileBasedTest {
 	private static final String TEST = "test";
 
 	@Test
-	public void testPerform() throws IOException, FileOperationException {		
+	public void testPerform() throws IOException {		
 		Context context = Context.create(getTestFolder());
 		
 		Path source = TestFileHelper.getTestResource("A7II.ARW");

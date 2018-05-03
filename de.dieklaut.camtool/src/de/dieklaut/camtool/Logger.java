@@ -5,7 +5,7 @@ import java.util.Calendar;
 public class Logger {
 
 	private static boolean printStackTraces = false;
-	private static Level discardIfBelow = Level.WARNING;
+	private static Level discardIfBelow = Level.TRACE;
 	
 	public static Level getDiscardIfBelow() {
 		return discardIfBelow;

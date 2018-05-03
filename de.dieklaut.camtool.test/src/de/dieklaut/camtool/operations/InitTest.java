@@ -14,7 +14,6 @@ import org.junit.Test;
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.FileBasedTest;
-import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.TestFileHelper;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -27,7 +26,7 @@ public class InitTest extends FileBasedTest {
 	Path[] paths = new Path[fileNames.length];
 
 	@Before
-	public void setUp() throws IOException, FileOperationException {
+	public void setUp() throws IOException {
 		for (int i = 0; i < fileNames.length; i++) {
 			paths[i] = Files.copy(TestFileHelper.getTestResource(fileNames[i]), getTestFolder().resolve(fileNames[i]));
 			timestamps[i] = FileUtils.getTimestamp(paths[i]);

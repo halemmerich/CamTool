@@ -86,6 +86,7 @@ public class DefaultSorter implements Sorter{
 	 */
 	public static void createCollections(Collection<Group> groups, Collection<Path> camtoolFiles,
 			Map<String, Group> groupNamesToGroup) throws IOException {
+		Map<Group, MultiGroup> groupToCollection = new HashMap<>();
 		for (Path camtoolFile : camtoolFiles) {
 			if (camtoolFile.getFileName().toString().endsWith(Constants.FILE_NAME_COLLECTION_SUFFIX)) {
 				Set<Group> collectionGroups = new HashSet<>();
@@ -94,18 +95,23 @@ public class DefaultSorter implements Sorter{
 					collectionGroups.add(groupForCollection);
 					groups.remove(groupForCollection);
 				}
-				Group newGroup = new MultiGroup(collectionGroups, camtoolFile);
+				MultiGroup newGroup = new MultiGroup(collectionGroups, camtoolFile);
 				groups.add(newGroup);
 				groupNamesToGroup.put(newGroup.getName(), newGroup);
+				
+				for (Group g : collectionGroups) {
+					groupToCollection.put(g, newGroup);
+				}
 			}
 		}
 		for (Path camtoolFile : camtoolFiles) {
-			if (camtoolFile.getFileName().endsWith(Constants.FILE_NAME_RENDERSCRIPT_SUFFIX)) {
-					
+			if (camtoolFile.getFileName().toString().endsWith(Constants.FILE_NAME_RENDERSCRIPT_SUFFIX)) {
 				Group group = groupNamesToGroup.get(FileUtils.getGroupName(camtoolFile));
-					
+				
+				
+				
 				if (group != null && group instanceof MultiGroup) {
-					((MultiGroup)group).setRenderscriptFile(camtoolFile);
+					((MultiGroup) group).setRenderscriptFile(camtoolFile);
 				} else {
 					Logger.log("Ignored camtool file " + camtoolFile + " because it does not belong to a multi group", Level.WARNING);
 				}

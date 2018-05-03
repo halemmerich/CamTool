@@ -18,7 +18,7 @@ public class ImageFile implements SourceFile {
 	}
 
 	@Override
-	public Instant getCreationDate() throws FileOperationException {
+	public Instant getCreationDate() {
 		if (creationDate == null) {
 			creationDate = FileUtils.getCreationDate(filePath);
 		}

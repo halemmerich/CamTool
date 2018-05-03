@@ -15,7 +15,6 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
-import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class DeleteUnusedTest extends FileBasedTest {
@@ -26,7 +25,7 @@ public class DeleteUnusedTest extends FileBasedTest {
 	private String timestamp_file3;
 
 	@Before
-	public void setUp() throws IOException, FileOperationException {
+	public void setUp() throws IOException {
 		timestamp_file1_arw = FileUtils.getTimestamp(Files.createFile(getTestFolder().resolve("file1.ARW")));
 		Files.createFile(getTestFolder().resolve("file1.JPG"));
 		timestamp_file2 = FileUtils.getTimestamp(Files.createFile(getTestFolder().resolve("file2.ARW")));

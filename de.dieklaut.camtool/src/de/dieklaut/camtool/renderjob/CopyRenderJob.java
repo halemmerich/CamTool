@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class CopyRenderJob implements RenderJob {
+public class CopyRenderJob extends RenderJob {
 
 	private Path source;
 	
@@ -13,7 +13,7 @@ public class CopyRenderJob implements RenderJob {
 	}
 
 	@Override
-	public void store(Path destination) throws IOException {
+	void storeImpl(Path destination) throws IOException {
 		
 		if (Files.isDirectory(destination)) {
 			destination = destination.resolve(source.getFileName());

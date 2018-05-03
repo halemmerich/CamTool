@@ -14,7 +14,7 @@ import de.dieklaut.camtool.util.FileUtils;
 
 public class FileUtilsTest extends FileBasedTest {
 	@Test
-	public void deleteRecursiveTest() throws IOException, FileOperationException {
+	public void deleteRecursiveTest() throws IOException {
 		Path testFolder = Files.createTempDirectory("test");
 
 		Path toDelete = Files.createDirectory(Paths.get(testFolder.toString(), "testfolder"));
@@ -56,7 +56,7 @@ public class FileUtilsTest extends FileBasedTest {
 	}
 	
 	@Test
-	public void testGetCreationDate() throws FileOperationException {
+	public void testGetCreationDate() {
 		assertEquals(1499505230000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("A7II.ARW")).toEpochMilli());
 		assertEquals(1499503995000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("NEX5R.ARW")).toEpochMilli());
 		assertEquals(1501103070993l, FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS")).toEpochMilli());
@@ -64,7 +64,7 @@ public class FileUtilsTest extends FileBasedTest {
 	}
 	
 	@Test
-	public void testGetTimestamp() throws FileOperationException {
+	public void testGetTimestamp() {
 		assertEquals("20170708091350000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("A7II.ARW"))));
 		assertEquals("20170708085315000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("NEX5R.ARW"))));
 		assertEquals("20170726090430993", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS"))));

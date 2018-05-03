@@ -13,7 +13,6 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
-import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.TestFileHelper;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -25,7 +24,7 @@ public class ExportTest extends FileBasedTest {
 	private DefaultSorter sorter;
 
 	@Before
-	public void setUp() throws IOException, FileOperationException {		
+	public void setUp() throws IOException {		
 		sorter = new DefaultSorter();
 		sorter.useRawTherapee = false;
 		
@@ -48,7 +47,7 @@ public class ExportTest extends FileBasedTest {
 	}
 	
 	@Test
-	public void testPerformNoDestination() throws IOException, FileOperationException {
+	public void testPerformNoDestination() throws IOException {
 		Export export = new Export();
 		export.setName(TEST);
 		export.setType(Constants.RENDER_TYPE_MEDIUM);
@@ -62,7 +61,7 @@ public class ExportTest extends FileBasedTest {
 	}
 	
 	@Test
-	public void testPerformWithDestination() throws IOException, FileOperationException {
+	public void testPerformWithDestination() throws IOException {
 		Path tempDest = Files.createTempDirectory("toBeDeleted");
 		tempDest.toFile().deleteOnExit();
 		

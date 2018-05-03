@@ -19,7 +19,7 @@ public class FileBasedTest {
 	}
 
 	@After
-	public void tearDownTestFolder() throws IOException, FileOperationException {
+	public void tearDownTestFolder() throws IOException {
 		FileUtils.deleteRecursive(testFolder, true);
 	}
 	

@@ -20,12 +20,11 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 
-import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
 
 public class FileUtils {
-	public static Instant getCreationDate(Path filePath) throws FileOperationException {
+	public static Instant getCreationDate(Path filePath) {
 		try {
 			Metadata metadata = ImageMetadataReader.readMetadata(Files.newInputStream(filePath));
 
@@ -45,7 +44,7 @@ public class FileUtils {
 		try {
 			return Files.readAttributes(filePath, BasicFileAttributes.class).lastModifiedTime().toInstant();
 		} catch (IOException e) {
-			throw new FileOperationException("Could not get the creation date from file " + filePath, e);
+			throw new IllegalStateException("Could not get the creation date from file " + filePath, e);
 		}
 	}
 
@@ -63,7 +62,7 @@ public class FileUtils {
 			Logger.log("Could not parse image file exif data for a creation date, falling back to file creation date",
 					e, Level.DEBUG);
 		}
-		
+
 		return Duration.ZERO;
 	}
 
@@ -74,13 +73,9 @@ public class FileUtils {
 	 *            set to true, if read only files should be deleted
 	 * @throws FileOperationException
 	 */
-	public static void deleteRecursive(Path path, boolean force) throws FileOperationException {
-		deleteRecursive(path, path, force);
-	}
-	
-	private static void deleteRecursive(Path path, Path originalPath, boolean force) throws FileOperationException {
+	public static void deleteRecursive(Path path, boolean force) {
 		File candidate = path.toFile();
-		
+
 		if (force && !Files.isSymbolicLink(path)) {
 			candidate.setWritable(true);
 		}
@@ -90,15 +85,9 @@ public class FileUtils {
 		}
 
 		try {
-			Files.list(path).forEach(file -> {
-				try {
-					deleteRecursive(file, originalPath, force);
-				} catch (FileOperationException e) {
-					Logger.log("Error during delete", e);
-				}
-			});
+			Files.list(path).forEach(file -> deleteRecursive(file, force));
 		} catch (IOException e) {
-			throw new FileOperationException("Could get list of files for " + path, e);
+			throw new IllegalStateException("Could get delete " + path + "recursive of files for ", e);
 		}
 
 		// Delete directory if empty
@@ -108,7 +97,25 @@ public class FileUtils {
 				return;
 			}
 		} catch (IOException e) {
-			throw new FileOperationException("Could not delete directory " + path, e);
+			throw new IllegalStateException("Could not delete directory " + path, e);
+		}
+	}
+
+	public static void copyRecursive(Path source, Path destination) throws IOException {
+		if (Files.isDirectory(source)) {
+			if (!Files.isDirectory(destination)) {
+				throw new IllegalArgumentException("Both arguments must be directories");
+			}
+			Files.list(source).forEach(current -> {
+				try {
+					copyRecursive(current, destination.resolve(current.getFileName()));
+				} catch (IOException e) {
+					throw new IllegalStateException(
+							"Could not copy recursively from " + current + " to " + destination);
+				}
+			});
+		} else {
+			Files.copy(source, destination);
 		}
 	}
 
@@ -119,8 +126,8 @@ public class FileUtils {
 		formatter = formatter.withZone(ZoneOffset.ofHours(0));
 		return formatter.format(instant);
 	}
-	
-	public static String getTimestamp(Path file) throws FileOperationException {
+
+	public static String getTimestamp(Path file) {
 		return getTimestamp(getCreationDate(file));
 	}
 
@@ -150,7 +157,13 @@ public class FileUtils {
 	}
 
 	public static String getNamePortion(String filename) {
-		return filename.substring(filename.indexOf('_'));
+		if (filename.contains(".")) {
+			filename = filename.substring(0, filename.lastIndexOf("."));
+		}
+		if (filename.contains("_")) {
+			return filename.substring(filename.indexOf('_'));
+		}
+		return filename;
 	}
 
 	public static String removeSuffix(String fileName) {

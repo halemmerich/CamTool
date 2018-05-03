@@ -8,7 +8,6 @@ import java.util.Set;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
-import de.dieklaut.camtool.FileOperationException;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**
@@ -51,7 +50,7 @@ public class UpdateUnused extends AbstractOperation {
 			for (Path current : unused) {
 				Files.createSymbolicLink(unusedFolder.resolve(current.getFileName()), unusedFolder.relativize(current));
 			}
-		} catch (FileOperationException | IOException e) {
+		} catch (IOException e) {
 			throw new IllegalStateException("File operation failed while creating unused folder", e);
 		}
 

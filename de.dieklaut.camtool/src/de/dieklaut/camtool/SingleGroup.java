@@ -81,8 +81,7 @@ public class SingleGroup extends AbstractGroup {
 
 		if (toBeRendered == null) {
 			for (Path element : getAllFiles()) {
-				if (FileTypeHelper.isRawImageFile(element)
-						|| FileTypeHelper.isVideoFile(element)) {
+				if (FileTypeHelper.isRawImageFile(element) || FileTypeHelper.isVideoFile(element)) {
 					toBeRendered = element;
 					break;
 				}
@@ -120,14 +119,10 @@ public class SingleGroup extends AbstractGroup {
 	}
 
 	public Instant getTimestamp() {
-		try {
-			if (cachedTimestamp == null) {
-				cachedTimestamp = FileUtils.getCreationDate(getPrimaryFile());
-			}
-			return cachedTimestamp;
-		} catch (FileOperationException e) {
-			throw new IllegalStateException("Could not read creation date from primary file for group " + this, e);
+		if (cachedTimestamp == null) {
+			cachedTimestamp = FileUtils.getCreationDate(getPrimaryFile());
 		}
+		return cachedTimestamp;
 	}
 
 	@Override

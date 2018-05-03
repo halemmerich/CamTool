@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 import de.dieklaut.camtool.util.FileUtils;
 
-public class DummyRawRenderJob implements RenderJob {
+public class DummyRawRenderJob extends RenderJob {
 
 	private Path element;
 
@@ -15,7 +15,7 @@ public class DummyRawRenderJob implements RenderJob {
 	}
 
 	@Override
-	public void store(Path destination) {
+	void storeImpl(Path destination) {
 		try {
 			if (Files.isDirectory(destination)) {
 				Files.createFile(destination.resolve(FileUtils.removeSuffix(element.getFileName().toString()) + ".jpg"));

@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import de.dieklaut.camtool.Group;
 
-public class MultiRenderJob implements RenderJob {
+public class MultiRenderJob extends RenderJob {
 
 	private Collection<Group> groups;
 
@@ -15,7 +15,7 @@ public class MultiRenderJob implements RenderJob {
 	}
 
 	@Override
-	public void store(Path destination) throws IOException {
+	void storeImpl(Path destination) throws IOException {
 		for (Group g : groups) {
 			g.getRenderJob().store(destination);
 		}

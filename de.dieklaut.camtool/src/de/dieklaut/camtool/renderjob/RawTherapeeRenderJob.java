@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import de.dieklaut.camtool.FileTypeHelper;
 import de.dieklaut.camtool.external.RawTherapeeWrapper;
 
-public class RawTherapeeRenderJob implements RenderJob {
+public class RawTherapeeRenderJob extends RenderJob {
 
 	private Path[] helperFiles;
 	private Path mainFile;
@@ -19,7 +19,7 @@ public class RawTherapeeRenderJob implements RenderJob {
 	}
 
 	@Override
-	public void store(Path destination) throws IOException {
+	void storeImpl(Path destination) throws IOException {
 		processWrapper.setInputFile(mainFile.toAbsolutePath().toString());
 		processWrapper.setOutputFile(destination.toAbsolutePath().toString());
 		processWrapper.setJpgQuality(95, 3);

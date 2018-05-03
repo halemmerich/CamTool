@@ -21,4 +21,5 @@ public interface Constants {
 	public static final String FILE_NAME_COLLECTION_SUFFIX = FILE_NAME_CAMTOOL_SUFFIX + "collection";
 	public static final String RENDERSCRIPT_SUFFIX = "renderscript";
 	public static final String FILE_NAME_RENDERSCRIPT_SUFFIX = FILE_NAME_CAMTOOL_SUFFIX + RENDERSCRIPT_SUFFIX;
+	public static final String TEMP_FOLDER_PREFIX = "camtool_tmp";
 }
