@@ -33,6 +33,7 @@ public class CamToolTest extends FileBasedTest {
 	public void testRenderNoArgs() {
 		CamTool.main(new String[] { "init" });
 		CamTool.main(new String[] { "sort" });
+		CamTool.main(new String[] { "showGroups" });
 		CamTool.main(new String[] { "render" });
 	}
 }

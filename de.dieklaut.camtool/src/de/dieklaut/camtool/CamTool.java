@@ -20,6 +20,7 @@ import de.dieklaut.camtool.cmdlinewrapper.ExportWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.InitWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.OperationWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.RenderWrapper;
+import de.dieklaut.camtool.cmdlinewrapper.ShowGroupsWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.SortWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.UpdateUnusedWrapper;
 import de.dieklaut.camtool.operations.Operation;
@@ -38,7 +39,16 @@ public class CamTool {
 	
 	private static Sorter sorter = new DefaultSorter();
 	
-	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(sorter), new CleanTrashWrapper(sorter), new RenderWrapper(sorter), new ExportWrapper(), new UpdateUnusedWrapper(), new DeleteUnusedWrapper());
+	private static UserInterface ui = new UserInterface() {
+
+		@Override
+		public void show(String text) {
+			System.out.println(text);
+		}
+		
+	};
+	
+	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(sorter), new CleanTrashWrapper(sorter), new RenderWrapper(sorter), new ShowGroupsWrapper(sorter, ui), new ExportWrapper(), new UpdateUnusedWrapper(), new DeleteUnusedWrapper());
 	
 	private CamTool() {
 		//Prevent instantiation
