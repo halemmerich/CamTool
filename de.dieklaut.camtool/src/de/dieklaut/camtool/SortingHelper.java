@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.dieklaut.camtool.Logger.Level;
+
 public class SortingHelper {
 
 	public static void combineSeries(Collection<Group> sorting) {
@@ -25,8 +27,7 @@ public class SortingHelper {
 		Collection<Group> groupsToBeRemoved = new HashSet<>();
 
 		for (Group currentGroup : sortedByTimestampGroups) {
-			System.out.println(
-					currentGroup.getName() + " " + currentGroup.getTimestamp() + "  " + currentGroup.getDuration());
+			Logger.log(currentGroup.getName() + " " + currentGroup.getTimestamp() + "  " + currentGroup.getDuration(), Level.TRACE);
 			if (lastTimestamp == null
 					|| lastTimestamp.plusSeconds(2).plus(lastDuration).isAfter(currentGroup.getTimestamp())) {
 				currentSeries.add(currentGroup);
