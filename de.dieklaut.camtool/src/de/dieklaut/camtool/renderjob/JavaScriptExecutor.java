@@ -31,11 +31,12 @@ public class JavaScriptExecutor {
 	 *            Additional variables to provide in the environment
 	 * @return
 	 */
-	public static boolean execRenderScript(Path script, Path resultDir, Path workingDir,
+	public static boolean execRenderScript(Path script, String groupName, Path resultDir, Path workingDir,
 			Map<String, Object> globalVariables) {
 		ScriptEngineManager manager = new ScriptEngineManager();
 		ScriptEngine engine = manager.getEngineByName("JavaScript");
 		try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(script))) {
+			engine.put("_groupName", groupName);
 			engine.put("_resultDir", resultDir.toAbsolutePath().toString());
 			engine.put("_workingDir", workingDir.toAbsolutePath().toString());
 			engine.eval("FilesApi = Java.type(\"" + FilesApi.class.getName() + "\")");

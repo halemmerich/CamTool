@@ -17,7 +17,7 @@ public class JavaScriptExecutorTest extends FileBasedTest{
 	public void test() throws IOException {
 		Files.createFile(getTestFolder().resolve("testfile"));
 		
-		JavaScriptExecutor.execRenderScript(TestFileHelper.getTestResource("scripts/createSummaryFile.js"), getTestFolder(), getTestFolder(), Collections.emptyMap());
+		JavaScriptExecutor.execRenderScript(TestFileHelper.getTestResource("scripts/createSummaryFile.js"), "groupname", getTestFolder(), getTestFolder(), Collections.emptyMap());
 
 		assertTrue(Files.exists(getTestFolder().resolve("summary.txt")));
 		assertEquals("testfile", new String(Files.readAllBytes(getTestFolder().resolve("summary.txt"))));

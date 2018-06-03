@@ -38,7 +38,7 @@ public class Init extends AbstractOperation {
 		Map<String, Set<Path>> groupNames = DefaultSorter.detectGroupNames(context.getOriginals(), new HashSet<>());
 		
 		Collection<Group> groups = new HashSet<>();
-		DefaultSorter.createSingleGroups(groups, groupNames, new HashMap<>());
+		DefaultSorter.createSingleGroups(groups, groupNames, new HashMap<>(), new HashSet<>());
 		
 		for (Group group : groups) {
 			String timestamp = FileUtils.getTimestamp(group.getTimestamp());

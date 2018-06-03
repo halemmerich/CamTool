@@ -3,10 +3,10 @@ package de.dieklaut.camtool.renderjob;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Collections;
 
 import de.dieklaut.camtool.Group;
+import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**
@@ -19,11 +19,11 @@ import de.dieklaut.camtool.util.FileUtils;
  */
 public class RenderScriptMultiRenderJob extends RenderJob {
 
-	private Collection<Group> groups;
+	private MultiGroup multiGroup;
 	private Path renderscriptFile;
 
-	public RenderScriptMultiRenderJob(Path renderscriptFile, Collection<Group> groups) {
-		this.groups = groups;
+	public RenderScriptMultiRenderJob(Path renderscriptFile, MultiGroup multiGroup) {
+		this.multiGroup = multiGroup;
 		this.renderscriptFile = renderscriptFile;
 	}
 
@@ -31,13 +31,13 @@ public class RenderScriptMultiRenderJob extends RenderJob {
 	void storeImpl(Path destination) throws IOException {
 		Path workDir = Files.createTempDirectory("camtool_workdir");
 
-		for (Group group : groups) {
+		for (Group group : multiGroup.getGroups()) {
 			group.getRenderJob().store(workDir);
 		}
 
 		Path resultDir = Files.createTempDirectory("camtool_results");
-
-		if (!JavaScriptExecutor.execRenderScript(renderscriptFile, resultDir, workDir, Collections.emptyMap())) {
+		
+		if (!JavaScriptExecutor.execRenderScript(renderscriptFile, multiGroup.getName(), resultDir, workDir, Collections.emptyMap())) {
 			throw new IllegalStateException("Render script execution failed");
 		}
 

@@ -83,7 +83,7 @@ public class MultiGroup extends AbstractGroup {
 	@Override
 	public RenderJob getRenderJob() {
 		if (renderscriptFile != null) {
-			return new RenderScriptMultiRenderJob(renderscriptFile, groups);	
+			return new RenderScriptMultiRenderJob(renderscriptFile, this);	
 		} else {
 			return new MultiRenderJob(groups);
 		}

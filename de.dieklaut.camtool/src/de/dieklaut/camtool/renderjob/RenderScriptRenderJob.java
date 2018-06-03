@@ -12,10 +12,12 @@ import de.dieklaut.camtool.util.FileUtils;
 public class RenderScriptRenderJob extends RenderJob {
 
 	private Path mainFile;
+	private String name;
 	private Path[] helperFiles;
 
-	public RenderScriptRenderJob(Path mainFile, Path ... helperFiles) {
+	public RenderScriptRenderJob(String name, Path mainFile, Path ... helperFiles) {
 		this.mainFile = mainFile;
+		this.name = name;
 		this.helperFiles = helperFiles;
 	}
 
@@ -27,7 +29,7 @@ public class RenderScriptRenderJob extends RenderJob {
 		
 		Path tempDir = Files.createTempDirectory(Constants.TEMP_FOLDER_PREFIX);
 		
-		boolean result = JavaScriptExecutor.execRenderScript(mainFile, destination, tempDir, map);				
+		boolean result = JavaScriptExecutor.execRenderScript(mainFile, name, destination, tempDir, map);				
 		
 		FileUtils.deleteRecursive(tempDir, true);
 		

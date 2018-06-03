@@ -31,8 +31,8 @@ public class DefaultSorter implements Sorter{
 
 		Map<String, Group> groupNamesToGroup = new HashMap<>();
 
-		createSingleGroups(groups, groupNamesToPaths, groupNamesToGroup);
-
+		createSingleGroups(groups, groupNamesToPaths, groupNamesToGroup, camtoolFiles);
+		
 		createCollections(groups, camtoolFiles, groupNamesToGroup);
 
 		return groups;
@@ -40,6 +40,7 @@ public class DefaultSorter implements Sorter{
 
 	public static Map<String, Set<Path>> detectGroupNames(Path path, Collection<Path> camtoolFiles)
 			throws IOException {
+		Logger.log("Searching for group names in " + path ,Level.TRACE);
 		Map<String, Set<Path>> groupNamesToPaths = new HashMap<>();
 		Files.list(path).forEach(currentPath -> {
 			if (!Files.isDirectory(currentPath)) {
@@ -50,12 +51,14 @@ public class DefaultSorter implements Sorter{
 				}
 
 				if (currentFileName.matches(".*\\" + Constants.FILE_NAME_CAMTOOL_SUFFIX + "[^\\.]*$")) {
+					Logger.log("Found collection file: " + currentFileName ,Level.TRACE);
 					camtoolFiles.add(currentPath);
 				} else {
 
 					String currentGroupName = FileUtils.getGroupName(currentFileName);
 
 					if (!groupNamesToPaths.containsKey(currentGroupName)) {
+						Logger.log("Found new group name " + currentGroupName ,Level.TRACE);
 						groupNamesToPaths.put(currentGroupName, new HashSet<>());
 					}
 					groupNamesToPaths.get(currentGroupName).add(currentPath);
@@ -66,10 +69,16 @@ public class DefaultSorter implements Sorter{
 	}
 
 	public static void createSingleGroups(Collection<Group> groups, Map<String, Set<Path>> groupNamesToPaths,
-			Map<String, Group> groupNamesToGroup) {
+			Map<String, Group> groupNamesToGroup, Collection<Path> camtoolFiles) {
 		for (String currentGroupName : groupNamesToPaths.keySet()) {
 			Set<Path> currentGroupPaths = groupNamesToPaths.get(currentGroupName);
 
+			for (Path current: camtoolFiles) {
+				if (currentGroupName.equals(FileUtils.getGroupName(current))) {
+					currentGroupPaths.add(current);
+				}
+			}
+			
 			SingleGroup newGroup = new SingleGroup(currentGroupPaths);
 			groups.add(newGroup);
 			groupNamesToGroup.put(currentGroupName, newGroup);
@@ -117,12 +126,10 @@ public class DefaultSorter implements Sorter{
 			if (camtoolFile.getFileName().toString().endsWith(Constants.FILE_NAME_RENDERSCRIPT_SUFFIX)) {
 				Group group = groupNamesToGroup.get(FileUtils.getGroupName(camtoolFile));
 				
-				
-				
 				if (group != null && group instanceof MultiGroup) {
 					((MultiGroup) group).setRenderscriptFile(camtoolFile);
 				} else {
-					Logger.log("Ignored camtool file " + camtoolFile + " because it does not belong to a multi group", Level.WARNING);
+					Logger.log("Ignored camtool file " + camtoolFile + " because it does not belong to a multi group", Level.INFO);
 				}
 			}
 		}

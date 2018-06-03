@@ -60,7 +60,7 @@ public class SingleGroup extends AbstractGroup {
 
 	private RenderJob forFile(Path mainFile, Path... helperFiles) {
 		if (FileTypeHelper.isRenderscript(mainFile)) {
-			return new RenderScriptRenderJob(mainFile, helperFiles);
+			return new RenderScriptRenderJob(this.getName(), mainFile, helperFiles);
 		} else if (FileTypeHelper.isRawImageFile(mainFile)) {
 			return new RawTherapeeRenderJob(new RawTherapeeWrapper(), mainFile, helperFiles);
 		} else if (FileTypeHelper.isVideoFile(mainFile)) {

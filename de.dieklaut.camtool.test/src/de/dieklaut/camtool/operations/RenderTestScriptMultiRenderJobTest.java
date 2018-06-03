@@ -42,7 +42,7 @@ public class RenderTestScriptMultiRenderJobTest extends FileBasedTest {
 		multigroups.add(subGroup);
 		MultiGroup multiGroup = new MultiGroup(multigroups);
 		groups.add(multiGroup);
-		RenderScriptMultiRenderJob renderJob = new RenderScriptMultiRenderJob(renderscript, groups );
+		RenderScriptMultiRenderJob renderJob = new RenderScriptMultiRenderJob(renderscript, multiGroup);
 		
 		Path dest = Files.createTempDirectory(Constants.TEMP_FOLDER_PREFIX);
 		
