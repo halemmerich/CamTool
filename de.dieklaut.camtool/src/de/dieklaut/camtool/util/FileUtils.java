@@ -149,7 +149,7 @@ public class FileUtils {
 	}
 
 	public static String getGroupName(String filename) {
-		return filename.substring(0, filename.indexOf('.'));
+		return filename.contains(".") ? filename.substring(0, filename.indexOf('.')) : filename;
 	}
 
 	public static String getNamePortion(Path current) {

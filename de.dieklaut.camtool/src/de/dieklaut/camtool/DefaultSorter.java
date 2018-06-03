@@ -91,7 +91,16 @@ public class DefaultSorter implements Sorter{
 			if (camtoolFile.getFileName().toString().endsWith(Constants.FILE_NAME_COLLECTION_SUFFIX)) {
 				Set<Group> collectionGroups = new HashSet<>();
 				for (String currentFileFromCollection : Files.readAllLines(camtoolFile)) {
+					currentFileFromCollection = currentFileFromCollection.trim();
+					if (currentFileFromCollection.isEmpty()) {
+						continue;
+					}
 					Group groupForCollection = groupNamesToGroup.get(FileUtils.getGroupName(currentFileFromCollection));
+					
+					if (groupForCollection == null) {
+						throw new IllegalStateException("No fitting group found for collection entry " + currentFileFromCollection);
+					}
+					
 					collectionGroups.add(groupForCollection);
 					groups.remove(groupForCollection);
 				}

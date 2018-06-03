@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class Init extends AbstractOperation {
 		Path timelineFolder = Files
 				.createDirectory(Paths.get(context.getRoot().toString(), Constants.FOLDER_TIMELINE));
 		
-		Map<String, Set<Path>> groupNames = DefaultSorter.detectGroupNames(context.getOriginals(), Collections.emptyList());
+		Map<String, Set<Path>> groupNames = DefaultSorter.detectGroupNames(context.getOriginals(), new HashSet<>());
 		
 		Collection<Group> groups = new HashSet<>();
 		DefaultSorter.createSingleGroups(groups, groupNames, new HashMap<>());

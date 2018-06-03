@@ -14,7 +14,7 @@ import java.util.List;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Test;
 
-public class SortingHelperTest extends FileBasedTest {
+public class DefaultSorterTest extends FileBasedTest {
 	
 	private static final DefaultSorter SORTER = new DefaultSorter();
 
@@ -35,7 +35,43 @@ public class SortingHelperTest extends FileBasedTest {
 		
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(2, sorting.size());
+	}
+	
+	@Test
+	public void testIdentifyGroupsCombineSingleToMulti() throws IOException {
+		Files.createFile(getTestFolder().resolve("file1.ARW"));
+		Files.createFile(getTestFolder().resolve("file1.JPG"));
+		Files.createFile(getTestFolder().resolve("file2.ARW"));
+		Files.createFile(getTestFolder().resolve("file2.JPG"));
+		Files.createFile(getTestFolder().resolve("file3.ARW"));
+		Files.createFile(getTestFolder().resolve("file3.JPG"));
+		Files.createFile(getTestFolder().resolve("file4.ARW"));
+		Files.createFile(getTestFolder().resolve("file4.JPG"));
 		
+		Path collection = Files.createFile(getTestFolder().resolve("file.camtool_collection"));
+		Files.write(collection, "file2\nfile3\nfile4\n".getBytes());
+		
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
+
+		assertEquals(2, sorting.size());
+
+		boolean foundMulti = false;
+		boolean foundSingle = false;
+		
+		for (Group g : sorting) {
+			if (g instanceof MultiGroup) {
+				foundMulti = true;
+				assertEquals(6, g.getAllFiles().size());
+				assertEquals("file", g.getName());
+				assertEquals(collection, ((MultiGroup) g).getCollectionFile());
+			}
+			if (g instanceof SingleGroup) {
+				foundSingle = true;
+			}
+		}
+		
+		assertTrue(foundMulti);
+		assertTrue(foundSingle);
 	}
 
 	@Test
