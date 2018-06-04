@@ -63,6 +63,12 @@ public class DefaultSorter implements Sorter{
 					}
 					groupNamesToPaths.get(currentGroupName).add(currentPath);
 				}
+			} else {
+				try {
+					groupNamesToPaths.putAll(detectGroupNames(currentPath, camtoolFiles));
+				} catch (IOException e) {
+					Logger.log("Failure during recursing into subfolders", e, Level.ERROR);
+				}
 			}
 		});
 		return groupNamesToPaths;

@@ -30,11 +30,11 @@ public class DefaultSorterTest extends FileBasedTest {
 		Files.createFile(getTestFolder().resolve("file4.ARW"));
 
 		Path subdir = Files.createDirectory(getTestFolder().resolve("subdir"));
-		Files.createFile(subdir.resolve("file4.ARW"));
-		Files.createFile(subdir.resolve("file4.JPG"));
+		Files.createFile(subdir.resolve("file5.ARW"));
+		Files.createFile(subdir.resolve("file5.JPG"));
 		
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
-		assertEquals(2, sorting.size());
+		assertEquals(3, sorting.size());
 	}
 	
 	@Test
