@@ -121,7 +121,7 @@ public class FileUtils {
 
 	public static String getTimestamp(Instant instant) {
 		DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
-		builder.appendPattern("yyyyMMddhhmmssSSS");
+		builder.appendPattern("yyyyMMddHHmmssSSS");
 		DateTimeFormatter formatter = builder.toFormatter();
 		formatter = formatter.withZone(ZoneOffset.ofHours(0));
 		return formatter.format(instant);
