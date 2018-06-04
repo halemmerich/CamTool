@@ -14,7 +14,7 @@ public class UpdateUnusedWrapper extends AbstractWrapper {
 
 	@Override
 	public String getHelp() {
-		return "This updates the folder containing links to unsed files";
+		return "Updates the folder containing links to unused files";
 	}
 
 }

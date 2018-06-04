@@ -44,7 +44,7 @@ public class ExportWrapper extends AbstractWrapper {
 
 	@Override
 	public String getHelp() {
-		return "This copies the results to a destination folder";
+		return "Copies the results to a destination folder";
 	}
 
 }

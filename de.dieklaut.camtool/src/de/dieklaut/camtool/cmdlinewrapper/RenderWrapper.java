@@ -36,7 +36,7 @@ public class RenderWrapper extends AbstractWrapper {
 
 	@Override
 	public String getHelp() {
-		return "This renders a sorting to create the results";
+		return "Renders a sorting to create the result files";
 	}
 
 }

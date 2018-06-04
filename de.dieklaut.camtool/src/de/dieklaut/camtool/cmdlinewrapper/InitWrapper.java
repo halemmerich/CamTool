@@ -22,6 +22,6 @@ public class InitWrapper extends AbstractWrapper {
 	@Override
 	public String getHelp() {
 		return "Initialize a camtool structure. This moves all files to the " + Constants.FOLDER_ORIGINAL
-				+ " and write protects them.";
+				+ " and write protects them";
 	}
 }

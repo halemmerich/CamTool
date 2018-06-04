@@ -15,7 +15,7 @@ public class DeleteUnusedWrapper extends AbstractWrapper {
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions();
-		options.addOption(Option.builder(OPT_NO_AUTO_UPDATE_SHORT).longOpt(OPT_NO_AUTO_UPDATE).desc("Automatically updates the unused folder before deletion").build());
+		options.addOption(Option.builder(OPT_NO_AUTO_UPDATE_SHORT).longOpt(OPT_NO_AUTO_UPDATE).desc("Prevent automatically updates of the unused folder before deletion").build());
 		return options;
 	}
 
@@ -30,7 +30,7 @@ public class DeleteUnusedWrapper extends AbstractWrapper {
 
 	@Override
 	public String getHelp() {
-		return "This deletes all files pointed to from the unused folder in original and timeline folders";
+		return "Deletes all files pointed to from the unused folder in original and timeline folders";
 	}
 
 }

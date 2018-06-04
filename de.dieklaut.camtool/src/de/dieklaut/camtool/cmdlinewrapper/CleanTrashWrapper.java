@@ -34,7 +34,7 @@ public class CleanTrashWrapper extends AbstractWrapper {
 
 	@Override
 	public String getHelp() {
-		return "This renders a sorting to create the results";
+		return "Deletes all groups that are marked as deleted";
 	}
 
 }

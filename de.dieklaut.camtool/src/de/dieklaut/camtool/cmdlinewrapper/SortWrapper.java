@@ -55,7 +55,7 @@ public class SortWrapper extends AbstractWrapper {
 
 	@Override
 	public String getHelp() {
-		return "This operation creates a new sorting out of the contents of the " + Constants.FOLDER_TIMELINE + "folder.";
+		return "This operation creates a new sorting out of the contents of the " + Constants.FOLDER_TIMELINE + "folder";
 	}
 
 }
