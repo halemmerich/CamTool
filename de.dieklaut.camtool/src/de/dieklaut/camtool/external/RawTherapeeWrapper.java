@@ -42,7 +42,7 @@ public class RawTherapeeWrapper extends ExternalTool {
 		commandline.addArgument("-d");
 		for (String current : profileOptions) {
 			commandline.addArgument("-p");
-			commandline.addArgument(current);
+			commandline.addArgument(current, false);
 		}
 		
 		commandline.addArgument("-c");
