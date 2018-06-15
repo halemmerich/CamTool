@@ -64,6 +64,12 @@ public class CamToolTest extends FileBasedTest {
 	}
 
 	@Test
+	public void callSortWithDetectSeriesAndTime() {
+		callInitNoArgs();
+		CamTool.main(new String[] { "sort", "-t", "5" });
+	}
+
+	@Test
 	public void callSortWithMoveAllGroups() {
 		callInitNoArgs();
 		CamTool.main(new String[] { "sort", "-a" });

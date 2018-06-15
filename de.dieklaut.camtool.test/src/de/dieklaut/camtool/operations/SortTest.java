@@ -91,6 +91,7 @@ public class SortTest extends FileBasedTest {
 		Sort sort = new Sort(SORTER);
 		sort.setMoveAllGroupsToFolder(true);
 		sort.setDetectSeries(true);
+		sort.setDetectSeriesTime(2);
 		sort.perform(context);
 
 		Path sortingFolder = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal");
@@ -129,6 +130,7 @@ public class SortTest extends FileBasedTest {
 		Sort sort = new Sort(SORTER);
 		sort.setMoveAllGroupsToFolder(false);
 		sort.setDetectSeries(true);
+		sort.setDetectSeriesTime(2);
 		sort.perform(context);
 
 		Path sortingFolder = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal");

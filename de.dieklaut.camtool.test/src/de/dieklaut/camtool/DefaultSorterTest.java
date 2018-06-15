@@ -125,7 +125,7 @@ public class DefaultSorterTest extends FileBasedTest {
 
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		
-		SortingHelper.combineSeries(sorting);
+		SortingHelper.combineSeries(sorting, 2);
 		
 		assertEquals(1, sorting.size());
 		Group group = sorting.iterator().next();

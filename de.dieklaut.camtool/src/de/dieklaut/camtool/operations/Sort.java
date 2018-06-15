@@ -30,6 +30,7 @@ public class Sort extends AbstractOperation {
 	private boolean moveAllGroupsToFolder = false;
 	private boolean detectSeries = false;
 	private Sorter sorter;
+	private int detectSeriesTimeDiff = 2;
 	
 	public Sort(Sorter sorter) {
 		this.sorter = sorter;
@@ -57,7 +58,7 @@ public class Sort extends AbstractOperation {
 			Collection<Group> sorting = sorter.identifyGroups(sortingFolder);
 			
 			if (detectSeries) {
-				SortingHelper.combineSeries(sorting);
+				SortingHelper.combineSeries(sorting, detectSeriesTimeDiff);
 			}
 			
 			if (moveCollectionsToFolder || moveAllGroupsToFolder) {
@@ -136,6 +137,10 @@ public class Sort extends AbstractOperation {
 	
 	public void setMoveAllGroupsToFolder(boolean moveAllGroupsToFolder) {
 		this.moveAllGroupsToFolder = moveAllGroupsToFolder;
+	}
+
+	public void setDetectSeriesTime(int timeDiff) {
+		this.detectSeriesTimeDiff = timeDiff;
 	}
 
 }

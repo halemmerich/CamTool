@@ -12,7 +12,7 @@ import de.dieklaut.camtool.Logger.Level;
 
 public class SortingHelper {
 
-	public static void combineSeries(Collection<Group> sorting) {
+	public static void combineSeries(Collection<Group> sorting, int detectSeriesTimeDiff) {
 		List<Group> sortedByTimestampGroups = new ArrayList<>(sorting);
 
 		sortedByTimestampGroups.sort(new GroupTimestampComparator());
@@ -25,20 +25,18 @@ public class SortingHelper {
 		Collection<MultiGroup> foundSeriesGroups = new HashSet<>();
 
 		Collection<Group> groupsToBeRemoved = new HashSet<>();
-
-		int timeDiff = 2;
 		
 		for (Group currentGroup : sortedByTimestampGroups) {
 			Logger.log(currentGroup.getName() + " - " + currentGroup.getTimestamp() + " " + currentGroup.getDuration(), Level.TRACE);
 			
-			if (lastTimestamp != null && !lastTimestamp.plusSeconds(timeDiff).plus(lastDuration).isAfter(currentGroup.getTimestamp())) {
+			if (lastTimestamp != null && !lastTimestamp.plusSeconds(detectSeriesTimeDiff).plus(lastDuration).isAfter(currentGroup.getTimestamp())) {
 				finishCurrentSeries(currentSeries, foundSeriesGroups, groupsToBeRemoved);
 				lastTimestamp = null;
 				lastDuration = null;
 			}
 			
 			if (lastTimestamp == null
-					|| lastTimestamp.plusSeconds(timeDiff).plus(lastDuration).isAfter(currentGroup.getTimestamp())) {
+					|| lastTimestamp.plusSeconds(detectSeriesTimeDiff).plus(lastDuration).isAfter(currentGroup.getTimestamp())) {
 				currentSeries.add(currentGroup);
 				lastTimestamp = currentGroup.getTimestamp();
 				lastDuration = currentGroup.getDuration();
