@@ -19,6 +19,7 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
 
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
@@ -53,12 +54,20 @@ public class FileUtils {
 		try {
 			Metadata metadata = ImageMetadataReader.readMetadata(Files.newInputStream(filePath));
 
-			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
+			Collection<ExifSubIFDDirectory> directories = metadata.getDirectoriesOfType(ExifSubIFDDirectory.class);
 
-			for (ExifIFD0Directory directory : directories) {
-				if (directory.containsTag(ExifIFD0Directory.TAG_SHUTTER_SPEED)) {
+			for (ExifSubIFDDirectory directory : directories) {
+				if (directory.containsTag(ExifSubIFDDirectory.TAG_SHUTTER_SPEED)) {
 					double shutterspeed = directory.getDouble(ExifIFD0Directory.TAG_SHUTTER_SPEED);
 					Duration result = Duration.ofNanos((long) (shutterspeed * 1000000));
+
+					Logger.log("Found creation duration for file " + filePath + " " + result, Level.DEBUG);
+					
+					return result;
+				}
+				if (directory.containsTag(ExifSubIFDDirectory.TAG_EXPOSURE_TIME)) {
+					double shutterspeed = directory.getDouble(ExifSubIFDDirectory.TAG_EXPOSURE_TIME);
+					Duration result = Duration.ofNanos((long) (shutterspeed * 1000000000));
 
 					Logger.log("Found creation duration for file " + filePath + " " + result, Level.DEBUG);
 					

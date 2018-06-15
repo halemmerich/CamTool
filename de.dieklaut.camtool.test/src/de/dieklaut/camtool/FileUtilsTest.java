@@ -71,6 +71,12 @@ public class FileUtilsTest extends FileBasedTest {
 	}
 	
 	@Test
+	public void testGetCreationDuration() {
+		assertEquals(50, FileUtils.getCreationDuration(TestFileHelper.getTestResource("A7II.ARW")).toMillis());
+		assertEquals(25, FileUtils.getCreationDuration(TestFileHelper.getTestResource("NEX5R.ARW")).toMillis());
+	}
+	
+	@Test
 	public void testGetTimestamp() {
 		assertEquals("20170708091350000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("A7II.ARW"))));
 		assertEquals("20170708085315000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("NEX5R.ARW"))));
