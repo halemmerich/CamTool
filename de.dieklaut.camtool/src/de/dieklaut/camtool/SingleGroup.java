@@ -33,6 +33,13 @@ public class SingleGroup extends AbstractGroup {
 	public SingleGroup(Collection<Path> elements) {
 		this.elements = elements;
 	}
+	
+	public SingleGroup(Path ... elements) {
+		this.elements = new HashSet<Path>();
+		for (Path e : elements) {
+			this.elements.add(e);
+		}
+	}
 
 	@Override
 	public Collection<Path> getAllFiles() {
