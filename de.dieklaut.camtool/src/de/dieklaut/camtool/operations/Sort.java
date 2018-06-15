@@ -3,6 +3,7 @@ package de.dieklaut.camtool.operations;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.stream.Stream;
 
@@ -75,9 +76,15 @@ public class Sort extends AbstractOperation {
 		for (Group g : sorting) {
 			if (g instanceof MultiGroup) {
 				try {
-					Path collectionFile = Files.createFile(g.getContainingFolder().resolve(g.getName() + Constants.FILE_NAME_COLLECTION_SUFFIX));
+					Path collectionFile = g.getContainingFolder().resolve(g.getName() + Constants.FILE_NAME_COLLECTION_SUFFIX);
+					
+					if (Files.exists(collectionFile)) {
+						continue;
+					}
+					Files.createFile(collectionFile);
+					
 					for (Path p : g.getAllFiles()) {
-						Files.write(collectionFile, (p.getFileName().toString() + "\n").getBytes());
+						Files.write(collectionFile, (p.getFileName().toString() + "\n").getBytes(), StandardOpenOption.APPEND);
 					}
 				} catch (IOException e) {
 					Logger.log("Error during creation of a collection file for " + g.getName(), e);
