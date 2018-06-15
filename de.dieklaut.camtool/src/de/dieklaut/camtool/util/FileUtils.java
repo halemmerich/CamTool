@@ -55,11 +55,19 @@ public class FileUtils {
 			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
 
 			for (ExifIFD0Directory directory : directories) {
-				double shutterspeed = directory.getDouble(ExifIFD0Directory.TAG_SHUTTER_SPEED);
-				Duration.ofNanos((long) (shutterspeed * 1000000));
+				if (directory.containsTag(ExifIFD0Directory.TAG_SHUTTER_SPEED)) {
+					double shutterspeed = directory.getDouble(ExifIFD0Directory.TAG_SHUTTER_SPEED);
+					Duration result = Duration.ofNanos((long) (shutterspeed * 1000000));
+
+					Logger.log("Found creation duration for file " + filePath + " " + result, Level.DEBUG);
+					
+					return result;
+				}
 			}
+			
+			
 		} catch (ImageProcessingException | IOException | MetadataException e) {
-			Logger.log("Could not parse image file exif data for a creation date, falling back to file creation date",
+			Logger.log("Could not parse image file exif data for a shutter duration, falling back to duration 0",
 					e, Level.DEBUG);
 		}
 
