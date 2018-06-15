@@ -37,11 +37,12 @@ public class FileUtils {
 				}
 			}
 		} catch (ImageProcessingException | IOException e) {
-			Logger.log("Could not parse image file exif data for a creation date, falling back to file creation date",
+			Logger.log("Error during parsing of image file " + filePath + " for exif data for a creation date, falling back to file creation date",
 					e, Level.DEBUG);
 		}
 
 		try {
+			Logger.log("No date found in image file " + filePath + " exif data, falling back to file creation date", Level.INFO);
 			return Files.readAttributes(filePath, BasicFileAttributes.class).lastModifiedTime().toInstant();
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not get the creation date from file " + filePath, e);
