@@ -17,6 +17,7 @@ import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.SingleGroup;
 import de.dieklaut.camtool.TestFileHelper;
+import de.dieklaut.camtool.renderjob.RenderJobFactory;
 import de.dieklaut.camtool.renderjob.RenderScriptMultiRenderJob;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -42,6 +43,9 @@ public class RenderTestScriptMultiRenderJobTest extends FileBasedTest {
 		multigroups.add(subGroup);
 		MultiGroup multiGroup = new MultiGroup(multigroups);
 		groups.add(multiGroup);
+
+		RenderJobFactory.useRawtherapee = false;
+		
 		RenderScriptMultiRenderJob renderJob = new RenderScriptMultiRenderJob(renderscript, multiGroup);
 		
 		Path dest = Files.createTempDirectory(Constants.TEMP_FOLDER_PREFIX);

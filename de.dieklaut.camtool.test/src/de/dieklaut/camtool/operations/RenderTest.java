@@ -14,6 +14,7 @@ import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.TestFileHelper;
+import de.dieklaut.camtool.renderjob.RenderJobFactory;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class RenderTest extends FileBasedTest {
@@ -32,6 +33,8 @@ public class RenderTest extends FileBasedTest {
 		Sort sort = new Sort(sorter);
 		sort.setName(TEST);
 		sort.perform(context);
+		
+		RenderJobFactory.useRawtherapee = false;
 		
 		Render render = new Render(sorter);
 		render.setSortingName(TEST);

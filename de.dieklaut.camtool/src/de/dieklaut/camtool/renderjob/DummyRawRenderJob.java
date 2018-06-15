@@ -6,6 +6,11 @@ import java.nio.file.Path;
 
 import de.dieklaut.camtool.util.FileUtils;
 
+/**
+ * This "renders" a file by creating an empty file with .jpg suffix.
+ * @author mboonk
+ *
+ */
 public class DummyRawRenderJob extends RenderJob {
 
 	private Path element;

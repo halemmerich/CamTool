@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dieklaut.camtool.renderjob.RenderJobFactory;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class CamToolTest extends FileBasedTest {
@@ -89,18 +90,21 @@ public class CamToolTest extends FileBasedTest {
 	@Test
 	public void callRenderNoArgs() {
 		callSortNoArgs();
+		RenderJobFactory.useRawtherapee = false;
 		CamTool.main(new String[] { "render" });
 	}
 
 	@Test
 	public void callRenderHelp() {
 		callInitNoArgs();
+		RenderJobFactory.useRawtherapee = false;
 		CamTool.main(new String[] { "render", "-h" });
 	}
 
 	@Test
 	public void callRenderWithName() {
 		callSortWithName();
+		RenderJobFactory.useRawtherapee = false;
 		CamTool.main(new String[] { "render", "-n", TEST });
 	}
 

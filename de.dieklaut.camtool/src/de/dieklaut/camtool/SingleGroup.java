@@ -6,13 +6,10 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
 
-import de.dieklaut.camtool.external.RawTherapeeWrapper;
 import de.dieklaut.camtool.renderjob.CopyRenderJob;
-import de.dieklaut.camtool.renderjob.LinkRenderJob;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
-import de.dieklaut.camtool.renderjob.RawTherapeeRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
-import de.dieklaut.camtool.renderjob.RenderScriptRenderJob;
+import de.dieklaut.camtool.renderjob.RenderJobFactory;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**
@@ -66,15 +63,7 @@ public class SingleGroup extends AbstractGroup {
 	}
 
 	private RenderJob forFile(Path mainFile, Path... helperFiles) {
-		if (FileTypeHelper.isRenderscript(mainFile)) {
-			return new RenderScriptRenderJob(this.getName(), mainFile, helperFiles);
-		} else if (FileTypeHelper.isRawImageFile(mainFile)) {
-			return new RawTherapeeRenderJob(new RawTherapeeWrapper(), mainFile, helperFiles);
-		} else if (FileTypeHelper.isVideoFile(mainFile)) {
-			return new LinkRenderJob(mainFile);
-		}
-
-		return new CopyRenderJob(mainFile);
+		return RenderJobFactory.getRenderJob(mainFile, helperFiles, this.getName());
 	}
 
 	private Path getPrimaryFile() {
