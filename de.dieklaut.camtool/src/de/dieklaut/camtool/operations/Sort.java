@@ -61,11 +61,28 @@ public class Sort extends AbstractOperation {
 			
 			if (moveCollectionsToFolder || moveAllGroupsToFolder) {
 				moveCollections(sorting, sortingFolder);
+			} else {
+				createCollectionFiles(sorting);
 			}
 			
 			Files.createFile(sortingFolder.resolve(Constants.SORTED_FILE_NAME));
 		} catch (IOException e) {
 			throw new IllegalStateException("A file operation failed", e);
+		}
+	}
+
+	private void createCollectionFiles(Collection<Group> sorting) {
+		for (Group g : sorting) {
+			if (g instanceof MultiGroup) {
+				try {
+					Path collectionFile = Files.createFile(g.getContainingFolder().resolve(g.getName() + Constants.FILE_NAME_COLLECTION_SUFFIX));
+					for (Path p : g.getAllFiles()) {
+						Files.write(collectionFile, (p.getFileName().toString() + "\n").getBytes());
+					}
+				} catch (IOException e) {
+					Logger.log("Error during creation of a collection file for " + g.getName(), e);
+				}
+			}
 		}
 	}
 
