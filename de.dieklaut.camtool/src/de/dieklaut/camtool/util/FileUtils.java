@@ -169,7 +169,7 @@ public class FileUtils {
 			filename = filename.substring(0, filename.lastIndexOf("."));
 		}
 		if (filename.contains("_")) {
-			return filename.substring(filename.indexOf('_'));
+			return filename.substring(filename.indexOf('_') + 1);
 		}
 		return filename;
 	}
