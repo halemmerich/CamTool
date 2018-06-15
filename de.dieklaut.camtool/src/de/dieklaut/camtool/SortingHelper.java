@@ -26,15 +26,26 @@ public class SortingHelper {
 
 		Collection<Group> groupsToBeRemoved = new HashSet<>();
 
+		int timeDiff = 2;
+		
 		for (Group currentGroup : sortedByTimestampGroups) {
-			Logger.log(currentGroup.getName() + " " + currentGroup.getTimestamp() + "  " + currentGroup.getDuration(), Level.TRACE);
+			Logger.log(currentGroup.getName() + " - " + currentGroup.getTimestamp() + " " + currentGroup.getDuration(), Level.TRACE);
+			
+			if (lastTimestamp != null && !lastTimestamp.plusSeconds(timeDiff).plus(lastDuration).isAfter(currentGroup.getTimestamp())) {
+				finishCurrentSeries(currentSeries, foundSeriesGroups, groupsToBeRemoved);
+				lastTimestamp = null;
+				lastDuration = null;
+			}
+			
 			if (lastTimestamp == null
-					|| lastTimestamp.plusSeconds(2).plus(lastDuration).isAfter(currentGroup.getTimestamp())) {
+					|| lastTimestamp.plusSeconds(timeDiff).plus(lastDuration).isAfter(currentGroup.getTimestamp())) {
 				currentSeries.add(currentGroup);
 				lastTimestamp = currentGroup.getTimestamp();
 				lastDuration = currentGroup.getDuration();
 			} else {
 				finishCurrentSeries(currentSeries, foundSeriesGroups, groupsToBeRemoved);
+				lastTimestamp = null;
+				lastDuration = null;
 			}
 		}
 		if (!currentSeries.isEmpty()) {
@@ -48,12 +59,16 @@ public class SortingHelper {
 
 	private static void finishCurrentSeries(List<Group> currentSeries, Collection<MultiGroup> foundSeriesGroups,
 			Collection<Group> groupsToBeRemoved) {
-		Collection<Group> seriesGroupContents = new HashSet<>();
-		for (Group toBeMoved : currentSeries) {
-			groupsToBeRemoved.add(toBeMoved);
-			seriesGroupContents.add(toBeMoved);
+		if (currentSeries.size() > 1) {
+			Collection<Group> seriesGroupContents = new HashSet<>();
+			for (Group toBeMoved : currentSeries) {
+				groupsToBeRemoved.add(toBeMoved);
+				seriesGroupContents.add(toBeMoved);
+			}
+			foundSeriesGroups.add(new MultiGroup(seriesGroupContents));
 		}
-		foundSeriesGroups.add(new MultiGroup(seriesGroupContents));
+		
+		currentSeries.clear();
 	}
 
 }
