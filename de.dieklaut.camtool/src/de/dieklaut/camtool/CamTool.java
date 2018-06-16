@@ -14,6 +14,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import de.dieklaut.camtool.Logger.Level;
+import de.dieklaut.camtool.cmdlinewrapper.AbstractWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.CleanTrashWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.DeleteUnusedWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.ExportWrapper;
@@ -23,6 +24,7 @@ import de.dieklaut.camtool.cmdlinewrapper.RenderWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.ShowGroupsWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.SortWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.UpdateUnusedWrapper;
+import de.dieklaut.camtool.operations.AbstractOperation;
 import de.dieklaut.camtool.operations.Operation;
 
 public class CamTool {
@@ -34,56 +36,77 @@ public class CamTool {
 	private static HelpFormatter formatter = new HelpFormatter();
 
 	private static Option helpOption = new Option("h", "help", false, "Print this help");
-	
+
 	private static Options options = new Options().addOption(helpOption);
-	
+
 	private static Sorter sorter = new DefaultSorter();
-	
+
 	private static UserInterface ui = new UserInterface() {
 
 		@Override
 		public void show(String text) {
 			System.out.println(text);
 		}
-		
+
 	};
-	
-	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(sorter), new CleanTrashWrapper(sorter), new RenderWrapper(sorter), new ShowGroupsWrapper(sorter, ui), new ExportWrapper(), new UpdateUnusedWrapper(), new DeleteUnusedWrapper());
-	
+
+	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(sorter), new CleanTrashWrapper(sorter),
+			new RenderWrapper(sorter), new ShowGroupsWrapper(sorter, ui), new ExportWrapper(),
+			new UpdateUnusedWrapper(), new DeleteUnusedWrapper());
+
 	private CamTool() {
-		//Prevent instantiation
+		// Prevent instantiation
 	}
-	
-	public static void main(String [] args) {
+
+	public static void main(String[] args) {
 		Logger.setDiscardIfBelow(Level.TRACE);
-		
+
 		if (args.length == 0) {
 			printGenericHelp();
 		} else if (args[0].startsWith("-")) {
 			System.out.println("An operation is needed.\n");
 			printGenericHelp();
 		} else {
-			
-			//extract action and move args
+
+			// extract action and move args
 
 			OperationWrapper operationWrapper = null;
 			for (OperationWrapper op : engine.getOperationWrappers()) {
-				if (op.getName().toLowerCase().equals(args[0].toLowerCase())){
+				if (op.getName().toLowerCase().equals(args[0].toLowerCase())) {
 					operationWrapper = op;
 					break;
 				}
 			}
-			
+
 			if (operationWrapper == null) {
 				Logger.log("No operation found on command line", Logger.Level.ERROR);
+				operationWrapper = new AbstractWrapper() {
+
+					@Override
+					public Operation getOperation(CommandLine cmdLine) {
+						return new AbstractOperation() {
+
+							@Override
+							public void perform(Context context) {
+								// Do nothing
+							}
+						};
+					}
+
+					@Override
+					public String getHelp() {
+						return "Invalid operation";
+					}
+
+				};
 			}
-			
+
 			CommandLineParser parser = new DefaultParser();
-			
+
 			try {
 				Options operationOptions = operationWrapper.getOptions();
 				CommandLine cmd = parser.parse(operationOptions, Arrays.copyOfRange(args, 1, args.length));
-				if (cmd.hasOption(helpOption.getOpt())){
+				if (cmd.hasOption(helpOption.getOpt())) {
 					printOperationHelp(operationWrapper.getName(), operationOptions);
 					return;
 				}
@@ -98,29 +121,36 @@ public class CamTool {
 				} else {
 					context = findContext(workingDir);
 				}
-				
+
 				Operation operation = operationWrapper.getOperation(cmd);
 				Logger.log("Performing operation " + operation.getName(), Level.INFO);
 				operation.perform(context);
 			} catch (ParseException e) {
-				formatter.printHelp(APPLICATION_NAME + " " + APPLICATION_ACTION + " " + APPLICATION_OPTIONS, options);
+				showHelp();
+			} catch (NoContextFoundException e) {
+				Logger.log("Could not find a context", e);
+				showHelp();
 			}
 		}
 	}
 
-	private static Context findContext(Path workingDir) {
+	private static void showHelp() {
+		formatter.printHelp(APPLICATION_NAME + " " + APPLICATION_ACTION + " " + APPLICATION_OPTIONS, options);
+	}
+
+	private static Context findContext(Path workingDir) throws NoContextFoundException {
 		if (Context.isInitialized(workingDir)) {
 			return new Context(workingDir);
 		}
-		
+
 		while (workingDir.getParent() != null) {
 			workingDir = workingDir.getParent();
 			if (Context.isInitialized(workingDir)) {
 				return new Context(workingDir);
 			}
 		}
-		
-		throw new IllegalArgumentException("Could not find a context at " + workingDir + " or at any parent");
+
+		throw new NoContextFoundException("Could not find a context at " + workingDir + " or at any parent");
 	}
 
 	private static void printGenericHelp() {

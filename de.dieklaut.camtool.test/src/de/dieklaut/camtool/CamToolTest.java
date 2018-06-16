@@ -30,6 +30,11 @@ public class CamToolTest extends FileBasedTest {
 	}
 
 	@Test
+	public void callNonCommand() {
+		CamTool.main(new String[] { "noncommand" });
+	}
+
+	@Test
 	public void callHelp() {
 		CamTool.main(new String[] { "-h" });
 	}
