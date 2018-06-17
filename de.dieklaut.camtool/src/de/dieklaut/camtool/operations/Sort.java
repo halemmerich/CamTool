@@ -17,8 +17,11 @@ import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**
- * Analyses the {@link Constants#FOLDER_ORIGINAL} contents and creates a
- * {@link Sorting}.
+ * Analyses the {@link Constants#FOLDER_ORIGINAL} contents and creates a sorting
+ * in the folder with the given name or a default.
+ * 
+ * The sorting can handle files created in fast succession and combine them to a
+ * {@link MultiGroup}s.
  * 
  * @author mboonk
  *
@@ -31,7 +34,7 @@ public class Sort extends AbstractOperation {
 	private boolean detectSeries = false;
 	private Sorter sorter;
 	private int detectSeriesTimeDiff = 2;
-	
+
 	public Sort(Sorter sorter) {
 		this.sorter = sorter;
 	}
@@ -56,17 +59,17 @@ public class Sort extends AbstractOperation {
 				}
 			});
 			Collection<Group> sorting = sorter.identifyGroups(sortingFolder);
-			
+
 			if (detectSeries) {
 				SortingHelper.combineSeries(sorting, detectSeriesTimeDiff);
 			}
-			
+
 			if (moveCollectionsToFolder || moveAllGroupsToFolder) {
 				moveCollections(sorting, sortingFolder);
 			} else {
 				createCollectionFiles(sorting);
 			}
-			
+
 			Files.createFile(sortingFolder.resolve(Constants.SORTED_FILE_NAME));
 		} catch (IOException e) {
 			throw new IllegalStateException("A file operation failed", e);
@@ -77,15 +80,17 @@ public class Sort extends AbstractOperation {
 		for (Group g : sorting) {
 			if (g instanceof MultiGroup) {
 				try {
-					Path collectionFile = g.getContainingFolder().resolve(g.getName() + Constants.FILE_NAME_COLLECTION_SUFFIX);
-					
+					Path collectionFile = g.getContainingFolder()
+							.resolve(g.getName() + Constants.FILE_NAME_COLLECTION_SUFFIX);
+
 					if (Files.exists(collectionFile)) {
 						continue;
 					}
 					Files.createFile(collectionFile);
-					
+
 					for (Path p : g.getAllFiles()) {
-						Files.write(collectionFile, (p.getFileName().toString() + "\n").getBytes(), StandardOpenOption.APPEND);
+						Files.write(collectionFile, (p.getFileName().toString() + "\n").getBytes(),
+								StandardOpenOption.APPEND);
 					}
 				} catch (IOException e) {
 					Logger.log("Error during creation of a collection file for " + g.getName(), e);
@@ -98,7 +103,7 @@ public class Sort extends AbstractOperation {
 		for (Group group : groups) {
 			if ((group instanceof MultiGroup || moveAllGroupsToFolder) && !group.hasOwnFolder()) {
 				Path destination = group.getContainingFolder().resolve(buildGroupName(group));
-				if(!Files.exists(destination)) {
+				if (!Files.exists(destination)) {
 					try {
 						Files.createDirectory(destination);
 					} catch (IOException e) {
@@ -113,7 +118,7 @@ public class Sort extends AbstractOperation {
 	private String buildGroupName(Group group) {
 		long currentMin = Long.MAX_VALUE;
 		String currentName = "";
-		for (Path current: group.getAllFiles()) {
+		for (Path current : group.getAllFiles()) {
 			long stamp = FileUtils.getTimestampPortion(current);
 			if (stamp < currentMin) {
 				currentMin = stamp;
@@ -134,7 +139,7 @@ public class Sort extends AbstractOperation {
 	public void setDetectSeries(boolean detectSeries) {
 		this.detectSeries = detectSeries;
 	}
-	
+
 	public void setMoveAllGroupsToFolder(boolean moveAllGroupsToFolder) {
 		this.moveAllGroupsToFolder = moveAllGroupsToFolder;
 	}
