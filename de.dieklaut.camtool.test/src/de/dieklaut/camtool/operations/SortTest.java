@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -26,9 +28,13 @@ public class SortTest extends FileBasedTest {
 	
 	@Test
 	public void test() throws IOException {
+		long time = Calendar.getInstance().getTimeInMillis();
 		Files.createFile(getTestFolder().resolve("file1.ARW"));
+		Files.setLastModifiedTime(getTestFolder().resolve("file1.ARW"), FileTime.fromMillis(time - 5000));
 		Files.createFile(getTestFolder().resolve("file1.JPG"));
+		Files.setLastModifiedTime(getTestFolder().resolve("file1.JPG"), FileTime.fromMillis(time - 5000));
 		Files.createFile(getTestFolder().resolve("file2.ARW"));
+		Files.setLastModifiedTime(getTestFolder().resolve("file2.ARW"), FileTime.fromMillis(time - 2500));
 		Files.createFile(getTestFolder().resolve("file3.JPG"));
 		
 		Context context = Context.create(getTestFolder());
@@ -42,9 +48,14 @@ public class SortTest extends FileBasedTest {
 	}
 	@Test
 	public void testMoveAllGroups() throws IOException {
+		// The time changes are needed to prevent groups getting the same name
+		long time = Calendar.getInstance().getTimeInMillis();
 		Files.createFile(getTestFolder().resolve("file1.ARW"));
+		Files.setLastModifiedTime(getTestFolder().resolve("file1.ARW"), FileTime.fromMillis(time - 5000));
 		Files.createFile(getTestFolder().resolve("file1.JPG"));
+		Files.setLastModifiedTime(getTestFolder().resolve("file1.JPG"), FileTime.fromMillis(time - 5000));
 		Files.createFile(getTestFolder().resolve("file2.ARW"));
+		Files.setLastModifiedTime(getTestFolder().resolve("file2.ARW"), FileTime.fromMillis(time - 2500));
 		Files.createFile(getTestFolder().resolve("file3.JPG"));
 		
 		Context context = Context.create(getTestFolder());

@@ -101,7 +101,7 @@ public class Sort extends AbstractOperation {
 
 	private void moveCollections(Collection<Group> groups, Path sortingFolder) {
 		for (Group group : groups) {
-			if ((group instanceof MultiGroup || moveAllGroupsToFolder) && !group.hasOwnFolder()) {
+			if (((group instanceof MultiGroup && !group.hasOwnFolder()) || moveAllGroupsToFolder)) {
 				Path destination = group.getContainingFolder().resolve(buildGroupName(group));
 				if (!Files.exists(destination)) {
 					try {
@@ -117,15 +117,13 @@ public class Sort extends AbstractOperation {
 
 	private String buildGroupName(Group group) {
 		long currentMin = Long.MAX_VALUE;
-		String currentName = "";
 		for (Path current : group.getAllFiles()) {
 			long stamp = FileUtils.getTimestampPortion(current);
 			if (stamp < currentMin) {
 				currentMin = stamp;
-				currentName = FileUtils.getNamePortion(current);
 			}
 		}
-		return currentMin + "_" + group.getType() + "_" + currentName;
+		return currentMin + "_" + group.getType();
 	}
 
 	public void setName(String name) {
