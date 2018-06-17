@@ -34,13 +34,6 @@ public class MultiGroup extends AbstractGroup {
 
 	public MultiGroup(Collection<Group> groups) {
 		this.groups = groups;
-		Optional<Group> first = groups.stream().min(new GroupTimestampComparator());
-
-		if (!first.isPresent()) {
-			throw new IllegalStateException("No first element found while sorting groups, this should not happen");
-		}
-		
-		collectionFile = first.get().getContainingFolder().resolve(first.get().getName() + Constants.FILE_NAME_COLLECTION_SUFFIX);
 	}
 
 	@Override
@@ -113,7 +106,21 @@ public class MultiGroup extends AbstractGroup {
 
 	@Override
 	public String getName() {
-		return FileUtils.getNamePortion(collectionFile);
+		if (collectionFile != null) {
+			return FileUtils.getNamePortion(collectionFile);
+		} else {
+			if (hasOwnFolder()) {
+				return getContainingFolder().getFileName().toString();
+			} else {Optional<Group> first = groups.stream().min(new GroupTimestampComparator());
+
+				if (!first.isPresent()) {
+					throw new IllegalStateException("No first element found while sorting groups, this should not happen");
+				}
+			
+				return first.get().getName();
+			}
+		}
+		
 	}
 
 	public void setRenderscriptFile(Path renderscriptFile) {

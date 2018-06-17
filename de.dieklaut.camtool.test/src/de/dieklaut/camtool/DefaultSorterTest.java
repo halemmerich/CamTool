@@ -1,6 +1,7 @@
 package de.dieklaut.camtool;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -19,7 +20,7 @@ public class DefaultSorterTest extends FileBasedTest {
 	private static final DefaultSorter SORTER = new DefaultSorter();
 
 	@Test
-	public void testConstructorComplexStructure() throws IOException {
+	public void testIdentifyGroupsComplexStructure() throws IOException {
 		Files.createFile(getTestFolder().resolve("file1.ARW"));
 		Files.createFile(getTestFolder().resolve("file1.JPG"));
 
@@ -32,6 +33,8 @@ public class DefaultSorterTest extends FileBasedTest {
 		Path subdir = Files.createDirectory(getTestFolder().resolve("subdir"));
 		Files.createFile(subdir.resolve("file5.ARW"));
 		Files.createFile(subdir.resolve("file5.JPG"));
+		Files.createFile(subdir.resolve("file6.ARW"));
+		Files.createFile(subdir.resolve("file6.JPG"));
 		
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(3, sorting.size());
@@ -73,9 +76,46 @@ public class DefaultSorterTest extends FileBasedTest {
 		assertTrue(foundMulti);
 		assertTrue(foundSingle);
 	}
+	
+	@Test
+	public void testIdentifyGroupsCombineFolderToMulti() throws IOException {
+		Path subFolder = getTestFolder().resolve("sub");
+		
+		Files.createDirectories(subFolder);
+		
+		Files.createFile(subFolder.resolve("file1.ARW"));
+		Files.createFile(subFolder.resolve("file1.JPG"));
+		Files.createFile(subFolder.resolve("file2.ARW"));
+		Files.createFile(subFolder.resolve("file2.JPG"));
+		Files.createFile(subFolder.resolve("file3.ARW"));
+		Files.createFile(subFolder.resolve("file3.JPG"));
+		Files.createFile(subFolder.resolve("file4.ARW"));
+		Files.createFile(subFolder.resolve("file4.JPG"));
+		
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
+
+		assertEquals(1, sorting.size());
+
+		boolean foundMulti = false;
+		boolean foundSingle = false;
+		
+		for (Group g : sorting) {
+			if (g instanceof MultiGroup) {
+				foundMulti = true;
+				assertEquals(8, g.getAllFiles().size());
+				assertEquals("sub", g.getName());
+			}
+			if (g instanceof SingleGroup) {
+				foundSingle = true;
+			}
+		}
+		
+		assertTrue(foundMulti);
+		assertFalse(foundSingle);
+	}
 
 	@Test
-	public void testConstructorSingleGroup() throws IOException {
+	public void testIdentifyGroupsSingleGroup() throws IOException {
 		Path file1arw = Files.createFile(getTestFolder().resolve("file1.ARW"));
 		Path file1jpg = Files.createFile(getTestFolder().resolve("file1.JPG"));
 		Path file1arwpp3 = Files.createFile(getTestFolder().resolve("file1.ARW.pp3"));
@@ -94,7 +134,7 @@ public class DefaultSorterTest extends FileBasedTest {
 	}
 
 	@Test
-	public void testConstructorSingleGroupCollection() throws IOException {
+	public void testIdentifyGroupsSingleGroupCollection() throws IOException {
 		Path collection = Files.createFile(getTestFolder().resolve("file.camtool_collection"));
 		Files.write(collection, "file2.ARW\nfile3.ARW\nfile4.ARW\n".getBytes());
 		Path file2arw = Files.createFile(getTestFolder().resolve("file2.ARW"));
@@ -114,7 +154,7 @@ public class DefaultSorterTest extends FileBasedTest {
 	}
 	
 	@Test
-	public void testCombineSeriesSingleFile() throws IOException {
+	public void testIdentifyGroupsCombineSeriesSingleFile() throws IOException {
 		List<Path> arw = new LinkedList<Path>();
 		
 		for (int i = 6; i <= 9; i++) {

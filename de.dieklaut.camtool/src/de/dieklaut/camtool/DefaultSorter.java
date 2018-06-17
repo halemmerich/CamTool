@@ -33,7 +33,9 @@ public class DefaultSorter implements Sorter{
 
 		createSingleGroups(groups, groupNamesToPaths, groupNamesToGroup, camtoolFiles);
 		
-		createCollections(groups, camtoolFiles, groupNamesToGroup);
+		createCollectionsFromFolders(path, groups, groupNamesToGroup);
+		
+		createCollectionsFromFiles(groups, camtoolFiles, groupNamesToGroup);
 
 		return groups;
 	}
@@ -51,7 +53,7 @@ public class DefaultSorter implements Sorter{
 				}
 
 				if (currentFileName.matches(".*\\" + Constants.FILE_NAME_CAMTOOL_SUFFIX + "[^\\.]*$")) {
-					Logger.log("Found collection file: " + currentFileName ,Level.TRACE);
+					Logger.log("Found camtool file: " + currentFileName ,Level.TRACE);
 					camtoolFiles.add(currentPath);
 				} else {
 
@@ -99,7 +101,7 @@ public class DefaultSorter implements Sorter{
 	 * @param groupNamesToGroup
 	 * @throws IOException
 	 */
-	public static void createCollections(Collection<Group> groups, Collection<Path> camtoolFiles,
+	public static void createCollectionsFromFiles(Collection<Group> groups, Collection<Path> camtoolFiles,
 			Map<String, Group> groupNamesToGroup) throws IOException {
 		Map<Group, MultiGroup> groupToCollection = new HashMap<>();
 		for (Path camtoolFile : camtoolFiles) {
@@ -141,4 +143,19 @@ public class DefaultSorter implements Sorter{
 		}
 	}
 
+	private static void createCollectionsFromFolders(Path path, Collection<Group> groups, Map<String, Group> groupNamesToGroup) throws IOException {
+		Files.list(path).filter(file -> Files.isDirectory(file)).forEach(currentPath -> {
+			try {
+				Collection<Group> groupsForCollection = new HashSet<Group>();
+				Files.list(currentPath).forEach(currentFile -> {					
+					groupsForCollection.add(groupNamesToGroup.get(FileUtils.getGroupName(currentFile)));
+				});
+				
+				groups.removeAll(groupsForCollection);
+				groups.add(new MultiGroup(groupsForCollection));
+			} catch (IOException e) {
+				Logger.log("Failure during detection of collections from folder " + currentPath, e, Level.ERROR);
+			}
+		});
+	}
 }
