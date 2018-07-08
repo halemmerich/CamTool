@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
@@ -150,9 +151,27 @@ public class FileUtils {
 	}
 
 	public static Path moveSymlink(Path current, Path destination) throws IOException {
-		Path symlinkTarget = destination.relativize(current.toRealPath());
-		Path newSymlink = destination.resolve(current.getFileName());
-		Path newLink = Files.createSymbolicLink(newSymlink, symlinkTarget);
+		Path currentTarget = Files.readSymbolicLink(current);
+		
+		if (!Files.exists(destination)) {
+			Files.createDirectories(destination);
+		}
+
+		Path symlinkTarget = null;
+		if (currentTarget.isAbsolute()) {
+			symlinkTarget = destination.relativize(currentTarget);
+		} else {
+			symlinkTarget = current.getParent().resolve(currentTarget).toRealPath(LinkOption.NOFOLLOW_LINKS);
+		}
+		
+		Path newSymlink = destination.toRealPath(LinkOption.NOFOLLOW_LINKS).resolve(current.getFileName());
+		
+		Path relativeTarget = symlinkTarget;
+		if (relativeTarget.isAbsolute()) {
+			relativeTarget = newSymlink.getParent().relativize(symlinkTarget);
+		}
+		
+		Path newLink = Files.createSymbolicLink(newSymlink, relativeTarget);
 		Files.delete(current);
 		return newLink;
 	}
@@ -189,5 +208,17 @@ public class FileUtils {
 			throw new IllegalArgumentException("The given file name contains no '.', hence no suffix to remove");
 		}
 		return fileName.substring(0, fileName.lastIndexOf('.'));
+	}
+
+	public static void cleanUpEmptyParents(Path current) {
+		Path parent = current.getParent();
+		try {
+			if (Files.list(parent).count() == 0) {
+				Files.delete(parent);
+				cleanUpEmptyParents(parent);
+			}
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Listing parents content failed", e);
+		}
 	}
 }

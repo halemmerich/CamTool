@@ -53,7 +53,7 @@ public class Sort extends AbstractOperation {
 			files.forEach(file -> {
 				try {
 					Path destination = sortingFolder.resolve(file.getFileName());
-					Files.createSymbolicLink(destination, sortingFolder.relativize(file.toRealPath()));
+					Files.createSymbolicLink(destination, sortingFolder.relativize(file));
 				} catch (IOException e) {
 					Logger.log("Linking file " + file + " to " + Constants.FOLDER_TIMELINE + " did cause an error", e);
 				}

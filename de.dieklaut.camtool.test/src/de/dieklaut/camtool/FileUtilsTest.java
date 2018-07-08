@@ -36,6 +36,7 @@ public class FileUtilsTest extends FileBasedTest {
 		
 		assertFalse(Files.exists(link));
 		assertEquals(subdir2.resolve("link"), newLink);
+		assertEquals(testfile.toRealPath(), newLink.toRealPath());
 	}
 
 	@Test

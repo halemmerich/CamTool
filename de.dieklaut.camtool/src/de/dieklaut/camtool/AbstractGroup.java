@@ -29,18 +29,27 @@ public abstract class AbstractGroup implements Group{
 		getAllFiles().stream().forEach(current -> {
 			if (Files.isSymbolicLink(current)) {
 				try {
-					FileUtils.moveSymlink(current, destination);
+					FileUtils.moveSymlink(current, getTargetDestination(destination));
 				} catch (IOException e) {
 					throw new IllegalStateException("Moving a symlink failed", e);
 				}
 			} else {
 				try {
-					Files.move(current, destination);
+					Files.move(current, getTargetDestination(destination));
 				} catch (IOException e) {
 					throw new IllegalStateException("Moving a file failed", e);
 				}
 			}
+			FileUtils.cleanUpEmptyParents(current);
 		});
+	}
+
+	private Path getTargetDestination(Path destination) {
+		if (!destination.isAbsolute()) {
+			return getContainingFolder().resolve(destination).toAbsolutePath();
+		} else {
+			return destination;
+		}
 	}
 
 }

@@ -106,7 +106,7 @@ public class SingleGroup extends AbstractGroup {
 
 	@Override
 	public String toString() {
-		return "SingleGroup: " + getAllFiles();
+		return "SingleGroup: " + getName() + "\n" + getAllFiles();
 	}
 
 	@Override

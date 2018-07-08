@@ -1,6 +1,10 @@
 package de.dieklaut.camtool;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -48,7 +52,7 @@ public class MultiGroup extends AbstractGroup {
 
 	@Override
 	public String toString() {
-		return "MultiGroup:\n" + getAllFiles();
+		return "MultiGroup: " + getName() + "\n" + getAllFiles();
 	}
 
 	@Override
@@ -125,5 +129,49 @@ public class MultiGroup extends AbstractGroup {
 
 	public void setRenderscriptFile(Path renderscriptFile) {
 		this.renderscriptFile = renderscriptFile;
+	}
+	
+	@Override
+	public void moveToFolder(Path destination) {
+		if (!destination.isAbsolute()) {
+			try {
+				destination = getContainingFolder().resolve(destination).toRealPath(LinkOption.NOFOLLOW_LINKS);
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Could not resolve destination path " + destination + " for multi group move", e);
+			}
+		}
+		try {
+			if (Files.list(destination).filter(path -> !Files.isDirectory(path)).count() == 0) {
+				// This means the render and collection file if any need to be converted
+				if (renderscriptFile != null) {
+					Files.move(renderscriptFile, destination.resolve(FileUtils.getGroupName(destination.getFileName())));
+				}
+				if (collectionFile != null) {
+					Files.delete(collectionFile);
+				}
+			} else {
+				if (collectionFile != null) {
+					Files.move(collectionFile, destination.resolve(this.getName() + Constants.FILE_NAME_COLLECTION_SUFFIX));
+				} else {
+					collectionFile = destination.resolve(getName() + Constants.FILE_NAME_COLLECTION_SUFFIX);
+					createCollectionFile();
+				}
+				if (renderscriptFile != null) {
+					Files.move(renderscriptFile, destination.resolve(FileUtils.getGroupName(destination.getFileName())));
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		super.moveToFolder(destination);
+		
+	}
+
+	private void createCollectionFile() throws IOException {
+		Files.createFile(collectionFile);
+		for (Group g : groups) {
+			Files.write(collectionFile, g.getName().getBytes(), StandardOpenOption.APPEND);
+		}
 	}
 }
