@@ -39,6 +39,26 @@ public class DefaultSorterTest extends FileBasedTest {
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(3, sorting.size());
 	}
+
+	@Test
+	public void testIdentifyGroupsDeepStructure() throws IOException {
+		Files.createFile(getTestFolder().resolve("file1.ARW"));
+		Files.createFile(getTestFolder().resolve("file1.JPG"));
+
+		Path subdir = Files.createDirectory(getTestFolder().resolve("subdir"));
+		Files.createFile(subdir.resolve("file5.ARW"));
+		Files.createFile(subdir.resolve("file5.JPG"));
+		Files.createFile(subdir.resolve("file6.ARW"));
+		Files.createFile(subdir.resolve("file6.JPG"));
+
+		Path subdir2 = Files.createDirectory(subdir.resolve("subdir2"));
+		Files.createFile(subdir2.resolve("file2.ARW"));
+		Files.createFile(subdir2.resolve("file3.ARW"));
+		Files.createFile(subdir2.resolve("file4.ARW"));
+		
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
+		assertEquals(3, sorting.size());
+	}
 	
 	@Test
 	public void testIdentifyGroupsCombineSingleToMulti() throws IOException {

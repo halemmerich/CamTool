@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public class DefaultSorter implements Sorter{
 
 		createSingleGroups(groups, groupNamesToPaths, groupNamesToGroup, camtoolFiles);
 		
-		createCollectionsFromFolders(path, groups, groupNamesToGroup);
+		createCollectionsFromFolders(path, groups, groupNamesToGroup, true);
 		
 		createCollectionsFromFiles(groups, camtoolFiles, groupNamesToGroup);
 
@@ -143,19 +144,22 @@ public class DefaultSorter implements Sorter{
 		}
 	}
 
-	private static void createCollectionsFromFolders(Path path, Collection<Group> groups, Map<String, Group> groupNamesToGroup) throws IOException {
-		Files.list(path).filter(file -> Files.isDirectory(file)).forEach(currentPath -> {
-			try {
-				Collection<Group> groupsForCollection = new HashSet<Group>();
-				Files.list(currentPath).forEach(currentFile -> {					
-					groupsForCollection.add(groupNamesToGroup.get(FileUtils.getGroupName(currentFile)));
-				});
-				
-				groups.removeAll(groupsForCollection);
-				groups.add(new MultiGroup(groupsForCollection));
-			} catch (IOException e) {
-				Logger.log("Failure during detection of collections from folder " + currentPath, e, Level.ERROR);
+	private static void createCollectionsFromFolders(Path path, Collection<Group> groups, Map<String, Group> groupNamesToGroup, boolean pathIsRootSortingDir) throws IOException {
+		Iterator<Path> fileIter = Files.list(path).iterator();
+		Collection<Group> groupsForCollection = new HashSet<Group>();
+		while (fileIter.hasNext()) {
+			Path currentFile = fileIter.next();
+			
+			
+			if (Files.isDirectory(currentFile)) {
+				createCollectionsFromFolders(currentFile, groups, groupNamesToGroup, false);
+			} else {
+				groupsForCollection.add(groupNamesToGroup.get(FileUtils.getGroupName(currentFile)));
 			}
-		});
+		}
+		if (!pathIsRootSortingDir) {
+			groups.removeAll(groupsForCollection);
+			groups.add(new MultiGroup(groupsForCollection));
+		}
 	}
 }
