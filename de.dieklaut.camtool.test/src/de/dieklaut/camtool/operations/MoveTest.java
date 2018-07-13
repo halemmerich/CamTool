@@ -58,6 +58,32 @@ public class MoveTest extends FileBasedTest {
 	}
 	
 	@Test
+	public void testMoveSubSubFolder() throws IOException {
+		Sort sort = new Sort(SORTER);
+		sort.setMoveAllGroupsToFolder(false);
+		sort.perform(context);
+		
+		String testGroupName = "testgroupname";
+		String subfolder = "sub";
+		
+		Move move = new Move(SORTER);
+		move.setNameOfGroup(timestamp_file3 + "_file3");
+		move.setTargetPath(Paths.get(subfolder).resolve(testGroupName));
+		move.perform(context);
+
+		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG")));
+		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(subfolder).resolve(testGroupName).resolve(timestamp_file3 + "_file3.JPG")));
+		
+		move = new Move(SORTER);
+		move.setNameOfGroup(testGroupName);
+		move.setTargetPath(Paths.get("..").resolve(".."));
+		move.perform(context);
+
+		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG")));
+		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(subfolder).resolve(testGroupName).resolve(timestamp_file3 + "_file3.JPG")));
+	}
+	
+	@Test
 	public void testMoveFromMainToFolder() throws IOException {
 		Sort sort = new Sort(SORTER);
 		sort.setMoveAllGroupsToFolder(false);

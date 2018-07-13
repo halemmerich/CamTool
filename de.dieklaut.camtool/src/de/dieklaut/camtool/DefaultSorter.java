@@ -157,7 +157,7 @@ public class DefaultSorter implements Sorter{
 				groupsForCollection.add(groupNamesToGroup.get(FileUtils.getGroupName(currentFile)));
 			}
 		}
-		if (!pathIsRootSortingDir) {
+		if (!pathIsRootSortingDir && groupsForCollection.size() > 0) {
 			groups.removeAll(groupsForCollection);
 			groups.add(new MultiGroup(groupsForCollection));
 		}
