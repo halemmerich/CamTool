@@ -2,7 +2,6 @@ package de.dieklaut.camtool;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
@@ -134,12 +133,18 @@ public class MultiGroup extends AbstractGroup {
 	@Override
 	public void moveToFolder(Path destination) {
 		if (!destination.isAbsolute()) {
+			destination = getContainingFolder().resolve(destination).toAbsolutePath().normalize();
+		}
+		
+		if (!Files.exists(destination)) {
 			try {
-				destination = getContainingFolder().resolve(destination).toRealPath(LinkOption.NOFOLLOW_LINKS);
+				Files.createDirectories(destination);
 			} catch (IOException e) {
-				throw new IllegalArgumentException("Could not resolve destination path " + destination + " for multi group move", e);
+				Logger.log("Failure during creation of destination folder", e);
+				throw new IllegalArgumentException(e);
 			}
 		}
+		
 		try {
 			if (Files.list(destination).filter(path -> !Files.isDirectory(path)).count() == 0) {
 				// This means the render and collection file if any need to be converted

@@ -39,11 +39,11 @@ public class MoveTest extends FileBasedTest {
 		timestamp_file3 = FileUtils.getTimestamp(Files.createFile(getTestFolder().resolve("file3.JPG")));
 		
 		context = Context.create(getTestFolder());
-		new Init().perform(context);
 	}
 	
 	@Test
 	public void testMoveFromFolderToMain() throws IOException {
+		new Init().perform(context);
 		Sort sort = new Sort(SORTER);
 		sort.setMoveAllGroupsToFolder(true);
 		sort.perform(context);
@@ -59,6 +59,7 @@ public class MoveTest extends FileBasedTest {
 	
 	@Test
 	public void testMoveSubSubFolder() throws IOException {
+		new Init().perform(context);
 		Sort sort = new Sort(SORTER);
 		sort.setMoveAllGroupsToFolder(false);
 		sort.perform(context);
@@ -84,7 +85,41 @@ public class MoveTest extends FileBasedTest {
 	}
 	
 	@Test
+	public void testMoveSubSubFolderMultiGroup() throws IOException {
+		String timestamp_file4 = FileUtils.getTimestamp(Files.createFile(getTestFolder().resolve("file4.JPG")));
+
+		new Init().perform(context);
+		
+		Sort sort = new Sort(SORTER);
+		sort.setDetectSeries(true);
+		sort.setMoveAllGroupsToFolder(true);
+		sort.perform(context);
+		
+		String testGroupName = "testgroupname";
+		String subfolder = "sub";
+		
+		Move move = new Move(SORTER);
+		move.setNameOfGroup(timestamp_file3 + "_multi");
+		move.setTargetPath(Paths.get("..").resolve(subfolder).resolve(testGroupName));
+		move.perform(context);
+
+		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG")));
+		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(subfolder).resolve(testGroupName).resolve(timestamp_file3 + "_file3.JPG")));
+		
+		move = new Move(SORTER);
+		move.setNameOfGroup(testGroupName);
+		move.setTargetPath(Paths.get("..").resolve(".."));
+		move.perform(context);
+
+		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG")));
+		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file4 + "_file4.JPG")));
+		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("testgroupname.camtool_collection")));
+		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(subfolder).resolve(testGroupName).resolve(timestamp_file3 + "_file3.JPG")));
+	}
+	
+	@Test
 	public void testMoveFromMainToFolder() throws IOException {
+		new Init().perform(context);
 		Sort sort = new Sort(SORTER);
 		sort.setMoveAllGroupsToFolder(false);
 		sort.perform(context);
