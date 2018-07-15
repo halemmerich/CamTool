@@ -51,7 +51,7 @@ public class MultiGroup extends AbstractGroup {
 
 	@Override
 	public String toString() {
-		return "MultiGroup: " + getName() + "\n" + getAllFiles();
+		return "MultiGroup: " + getName() + "\n" + getGroups();
 	}
 
 	@Override
@@ -112,18 +112,25 @@ public class MultiGroup extends AbstractGroup {
 		if (collectionFile != null) {
 			return FileUtils.getNamePortion(collectionFile);
 		} else {
-			if (hasOwnFolder()) {
-				return getContainingFolder().getFileName().toString();
-			} else {Optional<Group> first = groups.stream().min(new GroupTimestampComparator());
+			Path containingFolder = getContainingFolder();
+			if (Files.exists(containingFolder.resolve(Constants.SORTED_FILE_NAME))) {
+				Optional<Group> first = groups.stream().min(new GroupTimestampComparator());
 
 				if (!first.isPresent()) {
 					throw new IllegalStateException("No first element found while sorting groups, this should not happen");
 				}
 			
 				return first.get().getName();
+			} else {
+				return containingFolder.getFileName().toString();
 			}
 		}
 		
+	}
+	
+	@Override
+	public boolean hasOwnFolder() {
+		return collectionFile == null;
 	}
 
 	public void setRenderscriptFile(Path renderscriptFile) {
@@ -169,14 +176,42 @@ public class MultiGroup extends AbstractGroup {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		super.moveToFolder(destination);
-		
+		for (Group g : getGroups()) {
+			g.moveToFolder(destination.resolve(g.getName()));
+		}
 	}
 
 	private void createCollectionFile() throws IOException {
 		Files.createFile(collectionFile);
 		for (Group g : groups) {
-			Files.write(collectionFile, g.getName().getBytes(), StandardOpenOption.APPEND);
+			Files.write(collectionFile, (g.getName() + "\n").getBytes(), StandardOpenOption.APPEND);
 		}
+	}
+	
+	@Override
+	public Path getContainingFolder() {
+		// This assumes the collection file beeing at the top of the multi group hierarchy
+		if (getCollectionFile() != null) {
+			return getCollectionFile().getParent();
+		}
+		
+		Path shortest = null;
+		for (Group g : getGroups()) {
+			Path current = g.getContainingFolder();
+			if (g.hasOwnFolder()) {
+				current = current.getParent();
+			}
+
+			if (shortest == null || shortest.toAbsolutePath().normalize().startsWith(current.normalize().toAbsolutePath().getParent())) {
+				shortest = current.normalize().toAbsolutePath();
+			}
+		}
+
+		if (renderscriptFile != null && (shortest == null || shortest.toAbsolutePath().normalize().startsWith(renderscriptFile.toAbsolutePath().normalize().getParent()))) {
+			shortest = renderscriptFile.normalize().toAbsolutePath().getParent();
+		}
+		
+		
+		return shortest;
 	}
 }

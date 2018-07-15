@@ -100,9 +100,10 @@ public class Sort extends AbstractOperation {
 	}
 
 	private void moveCollections(Collection<Group> groups, Path sortingFolder) {
+		sortingFolder = sortingFolder.toAbsolutePath().normalize();
 		for (Group group : groups) {
-			if (((group instanceof MultiGroup && !group.hasOwnFolder()) || moveAllGroupsToFolder)) {
-				Path destination = group.getContainingFolder().resolve(buildGroupName(group));
+			Path destination = group.getContainingFolder().resolve(buildGroupName(group)).toAbsolutePath().normalize();
+			if (((group instanceof MultiGroup && sortingFolder.equals(group.getContainingFolder().toAbsolutePath().normalize())) || moveAllGroupsToFolder)) {
 				if (!Files.exists(destination)) {
 					try {
 						Files.createDirectory(destination);

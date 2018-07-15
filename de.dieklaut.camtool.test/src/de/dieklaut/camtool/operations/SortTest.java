@@ -140,12 +140,13 @@ public class SortTest extends FileBasedTest {
 		
 		Sort sort = new Sort(SORTER);
 		sort.setMoveAllGroupsToFolder(false);
+		sort.setMoveCollectionsToFolder(true);
 		sort.setDetectSeries(true);
 		sort.setDetectSeriesTime(2);
 		sort.perform(context);
 
 		Path sortingFolder = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal");
-		assertEquals(7, Files.list(sortingFolder).count());
+		assertEquals(3, Files.list(sortingFolder).count());
 		assertTrue(Files.exists(sortingFolder.resolve(Constants.SORTED_FILE_NAME)));
 		
 		int folders [] = new int [] { 0 };
@@ -163,9 +164,9 @@ public class SortTest extends FileBasedTest {
 			}
 		});
 
-		assertEquals(0, folders[0]);
-		assertEquals(7, files[0]);
-		assertEquals(1, collectionFiles[0]);
+		assertEquals(1, folders[0]);
+		assertEquals(2, files[0]);
+		assertEquals(0, collectionFiles[0]);
 	}
 	
 }

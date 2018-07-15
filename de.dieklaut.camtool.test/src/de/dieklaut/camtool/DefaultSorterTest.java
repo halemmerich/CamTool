@@ -15,6 +15,8 @@ import java.util.List;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Test;
 
+import de.dieklaut.camtool.renderjob.RenderScriptMultiRenderJob;
+
 public class DefaultSorterTest extends FileBasedTest {
 	
 	private static final DefaultSorter SORTER = new DefaultSorter();
@@ -57,7 +59,7 @@ public class DefaultSorterTest extends FileBasedTest {
 		Files.createFile(subdir2.resolve("file4.ARW"));
 		
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
-		assertEquals(3, sorting.size());
+		assertEquals(2, sorting.size());
 	}
 	
 	@Test
@@ -194,5 +196,22 @@ public class DefaultSorterTest extends FileBasedTest {
 		
 		MultiGroup seriesGroup = (MultiGroup) group;
 		assertEquals(4, seriesGroup.getAllFiles().size());
+	}
+	
+	@Test
+	public void testIdentifyGroupsNoFilesButRenderscript() throws IOException {
+		Path subFolder = getTestFolder().resolve("sub");
+		
+		Files.createDirectories(subFolder);
+		
+		Files.createFile(subFolder.resolve("camtool_renderscript"));
+
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
+		assertEquals(1, sorting.size());
+		Group group = sorting.iterator().next();
+		Collection<Path> files = group.getAllFiles();
+		assertEquals(0, files.size());
+		assertThat(group, new IsInstanceOf(MultiGroup.class));
+		assertThat(group.getRenderJob(), new IsInstanceOf(RenderScriptMultiRenderJob.class));
 	}
 }

@@ -1,5 +1,7 @@
 package de.dieklaut.camtool;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -131,6 +133,59 @@ public class SingleGroup extends AbstractGroup {
 
 	@Override
 	public String getName() {
-		return FileUtils.getGroupName(getPrimaryFile());
+		if (hasOwnFolder()) {
+			return getContainingFolder().getFileName().toString();
+		} else {
+			return FileUtils.getGroupName(getPrimaryFile());
+		}
+	}
+	
+
+	@Override
+	public boolean hasOwnFolder() {
+		Path containing = getContainingFolder();
+		try {
+			return Files.list(containing).count() == getAllFiles().size();
+		} catch (IOException e) {
+			throw new IllegalStateException("File listing failed", e);
+		}
+	}
+
+	@Override
+	public Path getContainingFolder() {
+		// This only works, because groups are expected to reside on one file system hierarchy level
+		return getAllFiles().iterator().next().toAbsolutePath().getParent();
+	}
+
+	@Override
+	public void moveToFolder(Path destination) {
+		getAllFiles().stream().forEach(current -> {
+			Path targetDestination = getTargetDestination(destination);
+			if (Files.isSymbolicLink(current)) {
+				try {
+					FileUtils.moveSymlink(current, targetDestination);
+				} catch (IOException e) {
+					throw new IllegalStateException("Moving a symlink failed", e);
+				}
+			} else {
+				try {
+					if (!Files.exists(targetDestination)) {
+						Files.createDirectories(targetDestination);
+					}
+					Files.move(current, targetDestination.resolve(current.getFileName()));
+				} catch (IOException e) {
+					throw new IllegalStateException("Moving a file failed", e);
+				}
+			}
+			FileUtils.cleanUpEmptyParents(current);
+		});
+	}
+
+	private Path getTargetDestination(Path destination) {
+		if (!destination.isAbsolute()) {
+			return getContainingFolder().resolve(destination).toAbsolutePath();
+		} else {
+			return destination;
+		}
 	}
 }

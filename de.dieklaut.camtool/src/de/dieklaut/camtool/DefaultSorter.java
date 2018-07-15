@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,21 +23,63 @@ public class DefaultSorter implements Sorter{
 
 	@Override
 	public Collection<Group> identifyGroups(Path path) throws IOException {
-
-		Collection<Group> groups = new HashSet<>();
-		Collection<Path> camtoolFiles = new HashSet<>();
-
-		Map<String, Set<Path>> groupNamesToPaths = detectGroupNames(path, camtoolFiles);
-
-		Map<String, Group> groupNamesToGroup = new HashMap<>();
-
-		createSingleGroups(groups, groupNamesToPaths, groupNamesToGroup, camtoolFiles);
+		Collection<Group> result = new HashSet<Group>();
 		
-		createCollectionsFromFolders(path, groups, groupNamesToGroup, true);
+		HashMap<String, Set<Path>> nameToPaths = new HashMap<>();
+		HashMap<String, Group> nameToGroup = new HashMap<>();
 		
-		createCollectionsFromFiles(groups, camtoolFiles, groupNamesToGroup);
+		Set<Path> collectionFiles = new HashSet<>();
 
-		return groups;
+		Files.list(path).forEach(current -> {
+			if (Files.isDirectory(current)) {
+				MultiGroup multiGroup;
+				try {
+					Collection<Group> groups = identifyGroups(current);
+					Path renderscript = current.resolve(Constants.FILE_NAME_RENDERSCRIPT);
+					if (groups.size() > 1 || groups.size() == 0) {
+						multiGroup = new MultiGroup(groups);
+						if (Files.exists(renderscript)) {
+							multiGroup.setRenderscriptFile(renderscript);
+						}
+						result.add(multiGroup);
+						nameToGroup.put(multiGroup.getName(), multiGroup);
+					} else if (groups.size() == 1){
+						result.addAll(groups);
+						Group group = groups.iterator().next();
+						nameToGroup.put(group.getName(), group);
+					}
+				} catch (IOException e) {
+					Logger.log("Error during group analysis of " + path, e);
+				}
+			} else {
+				String groupName = FileUtils.getGroupName(current);
+				if (current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSCRIPT) || current.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
+					return;
+				}
+				if (!current.getFileName().toString().contains(Constants.FILE_NAME_COLLECTION_SUFFIX)) {
+					if (!nameToPaths.containsKey(groupName)) {
+						nameToPaths.put(groupName, new HashSet<>());
+					}
+					nameToPaths.get(groupName).add(current);
+				} else {
+					collectionFiles.add(current);
+				}
+			}
+		});
+		
+		//Creation of single groups
+		
+		for (String name : nameToPaths.keySet()) {
+			SingleGroup group = new SingleGroup(nameToPaths.get(name));
+			result.add(group);
+			nameToGroup.put(name, group);
+		}
+		
+		//Creation of collections from files
+		
+		createCollectionsFromFiles(result, collectionFiles, nameToGroup);
+		
+		return result;
 	}
 
 	public static Map<String, Set<Path>> detectGroupNames(Path path, Collection<Path> camtoolFiles)
@@ -53,19 +94,24 @@ public class DefaultSorter implements Sorter{
 					return;
 				}
 
-				if (currentFileName.matches(".*\\" + Constants.FILE_NAME_CAMTOOL_SUFFIX + "[^\\.]*$")) {
+				String currentGroupName = null;
+				if (currentFileName.contains(Constants.FILE_NAME_CAMTOOL)) {
 					Logger.log("Found camtool file: " + currentFileName ,Level.TRACE);
 					camtoolFiles.add(currentPath);
+					currentGroupName = FileUtils.getGroupName(currentPath);
+					
 				} else {
-
-					String currentGroupName = FileUtils.getGroupName(currentFileName);
-
-					if (!groupNamesToPaths.containsKey(currentGroupName)) {
-						Logger.log("Found new group name " + currentGroupName ,Level.TRACE);
-						groupNamesToPaths.put(currentGroupName, new HashSet<>());
-					}
+					currentGroupName = FileUtils.getGroupName(currentPath);
+				}
+				
+				if (!groupNamesToPaths.containsKey(currentGroupName)) {
+					Logger.log("Found new group name " + currentGroupName, Level.TRACE);
+					groupNamesToPaths.put(currentGroupName, new HashSet<>());
+				}
+				if (!currentFileName.contains(Constants.FILE_NAME_CAMTOOL)) {
 					groupNamesToPaths.get(currentGroupName).add(currentPath);
 				}
+				
 			} else {
 				try {
 					groupNamesToPaths.putAll(detectGroupNames(currentPath, camtoolFiles));
@@ -120,10 +166,10 @@ public class DefaultSorter implements Sorter{
 					}
 					
 					collectionGroups.add(groupForCollection);
-					groups.remove(groupForCollection);
 				}
 				MultiGroup newGroup = new MultiGroup(collectionGroups, camtoolFile);
 				groups.add(newGroup);
+				groups.removeAll(collectionGroups);
 				groupNamesToGroup.put(newGroup.getName(), newGroup);
 				
 				for (Group g : collectionGroups) {
@@ -141,25 +187,6 @@ public class DefaultSorter implements Sorter{
 					Logger.log("Ignored camtool file " + camtoolFile + " because it does not belong to a multi group", Level.INFO);
 				}
 			}
-		}
-	}
-
-	private static void createCollectionsFromFolders(Path path, Collection<Group> groups, Map<String, Group> groupNamesToGroup, boolean pathIsRootSortingDir) throws IOException {
-		Iterator<Path> fileIter = Files.list(path).iterator();
-		Collection<Group> groupsForCollection = new HashSet<Group>();
-		while (fileIter.hasNext()) {
-			Path currentFile = fileIter.next();
-			
-			
-			if (Files.isDirectory(currentFile)) {
-				createCollectionsFromFolders(currentFile, groups, groupNamesToGroup, false);
-			} else {
-				groupsForCollection.add(groupNamesToGroup.get(FileUtils.getGroupName(currentFile)));
-			}
-		}
-		if (!pathIsRootSortingDir && groupsForCollection.size() > 0) {
-			groups.removeAll(groupsForCollection);
-			groups.add(new MultiGroup(groupsForCollection));
 		}
 	}
 }
