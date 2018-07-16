@@ -8,7 +8,7 @@
 <listEntry value="4"/>
 </listAttribute>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-<mapEntry key="NEEDS_WORKING_DIR" value="true"/>
+<mapEntry key="NEEDS_WORKING_DIR" value="${workspace_loc:/de.dieklaut.camtool.integrationtest/junit-workingdir}"/>
 <mapEntry key="RESOURCES_PATH" value="${workspace_loc:/de.dieklaut.camtool.test/res}"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=de.dieklaut.camtool.integrationtest"/>

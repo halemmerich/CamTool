@@ -6,7 +6,9 @@ import java.nio.file.Path;
 import java.util.Collections;
 
 import de.dieklaut.camtool.Group;
+import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.MultiGroup;
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**
@@ -38,7 +40,7 @@ public class RenderScriptMultiRenderJob extends RenderJob {
 		Path resultDir = Files.createTempDirectory("camtool_results");
 		
 		if (!JavaScriptExecutor.execRenderScript(renderscriptFile, multiGroup.getName(), resultDir, workDir, Collections.emptyMap())) {
-			throw new IllegalStateException("Render script execution failed");
+			Logger.log("Render script execution failed", Level.ERROR);
 		}
 
 		FileUtils.copyRecursive(resultDir, destination);

@@ -7,12 +7,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
+import de.dieklaut.camtool.scriptapi.Combiner;
 import de.dieklaut.camtool.scriptapi.FilesApi;
 
 public class JavaScriptExecutor {
@@ -35,17 +39,22 @@ public class JavaScriptExecutor {
 			Map<String, Object> globalVariables) {
 		ScriptEngineManager manager = new ScriptEngineManager();
 		ScriptEngine engine = manager.getEngineByName("JavaScript");
+		ScriptContext context = engine.getContext();
+		Bindings binding = new SimpleBindings();
+		context.setBindings(binding, ScriptContext.GLOBAL_SCOPE);
 		try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(script))) {
-			engine.put("_groupName", groupName);
-			engine.put("_resultDir", resultDir.toAbsolutePath().toString());
-			engine.put("_workingDir", workingDir.toAbsolutePath().toString());
-			engine.eval("FilesApi = Java.type(\"" + FilesApi.class.getName() + "\")");
-			engine.eval("Paths = Java.type(\"" + Paths.class.getName() + "\")");
+			
+			binding.put("_groupName", groupName);
+			binding.put("_resultDir", resultDir.toAbsolutePath());
+			binding.put("_workingDir", workingDir.toAbsolutePath());
+			eval(engine, "var FilesApi = Java.type('" + FilesApi.class.getName() + "');", binding);
+			eval(engine, "var Paths = Java.type('" + Paths.class.getName() + "');", binding);
+			eval(engine, "var Combiner = Java.type('" + Combiner.class.getName() + "\');", binding);
 			for (String name : globalVariables.keySet()) {
-				engine.put("_" + name, globalVariables.get(name));
+				binding.put("_" + name, globalVariables.get(name));
 			}
 			
-			engine.eval(reader);
+			engine.eval(reader, binding);
 		} catch (ScriptException | IOException e) {
 			Logger.log("Failed to run script correctly", e, Level.ERROR);
 			return false;
@@ -53,4 +62,8 @@ public class JavaScriptExecutor {
 		return true;
 	}
 
+	private static void eval(ScriptEngine engine, String script, Bindings binding) throws ScriptException {
+		Logger.log("Script eval:\n" + script, Level.TRACE);
+		engine.eval(script, binding);
+	}
 }

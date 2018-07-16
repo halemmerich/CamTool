@@ -1,17 +1,19 @@
 package de.dieklaut.camtool.external;
 
+import java.nio.file.Path;
+
 import org.apache.commons.exec.CommandLine;
 
 public class EnfuseWrapper extends ExternalTool {
 	
-	private String [] inputFilePaths;
-	private String outputFilePath;
+	private Path [] inputFilePaths;
+	private Path outputFilePath;
 	
-	public void setInputFile(String ... inputFilePath) {
+	public void setInputFiles(Path ... inputFilePath) {
 		this.inputFilePaths = inputFilePath;
 	}
 	
-	public void setOutputFile(String outputFilePath) {
+	public void setOutputFile(Path outputFilePath) {
 		this.outputFilePath = outputFilePath;
 	}
 	
@@ -19,10 +21,10 @@ public class EnfuseWrapper extends ExternalTool {
 	public CommandLine getCommandLine() {
 		CommandLine commandline = new CommandLine("enfuse");
 		commandline.addArgument("-o");
-		commandline.addArgument(outputFilePath, false);
+		commandline.addArgument(outputFilePath.toAbsolutePath().normalize().toString(), false);
 
-		for (String current : inputFilePaths) {
-			commandline.addArgument(current);
+		for (Path current : inputFilePaths) {
+			commandline.addArgument(current.toAbsolutePath().normalize().toString(), false);
 		}
 		
 		return commandline;
