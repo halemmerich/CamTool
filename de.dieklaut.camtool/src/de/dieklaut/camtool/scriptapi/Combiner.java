@@ -25,6 +25,9 @@ public class Combiner {
 			
 			Path fused = outputDir.resolve("result.tif");
 			enfuse.setOutputFile(fused);
+			enfuse.setExposureOptimum(0.6);
+			enfuse.setExposureWidth(0.3);
+			enfuse.setSaturationWeight(0.5);
 			enfuse.process();
 			
 			ConvertWrapper convert = new ConvertWrapper();
