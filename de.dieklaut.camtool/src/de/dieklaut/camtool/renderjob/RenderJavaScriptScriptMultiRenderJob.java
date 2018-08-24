@@ -19,12 +19,12 @@ import de.dieklaut.camtool.util.FileUtils;
  * @author mboonk
  *
  */
-public class RenderScriptMultiRenderJob extends RenderJob {
+public class RenderJavaScriptScriptMultiRenderJob extends RenderJob {
 
 	private MultiGroup multiGroup;
 	private Path renderscriptFile;
 
-	public RenderScriptMultiRenderJob(Path renderscriptFile, MultiGroup multiGroup) {
+	public RenderJavaScriptScriptMultiRenderJob(Path renderscriptFile, MultiGroup multiGroup) {
 		this.multiGroup = multiGroup;
 		this.renderscriptFile = renderscriptFile;
 	}

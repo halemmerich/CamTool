@@ -13,7 +13,6 @@ import java.util.Set;
 
 import de.dieklaut.camtool.renderjob.MultiRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
-import de.dieklaut.camtool.renderjob.RenderScriptMultiRenderJob;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**
@@ -28,7 +27,7 @@ public class MultiGroup extends AbstractGroup {
 
 	private Collection<Group> groups;
 	private Path collectionFile;
-	private Path renderscriptFile;
+	private RenderModifier renderModifier;
 
 	public MultiGroup(Collection<Group> groups, Path collectionFile) {
 		this.groups = groups;
@@ -78,8 +77,8 @@ public class MultiGroup extends AbstractGroup {
 
 	@Override
 	public RenderJob getRenderJob() {
-		if (renderscriptFile != null) {
-			return new RenderScriptMultiRenderJob(renderscriptFile, this);	
+		if (renderModifier != null) {
+			return renderModifier.getRenderJob();	
 		} else {
 			return new MultiRenderJob(groups);
 		}
@@ -133,8 +132,8 @@ public class MultiGroup extends AbstractGroup {
 		return collectionFile == null;
 	}
 
-	public void setRenderscriptFile(Path renderscriptFile) {
-		this.renderscriptFile = renderscriptFile;
+	public void setRenderModifier(RenderModifier renderModifier) {
+		this.renderModifier = renderModifier;
 	}
 	
 	@Override
@@ -155,8 +154,8 @@ public class MultiGroup extends AbstractGroup {
 		try {
 			if (Files.list(destination).filter(path -> !Files.isDirectory(path)).count() == 0) {
 				// This means the render and collection file if any need to be converted
-				if (renderscriptFile != null) {
-					Files.move(renderscriptFile, destination.resolve(FileUtils.getGroupName(destination.getFileName())));
+				if (renderModifier != null) {
+					renderModifier.move(destination.resolve(FileUtils.getGroupName(destination.getFileName())));
 				}
 				if (collectionFile != null) {
 					Files.delete(collectionFile);
@@ -168,8 +167,8 @@ public class MultiGroup extends AbstractGroup {
 					collectionFile = destination.resolve(getName() + Constants.FILE_NAME_COLLECTION_SUFFIX);
 					createCollectionFile();
 				}
-				if (renderscriptFile != null) {
-					Files.move(renderscriptFile, destination.resolve(FileUtils.getGroupName(destination.getFileName())));
+				if (renderModifier != null) {
+					renderModifier.move(destination.resolve(FileUtils.getGroupName(destination.getFileName())));
 				}
 			}
 		} catch (IOException e) {
@@ -190,7 +189,7 @@ public class MultiGroup extends AbstractGroup {
 	
 	@Override
 	public Path getContainingFolder() {
-		// This assumes the collection file beeing at the top of the multi group hierarchy
+		// This assumes the collection file being at the top of the multi group hierarchy
 		if (getCollectionFile() != null) {
 			return getCollectionFile().getParent();
 		}
@@ -207,10 +206,9 @@ public class MultiGroup extends AbstractGroup {
 			}
 		}
 
-		if (renderscriptFile != null && (shortest == null || shortest.toAbsolutePath().normalize().startsWith(renderscriptFile.toAbsolutePath().normalize().getParent()))) {
-			shortest = renderscriptFile.normalize().toAbsolutePath().getParent();
+		if (renderModifier != null && (shortest == null || shortest.toAbsolutePath().normalize().startsWith(renderModifier.getContainingFolder().toAbsolutePath().normalize()))) {
+			shortest = renderModifier.getContainingFolder().normalize().toAbsolutePath();
 		}
-		
 		
 		return shortest;
 	}

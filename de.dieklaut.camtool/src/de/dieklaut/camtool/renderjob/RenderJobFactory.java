@@ -18,7 +18,7 @@ public class RenderJobFactory {
 
 	public static RenderJob getRenderJob(Path mainFile, Path[] helperFiles, String name) {
 		if (FileTypeHelper.isRenderscript(mainFile)) {
-			return new RenderScriptRenderJob(name, mainFile, helperFiles);
+			return new RenderJavaScriptRenderJob(name, mainFile, helperFiles);
 		} else if (FileTypeHelper.isRawImageFile(mainFile)) {
 			if (useRawtherapee) {
 				return new RawTherapeeRenderJob(new RawTherapeeWrapper(), mainFile, helperFiles);

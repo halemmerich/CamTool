@@ -9,13 +9,13 @@ import java.util.Map;
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.util.FileUtils;
 
-public class RenderScriptRenderJob extends RenderJob {
+public class RenderJavaScriptRenderJob extends RenderJob {
 
 	private Path mainFile;
 	private String name;
 	private Path[] helperFiles;
 
-	public RenderScriptRenderJob(String name, Path mainFile, Path ... helperFiles) {
+	public RenderJavaScriptRenderJob(String name, Path mainFile, Path ... helperFiles) {
 		this.mainFile = mainFile;
 		this.name = name;
 		this.helperFiles = helperFiles;

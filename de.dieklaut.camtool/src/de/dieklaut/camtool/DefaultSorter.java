@@ -39,7 +39,7 @@ public class DefaultSorter implements Sorter{
 					if (groups.size() > 1 || groups.size() == 0) {
 						multiGroup = new MultiGroup(groups);
 						if (Files.exists(renderscript)) {
-							multiGroup.setRenderscriptFile(renderscript);
+							multiGroup.setRenderModifier(new JavaScriptRenderModifier(multiGroup, renderscript));
 						}
 						result.add(multiGroup);
 						nameToGroup.put(multiGroup.getName(), multiGroup);
@@ -182,7 +182,7 @@ public class DefaultSorter implements Sorter{
 				Group group = groupNamesToGroup.get(FileUtils.getGroupName(camtoolFile));
 				
 				if (group != null && group instanceof MultiGroup) {
-					((MultiGroup) group).setRenderscriptFile(camtoolFile);
+					((MultiGroup) group).setRenderModifier(new JavaScriptRenderModifier((MultiGroup) group, camtoolFile));
 				} else {
 					Logger.log("Ignored camtool file " + camtoolFile + " because it does not belong to a multi group", Level.INFO);
 				}

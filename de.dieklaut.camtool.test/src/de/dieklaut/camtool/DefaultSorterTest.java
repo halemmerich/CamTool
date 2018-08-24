@@ -15,7 +15,7 @@ import java.util.List;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Test;
 
-import de.dieklaut.camtool.renderjob.RenderScriptMultiRenderJob;
+import de.dieklaut.camtool.renderjob.RenderJavaScriptScriptMultiRenderJob;
 
 public class DefaultSorterTest extends FileBasedTest {
 	
@@ -212,6 +212,6 @@ public class DefaultSorterTest extends FileBasedTest {
 		Collection<Path> files = group.getAllFiles();
 		assertEquals(0, files.size());
 		assertThat(group, new IsInstanceOf(MultiGroup.class));
-		assertThat(group.getRenderJob(), new IsInstanceOf(RenderScriptMultiRenderJob.class));
+		assertThat(group.getRenderJob(), new IsInstanceOf(RenderJavaScriptScriptMultiRenderJob.class));
 	}
 }
