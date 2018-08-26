@@ -8,6 +8,7 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
+import de.dieklaut.camtool.util.FileUtils;
 
 /**
  * Finds all unused originals and deletes them. This can not be undone!
@@ -36,8 +37,8 @@ public class DeleteUnused extends AbstractOperation {
 		try {
 			Files.list(unusedFolder).forEach(file -> {
 				try {
-					Files.delete(file.toRealPath());
-					Files.delete(file);
+					FileUtils.deleteRecursive(file.toRealPath(), true);
+					FileUtils.deleteRecursive(file, true);
 				} catch (IOException e) {
 					throw new IllegalStateException("Could not delete file " + file);
 				}
@@ -50,7 +51,7 @@ public class DeleteUnused extends AbstractOperation {
 			Files.list(context.getTimeLine()).forEach(file -> {
 				try {
 					if (!Files.exists(context.getTimeLine().resolve(Files.readSymbolicLink(file)))) {
-						Files.delete(file);
+						FileUtils.deleteRecursive(file, false);
 					}
 				} catch (IOException e) {
 					throw new IllegalStateException("Could not handle probably dangling link " + file);
