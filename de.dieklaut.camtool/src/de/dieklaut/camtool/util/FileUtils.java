@@ -2,6 +2,7 @@ package de.dieklaut.camtool.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -94,30 +95,44 @@ public class FileUtils {
 	 */
 	public static void deleteRecursive(Path path, boolean force) {
 		File candidate = path.toFile();
-
+		
 		if (force && !Files.isSymbolicLink(path)) {
 			candidate.setWritable(true);
 		}
-
-		if (candidate.delete()) {
-			return;
-		}
-
-		try {
-			Files.list(path).forEach(file -> deleteRecursive(file, force));
-		} catch (IOException e) {
-			throw new IllegalStateException("Could get delete " + path + "recursive of files for ", e);
-		}
-
-		// Delete directory if empty
-		try (DirectoryStream<Path> directoryCandidate = Files.newDirectoryStream(path)) {
-			if (!directoryCandidate.iterator().hasNext()) {
-				candidate.delete();
-				return;
+		
+		if (Files.isDirectory(path)) {
+			try {
+				Files.list(path).forEach(file -> deleteRecursive(file, force));
+			} catch (IOException e) {
+				throw new IllegalStateException("Could get delete contents of " + path + " recursive", e);
 			}
-		} catch (IOException e) {
-			throw new IllegalStateException("Could not delete directory " + path, e);
+			
+			// Delete directory if empty
+			try (DirectoryStream<Path> directoryCandidate = Files.newDirectoryStream(path)) {
+				if (!directoryCandidate.iterator().hasNext()) {
+					candidate.delete();
+					return;
+				}
+			} catch (IOException e) {
+				throw new IllegalStateException("Could not delete directory " + path, e);
+			}
+		} else {
+			try {
+				Path parent = path.toAbsolutePath().getParent();
+				boolean writeable = parent.toFile().canWrite();
+				if (force) {
+					parent.toFile().setWritable(true);
+				}
+				Files.delete(path);
+				if (force) {
+					parent.toFile().setWritable(writeable);
+				}
+			} catch (IOException e) {
+				Logger.log("Error during delete of " + path, e);
+			}
 		}
+
+		
 	}
 
 	public static void copyRecursive(Path source, Path destination) throws IOException {
@@ -220,5 +235,16 @@ public class FileUtils {
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Listing parents content failed", e);
 		}
+	}
+
+	public static void setReadOnlyRecursive(Path path) {
+		if (Files.isDirectory(path)) {
+			try {
+				Files.list(path).forEach(current -> {setReadOnlyRecursive(current);});
+			} catch (IOException e) {
+				Logger.log("Error while setting " + path + " to readonly", e);
+			}
+		}
+		path.toFile().setReadOnly();
 	}
 }
