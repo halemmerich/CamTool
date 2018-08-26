@@ -30,8 +30,7 @@ public abstract class ExternalTool {
 	 */
 	public boolean process(Path workingDir) {
 		Executor executor = new DefaultExecutor();
-		try {
-		    ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+		try (ByteArrayOutputStream stdout = new ByteArrayOutputStream()) {
 		    PumpStreamHandler psh = new PumpStreamHandler(stdout);
 		    executor.setStreamHandler(psh);
 		    if (workingDir != null) {

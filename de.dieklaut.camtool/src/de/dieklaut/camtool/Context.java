@@ -2,6 +2,7 @@ package de.dieklaut.camtool;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -75,9 +76,8 @@ public class Context {
 	}
 
 	public void store() {
-		try {
-			properties.store(Files.newOutputStream(root.resolve(Constants.FILE_PROPERTIES)),
-					"Properties for the CamTool");
+		try (OutputStream stream = Files.newOutputStream(root.resolve(Constants.FILE_PROPERTIES))) {
+			properties.store(stream, "Properties for the CamTool");
 		} catch (IOException e) {
 			Logger.log("Storing the properties file failed", e);
 		}

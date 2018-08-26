@@ -27,8 +27,8 @@ import de.dieklaut.camtool.Logger.Level;
 
 public class FileUtils {
 	public static Instant getCreationDate(Path filePath) {
-		try {
-			Metadata metadata = ImageMetadataReader.readMetadata(Files.newInputStream(filePath));
+		try (InputStream stream = Files.newInputStream(filePath)){
+			Metadata metadata = ImageMetadataReader.readMetadata(stream);
 
 			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
 
@@ -52,8 +52,8 @@ public class FileUtils {
 	}
 
 	public static Duration getCreationDuration(Path filePath) {
-		try {
-			Metadata metadata = ImageMetadataReader.readMetadata(Files.newInputStream(filePath));
+		try (InputStream stream = Files.newInputStream(filePath)){
+			Metadata metadata = ImageMetadataReader.readMetadata(stream);
 
 			Collection<ExifSubIFDDirectory> directories = metadata.getDirectoriesOfType(ExifSubIFDDirectory.class);
 

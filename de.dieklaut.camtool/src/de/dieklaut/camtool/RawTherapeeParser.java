@@ -1,6 +1,7 @@
 package de.dieklaut.camtool;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -11,8 +12,8 @@ public class RawTherapeeParser {
 
 	public static boolean isDeleted(Path element) {
 		Properties profile = new Properties();
-		try {
-			profile.load(Files.newInputStream(element));
+		try (InputStream stream = Files.newInputStream(element)){
+			profile.load(stream);
 			return Boolean.parseBoolean(profile.getProperty("InTrash"));
 		} catch (IOException e) {
 			Logger.log("Failure while parsing RawTherapee ini", e, Level.WARNING);
