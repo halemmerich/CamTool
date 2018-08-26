@@ -26,7 +26,7 @@ public class CamToolTest extends FileBasedTest {
 			System.exit(1);
 		}
 
-		Files.list(Paths.get("")).forEach(currentPath -> FileUtils.deleteRecursive(currentPath, false));
+		Files.list(Paths.get("")).forEach(currentPath -> FileUtils.deleteRecursive(currentPath, true));
 	}
 
 	@Test
