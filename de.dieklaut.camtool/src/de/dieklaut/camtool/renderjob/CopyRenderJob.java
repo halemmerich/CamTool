@@ -3,23 +3,27 @@ package de.dieklaut.camtool.renderjob;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
 
 public class CopyRenderJob extends RenderJob {
 
-	private Path source;
+	private Collection<Path> source;
 	
-	public CopyRenderJob(Path source) {
-		this.source = source;
+	public CopyRenderJob(Path ... source) {
+		this.source = Arrays.asList(source);
 	}
 
 	@Override
 	void storeImpl(Path destination) throws IOException {
 		
-		if (Files.isDirectory(destination)) {
-			destination = destination.resolve(source.getFileName());
+		for (Path current : source) {
+			if (Files.isDirectory(destination)) {
+				destination = destination.resolve(current.getFileName());
+			}
+			
+			Files.copy(current.toRealPath(), destination);
 		}
-		
-		Files.copy(source.toRealPath(), destination);
 	}
 
 }

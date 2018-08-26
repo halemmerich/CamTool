@@ -36,10 +36,13 @@ public class DefaultSorter implements Sorter{
 				try {
 					Collection<Group> groups = identifyGroups(current);
 					Path renderscript = current.resolve(Constants.FILE_NAME_RENDERSCRIPT);
+					Path rendersub = current.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
 					if (groups.size() > 1 || groups.size() == 0) {
 						multiGroup = new MultiGroup(groups);
 						if (Files.exists(renderscript)) {
 							multiGroup.setRenderModifier(new JavaScriptRenderModifier(multiGroup, renderscript));
+						} else if (Files.exists(rendersub)) {
+							multiGroup.setRenderModifier(new RenderSubstituteModifier(rendersub));
 						}
 						result.add(multiGroup);
 						nameToGroup.put(multiGroup.getName(), multiGroup);
