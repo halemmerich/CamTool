@@ -4,17 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
-import de.dieklaut.camtool.DefaultSorter;
-import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -35,37 +28,51 @@ public class Init extends AbstractOperation {
 		Path timelineFolder = Files
 				.createDirectory(Paths.get(context.getRoot().toString(), Constants.FOLDER_TIMELINE));
 		
-		Map<String, Set<Path>> groupNames = DefaultSorter.detectGroupNames(context.getOriginals(), new HashSet<>());
-		
-		Collection<Group> groups = new HashSet<>();
-		DefaultSorter.createSingleGroups(groups, groupNames, new HashMap<>(), new HashSet<>());
-		
-		for (Group group : groups) {
-			String timestamp = FileUtils.getTimestamp(group.getTimestamp());
-			for (Path current : group.getAllFiles()) {
-				Path destination = timelineFolder.resolve(timestamp + "_" + current.getFileName());
-				Files.createSymbolicLink(destination, timelineFolder.relativize(current));
-			}
+		createTimeLineEntries(context.getOriginals(), timelineFolder);
+	}
+
+	private void createTimeLineEntries(Path originals, Path timelineFolder) {
+		try {
+			Files.list(originals).forEach(current -> {
+				if (Files.isDirectory(current)) {
+					try {
+						Files.list(current).forEach(sub -> createTimeLineEntries(current, timelineFolder));
+					} catch (IOException e) {
+						Logger.log("Failed to iterate through original folder " + current + " for creating timeline symlinks", e);
+					}
+				} else {
+					Path destination = timelineFolder.resolve(FileUtils.getTimestamp(current) + "_" + current.getFileName());
+					try {
+						Files.createSymbolicLink(destination, timelineFolder.relativize(current));
+					} catch (IOException e) {
+						Logger.log("Failed to create timeline symlink for " + current, e);
+					}
+				}
+			});
+		} catch (IOException e) {
+			Logger.log("Failed to iterate through original folder for creating timeline symlinks", e);
 		}
 	}
 
 	protected void moveToOriginalsFolder(Context context) throws IOException {
+		Path originalFolder = Files
+				.createDirectory(Paths.get(context.getRoot().toString(), Constants.FOLDER_ORIGINAL));
 		try (Stream<Path> files = Files.list(context.getRoot())) {
-			Path originalFolder = Files
-					.createDirectory(Paths.get(context.getRoot().toString(), Constants.FOLDER_ORIGINAL));
 			files.forEach(file -> {
 				try {
 					if (file.getFileName().toString().equals(Constants.FOLDER_ORIGINAL) ||
 							file.getFileName().toString().equals(Constants.AUTOMATION_FILE_NAME)) {
 						return;
 					}
+					
 					Path destination = Paths.get(originalFolder.toString(), file.getFileName().toString());
 					Files.move(file, destination);
-					destination.toFile().setReadOnly();
 				} catch (IOException e) {
 					Logger.log("Copying file " + file + " to " + Constants.FOLDER_ORIGINAL + " did cause an error", e);
 				}
 			});
 		}
+
+		FileUtils.setReadOnlyRecursive(originalFolder);
 	}
 }
