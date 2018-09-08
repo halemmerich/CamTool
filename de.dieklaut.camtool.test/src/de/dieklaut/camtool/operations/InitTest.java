@@ -22,10 +22,11 @@ public class InitTest extends FileBasedTest {
 			"AVCHD.MTS", "neutral.pp3", "neutral_deleted.pp3", "empty.file" };
 	String[] timestamps = new String[] { "1499496795", "1499496795", "1499498030", "1499498030", "1500055432", "1501094414", "1501103070",
 			"1502471392", "1502471659", "1503427257" };
-	Path[] paths = new Path[fileNames.length];
 	
 	@Test
 	public void testFolderCreation() throws IOException {
+		Path[] paths = new Path[fileNames.length];
+		
 		for (int i = 0; i < fileNames.length; i++) {
 			paths[i] = Files.copy(TestFileHelper.getTestResource(fileNames[i]), getTestFolder().resolve(fileNames[i]));
 			timestamps[i] = FileUtils.getTimestamp(paths[i]);
@@ -57,25 +58,24 @@ public class InitTest extends FileBasedTest {
 	}
 	
 	@Test
-	public void testFolderCreationFromMultipleInputFolders() throws IOException {
+	public void testFolderCreationWithNameClash() throws IOException {
 		Files.createDirectory(getTestFolder().resolve("sub1"));
 		Files.createDirectory(getTestFolder().resolve("sub2"));
-		paths[0] = Files.copy(TestFileHelper.getTestResource(fileNames[0]), getTestFolder().resolve("sub1").resolve(fileNames[0]));
-		paths[2] = Files.copy(TestFileHelper.getTestResource(fileNames[2]), getTestFolder().resolve("sub2").resolve(fileNames[0]));
-		timestamps[0] = FileUtils.getTimestamp(paths[0]);
-		timestamps[2] = FileUtils.getTimestamp(paths[2]);
+		Path sub1File = Files.copy(TestFileHelper.getTestResource(fileNames[0]), getTestFolder().resolve("sub1").resolve(fileNames[0]));
+		Files.copy(TestFileHelper.getTestResource(fileNames[0]), getTestFolder().resolve("sub2").resolve(fileNames[0]));
+		timestamps[0] = FileUtils.getTimestamp(sub1File);
 		
 		Init init = new Init();
 		Context context = Context.create(getTestFolder());
 		init.perform(context);
 		
 		// checks that the timeline was created correctly
-		String expectedFilename = timestamps[0] + "_" + fileNames[0];
-		assertTrue("File " + expectedFilename + " does exist", Files.exists(context.getTimeLine().resolve(expectedFilename)));
-		assertEquals(context.getOriginals().resolve("sub1").resolve(fileNames[0]).toRealPath(), context.getTimeLine().resolve(timestamps[0] + "_" + fileNames[0]).toRealPath());
-		expectedFilename = timestamps[2] + "_" + fileNames[0];
-		assertTrue("File " + expectedFilename + " does exist", Files.exists(context.getTimeLine().resolve(expectedFilename)));
-		assertEquals(context.getOriginals().resolve("sub2").resolve(fileNames[0]).toRealPath(), context.getTimeLine().resolve(timestamps[2] + "_" + fileNames[0]).toRealPath());
+		String expectedFilename = timestamps[0] + "_sub1-" + fileNames[0];
+		assertTrue("File " + expectedFilename + " does not exist", Files.exists(context.getTimeLine().resolve(expectedFilename)));
+		assertEquals(context.getOriginals().resolve("sub1").resolve(fileNames[0]).toRealPath(), context.getTimeLine().resolve(expectedFilename).toRealPath());
+		expectedFilename = timestamps[0] + "_sub2-" + fileNames[0];
+		assertTrue("File " + expectedFilename + " does not exist", Files.exists(context.getTimeLine().resolve(expectedFilename)));
+		assertEquals(context.getOriginals().resolve("sub2").resolve(fileNames[0]).toRealPath(), context.getTimeLine().resolve(expectedFilename).toRealPath());
 		
 	}
 }

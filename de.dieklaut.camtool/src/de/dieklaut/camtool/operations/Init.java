@@ -28,20 +28,29 @@ public class Init extends AbstractOperation {
 		Path timelineFolder = Files
 				.createDirectory(Paths.get(context.getRoot().toString(), Constants.FOLDER_TIMELINE));
 		
-		createTimeLineEntries(context.getOriginals(), timelineFolder);
+		createTimeLineEntries(context.getOriginals(), timelineFolder, context);
 	}
 
-	private void createTimeLineEntries(Path originals, Path timelineFolder) {
+	private void createTimeLineEntries(Path folder, Path timelineFolder, Context context) {
 		try {
-			Files.list(originals).forEach(current -> {
+			Files.list(folder).forEach(current -> {
 				if (Files.isDirectory(current)) {
 					try {
-						Files.list(current).forEach(sub -> createTimeLineEntries(current, timelineFolder));
+						Files.list(current).forEach(sub -> createTimeLineEntries(current, timelineFolder, context));
 					} catch (IOException e) {
 						Logger.log("Failed to iterate through original folder " + current + " for creating timeline symlinks", e);
 					}
 				} else {
-					Path destination = timelineFolder.resolve(FileUtils.getTimestamp(current) + "_" + current.getFileName());
+					String linkName = FileUtils.getTimestamp(current) + "_";
+					
+					if (!folder.equals(context.getOriginals())) {
+						linkName += FileUtils.getSimplifiedStringRep(context.getOriginals().relativize(current.getParent())) + "-";
+					}
+					
+					linkName += current.getFileName();
+					
+					Path destination = timelineFolder.resolve(linkName);
+					
 					try {
 						Files.createSymbolicLink(destination, timelineFolder.relativize(current));
 					} catch (IOException e) {
