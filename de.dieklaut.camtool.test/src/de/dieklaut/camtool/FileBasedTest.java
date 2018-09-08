@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import org.junit.After;
 import org.junit.Before;
 
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class FileBasedTest {
@@ -16,6 +17,7 @@ public class FileBasedTest {
 	@Before
 	public void setUpTestFolder() throws IOException {
 		testFolder = Files.createTempDirectory("test");
+		Logger.log("Created test folder " + testFolder, Level.DEBUG);
 	}
 
 	@After
