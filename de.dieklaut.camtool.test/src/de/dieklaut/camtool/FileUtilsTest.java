@@ -94,4 +94,9 @@ public class FileUtilsTest extends FileBasedTest {
 	public void testRemoveSuffixNoDot() {
 		FileUtils.removeSuffix("test");
 	}
+	
+	@Test
+	public void testGetSimplifiedStringRep() {
+		assertEquals("thisisrelative", FileUtils.getSimplifiedStringRep(Paths.get("this/is/relative")));
+	}
 }

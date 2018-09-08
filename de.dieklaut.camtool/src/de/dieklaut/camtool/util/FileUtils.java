@@ -247,4 +247,8 @@ public class FileUtils {
 		}
 		path.toFile().setReadOnly();
 	}
+
+	public static String getSimplifiedStringRep(Path path) {
+		return path.toString().replaceAll(path.getFileSystem().getSeparator(), "");
+	}
 }
