@@ -1,5 +1,5 @@
 package de.dieklaut.camtool;
-
+ 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -23,11 +23,11 @@ public class DefaultSorterTest extends FileBasedTest {
 
 	@Test
 	public void testIdentifyGroupsComplexStructure() throws IOException {
+		Files.createFile(getTestFolder().resolve(Constants.SORTED_FILE_NAME));
+		
 		Files.createFile(getTestFolder().resolve("file1.ARW"));
 		Files.createFile(getTestFolder().resolve("file1.JPG"));
 
-		Path collection = Files.createFile(getTestFolder().resolve("file.camtool_collection"));
-		Files.write(collection, "file2.ARW\nfile3.ARW\nfile4.ARW\n".getBytes());
 		Files.createFile(getTestFolder().resolve("file2.ARW"));
 		Files.createFile(getTestFolder().resolve("file3.ARW"));
 		Files.createFile(getTestFolder().resolve("file4.ARW"));
@@ -39,7 +39,40 @@ public class DefaultSorterTest extends FileBasedTest {
 		Files.createFile(subdir.resolve("file6.JPG"));
 		
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
+		assertEquals(5, sorting.size());
+	}
+
+	@Test
+	public void testIdentifySingleGroups() throws IOException {
+		Files.createFile(getTestFolder().resolve("file1.ARW"));
+		Files.createFile(getTestFolder().resolve("file1.JPG"));
+
+		Files.createFile(getTestFolder().resolve("file2.ARW"));
+		Files.createFile(getTestFolder().resolve("file3.ARW"));
+		
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(3, sorting.size());
+		for (Group current : sorting) {
+			assertThat(current, new IsInstanceOf(SingleGroup.class));
+		}
+	}
+
+	@Test
+	public void testIdentifyMultiGroups() throws IOException {
+		Path subdir = Files.createDirectory(getTestFolder().resolve("subdir"));
+		Files.createFile(subdir.resolve("file1.ARW"));
+		Files.createFile(subdir.resolve("file1.JPG"));
+
+
+		Path subdir2 = Files.createDirectory(getTestFolder().resolve("subdir2"));
+		Files.createFile(subdir2.resolve("file2.ARW"));
+		Files.createFile(subdir2.resolve("file3.ARW"));
+		
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
+		assertEquals(2, sorting.size());
+		for (Group current : sorting) {
+			assertThat(current, new IsInstanceOf(MultiGroup.class));
+		}
 	}
 
 	@Test
@@ -60,43 +93,6 @@ public class DefaultSorterTest extends FileBasedTest {
 		
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(2, sorting.size());
-	}
-	
-	@Test
-	public void testIdentifyGroupsCombineSingleToMulti() throws IOException {
-		Files.createFile(getTestFolder().resolve("file1.ARW"));
-		Files.createFile(getTestFolder().resolve("file1.JPG"));
-		Files.createFile(getTestFolder().resolve("file2.ARW"));
-		Files.createFile(getTestFolder().resolve("file2.JPG"));
-		Files.createFile(getTestFolder().resolve("file3.ARW"));
-		Files.createFile(getTestFolder().resolve("file3.JPG"));
-		Files.createFile(getTestFolder().resolve("file4.ARW"));
-		Files.createFile(getTestFolder().resolve("file4.JPG"));
-		
-		Path collection = Files.createFile(getTestFolder().resolve("file.camtool_collection"));
-		Files.write(collection, "file2\nfile3\nfile4\n".getBytes());
-		
-		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
-
-		assertEquals(2, sorting.size());
-
-		boolean foundMulti = false;
-		boolean foundSingle = false;
-		
-		for (Group g : sorting) {
-			if (g instanceof MultiGroup) {
-				foundMulti = true;
-				assertEquals(6, g.getAllFiles().size());
-				assertEquals("file", g.getName());
-				assertEquals(collection, ((MultiGroup) g).getCollectionFile());
-			}
-			if (g instanceof SingleGroup) {
-				foundSingle = true;
-			}
-		}
-		
-		assertTrue(foundMulti);
-		assertTrue(foundSingle);
 	}
 	
 	@Test
@@ -153,26 +149,6 @@ public class DefaultSorterTest extends FileBasedTest {
 		assertTrue(files.contains(file1jpg));
 		assertTrue(files.contains(file1arwpp3));
 		assertTrue(files.contains(file1jpgpp3));
-	}
-
-	@Test
-	public void testIdentifyGroupsSingleGroupCollection() throws IOException {
-		Path collection = Files.createFile(getTestFolder().resolve("file.camtool_collection"));
-		Files.write(collection, "file2.ARW\nfile3.ARW\nfile4.ARW\n".getBytes());
-		Path file2arw = Files.createFile(getTestFolder().resolve("file2.ARW"));
-		Path file3arw = Files.createFile(getTestFolder().resolve("file3.ARW"));
-		Path file4arw = Files.createFile(getTestFolder().resolve("file4.ARW"));
-
-		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
-		assertEquals(1, sorting.size());
-		Group group = sorting.iterator().next();
-		Collection<Path> files = group.getAllFiles();
-
-		assertEquals(3, files.size());
-		assertTrue(files.contains(file2arw));
-		assertTrue(files.contains(file3arw));
-		assertTrue(files.contains(file4arw));
-		assertEquals(collection, ((MultiGroup)group).getCollectionFile());
 	}
 	
 	@Test

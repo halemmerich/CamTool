@@ -46,36 +46,6 @@ public class SortTest extends FileBasedTest {
 		assertEquals(5, Files.list(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal")).count());
 		
 	}
-	@Test
-	public void testMoveAllGroups() throws IOException {
-		// The time changes are needed to prevent groups getting the same name
-		long time = Calendar.getInstance().getTimeInMillis();
-		Files.createFile(getTestFolder().resolve("file1.ARW"));
-		Files.setLastModifiedTime(getTestFolder().resolve("file1.ARW"), FileTime.fromMillis(time - 5000));
-		Files.createFile(getTestFolder().resolve("file1.JPG"));
-		Files.setLastModifiedTime(getTestFolder().resolve("file1.JPG"), FileTime.fromMillis(time - 5000));
-		Files.createFile(getTestFolder().resolve("file2.ARW"));
-		Files.setLastModifiedTime(getTestFolder().resolve("file2.ARW"), FileTime.fromMillis(time - 2500));
-		Files.createFile(getTestFolder().resolve("file3.JPG"));
-		
-		Context context = Context.create(getTestFolder());
-		new Init().perform(context);
-		
-		Sort sort = new Sort(SORTER);
-		sort.setMoveAllGroupsToFolder(true);
-		sort.perform(context);
-
-		Path sortingFolder = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal");
-		assertEquals(4, Files.list(sortingFolder).count());
-		assertTrue(Files.exists(sortingFolder.resolve(Constants.SORTED_FILE_NAME)));
-		
-		Files.list(sortingFolder).forEach(file -> {
-			if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
-				assertTrue(Files.isDirectory(file));
-			}
-		});
-		
-	}
 	
 	@Test
 	public void moveSeries() throws IOException {
@@ -100,7 +70,6 @@ public class SortTest extends FileBasedTest {
 		new Init().perform(context);
 		
 		Sort sort = new Sort(SORTER);
-		sort.setMoveAllGroupsToFolder(true);
 		sort.setDetectSeries(true);
 		sort.setDetectSeriesTime(2);
 		sort.perform(context);
@@ -109,11 +78,11 @@ public class SortTest extends FileBasedTest {
 		assertEquals(3, Files.list(sortingFolder).count());
 		assertTrue(Files.exists(sortingFolder.resolve(Constants.SORTED_FILE_NAME)));
 		
-		Files.list(sortingFolder).forEach(file -> {
-			if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
-				assertTrue(Files.isDirectory(file));
-			}
-		});
+
+		assertContents(sortingFolder, 1, 2);
+		
+		Path multi = (Path) Files.list(sortingFolder).filter(current -> Files.isDirectory(current)).toArray()[0];
+		assertContents(multi, 0, 4);
 	}
 	
 	@Test
@@ -139,8 +108,6 @@ public class SortTest extends FileBasedTest {
 		new Init().perform(context);
 		
 		Sort sort = new Sort(SORTER);
-		sort.setMoveAllGroupsToFolder(false);
-		sort.setMoveCollectionsToFolder(true);
 		sort.setDetectSeries(true);
 		sort.setDetectSeriesTime(2);
 		sort.perform(context);
@@ -149,24 +116,23 @@ public class SortTest extends FileBasedTest {
 		assertEquals(3, Files.list(sortingFolder).count());
 		assertTrue(Files.exists(sortingFolder.resolve(Constants.SORTED_FILE_NAME)));
 		
+		assertContents(sortingFolder, 1, 2);
+	}
+
+	private void assertContents(Path sortingFolder, int numberOfFolders, int numberOfFiles) throws IOException {
 		int folders [] = new int [] { 0 };
 		int files [] = new int [] { 0 };
-		int collectionFiles [] = new int [] { 0 };
 		
 		Files.list(sortingFolder).forEach(file -> {
 			if (Files.isDirectory(file)) {
 				folders[0]++;
 			} else {
-				if (file.getFileName().toString().endsWith(Constants.FILE_NAME_COLLECTION_SUFFIX)) {
-					collectionFiles[0]++;
-				}
 				files[0]++;
 			}
 		});
 
-		assertEquals(1, folders[0]);
-		assertEquals(2, files[0]);
-		assertEquals(0, collectionFiles[0]);
+		assertEquals(numberOfFolders, folders[0]);
+		assertEquals(numberOfFiles, files[0]);
 	}
 	
 }

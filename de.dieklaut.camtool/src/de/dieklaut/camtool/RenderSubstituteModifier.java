@@ -44,8 +44,7 @@ public class RenderSubstituteModifier implements RenderModifier {
 
 	@Override
 	public Path getContainingFolder() {
-		// TODO Auto-generated method stub
-		return null;
+		return rendersub.getParent();
 	}
 
 }

@@ -63,6 +63,7 @@ public class SortingHelper {
 				groupsToBeRemoved.add(toBeMoved);
 				seriesGroupContents.add(toBeMoved);
 			}
+			
 			foundSeriesGroups.add(new MultiGroup(seriesGroupContents));
 		}
 		

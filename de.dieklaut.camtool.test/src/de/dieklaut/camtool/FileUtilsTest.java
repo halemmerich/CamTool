@@ -53,12 +53,14 @@ public class FileUtilsTest extends FileBasedTest {
 	
 	@Test
 	public void testGetNamePortion() {
+		assertEquals("asdf", FileUtils.getNamePortion(Paths.get("asdf").resolve("12345_asdf.arw.pp3")));
 		assertEquals("asdf", FileUtils.getNamePortion(Paths.get("asdf").resolve("12345_asdf.arw")));
 		assertEquals("asdf", FileUtils.getNamePortion(Paths.get("asdf").resolve("12345_asdf")));
 	}
 	
 	@Test
 	public void testGetTimestampPortion() {
+		assertEquals(12345, FileUtils.getTimestampPortion(Paths.get("asdf").resolve("12345_asdf.arw.pp3")));
 		assertEquals(12345, FileUtils.getTimestampPortion(Paths.get("asdf").resolve("12345_asdf.arw")));
 		assertEquals(12345, FileUtils.getTimestampPortion(Paths.get("asdf").resolve("12345_asdf")));
 	}

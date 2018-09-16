@@ -210,7 +210,7 @@ public class FileUtils {
 
 	public static String getNamePortion(String filename) {
 		if (filename.contains(".")) {
-			filename = filename.substring(0, filename.lastIndexOf("."));
+			filename = filename.substring(0, filename.indexOf("."));
 		}
 		if (filename.contains("_")) {
 			return filename.substring(filename.indexOf('_') + 1);

@@ -19,7 +19,6 @@ public interface Constants {
 	public static final String DEFAULT_EXPORT_NAME = "export";
 	public static final String FILE_NAME_CAMTOOL = "camtool_";
 	public static final String FILE_NAME_CAMTOOL_SUFFIX = "." + FILE_NAME_CAMTOOL;
-	public static final String FILE_NAME_COLLECTION_SUFFIX = FILE_NAME_CAMTOOL_SUFFIX + "collection";
 	public static final String RENDERSCRIPT_SUFFIX = "renderscript";
 	public static final String FILE_NAME_RENDERSCRIPT = FILE_NAME_CAMTOOL + RENDERSCRIPT_SUFFIX;
 	public static final String FILE_NAME_RENDERSCRIPT_SUFFIX = FILE_NAME_CAMTOOL_SUFFIX + RENDERSCRIPT_SUFFIX;

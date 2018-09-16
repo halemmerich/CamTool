@@ -3,7 +3,6 @@ package de.dieklaut.camtool.operations;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.stream.Stream;
 
@@ -29,8 +28,6 @@ import de.dieklaut.camtool.util.FileUtils;
 public class Sort extends AbstractOperation {
 
 	private String name = Constants.DEFAULT_SORTING_NAME;
-	private boolean moveCollectionsToFolder = false;
-	private boolean moveAllGroupsToFolder = false;
 	private boolean detectSeries = false;
 	private Sorter sorter;
 	private int detectSeriesTimeDiff = 2;
@@ -42,8 +39,10 @@ public class Sort extends AbstractOperation {
 	@Override
 	public void perform(Context context) {
 		Path sortingFolder = context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(name);
+		
 		try {
 			Files.createDirectories(sortingFolder);
+			Files.createFile(sortingFolder.resolve(Constants.SORTED_FILE_NAME));
 		} catch (IOException e) {
 			Logger.log("Creation of folder for sorting failed", e);
 			return;
@@ -64,46 +63,17 @@ public class Sort extends AbstractOperation {
 				SortingHelper.combineSeries(sorting, detectSeriesTimeDiff);
 			}
 
-			if (moveCollectionsToFolder || moveAllGroupsToFolder) {
-				moveCollections(sorting, sortingFolder);
-			} else {
-				createCollectionFiles(sorting);
-			}
-
-			Files.createFile(sortingFolder.resolve(Constants.SORTED_FILE_NAME));
+			moveCollections(sorting, sortingFolder);
 		} catch (IOException e) {
 			throw new IllegalStateException("A file operation failed", e);
 		}
 	}
-
-	private void createCollectionFiles(Collection<Group> sorting) {
-		for (Group g : sorting) {
-			if (g instanceof MultiGroup) {
-				try {
-					Path collectionFile = g.getContainingFolder()
-							.resolve(g.getName() + Constants.FILE_NAME_COLLECTION_SUFFIX);
-
-					if (Files.exists(collectionFile)) {
-						continue;
-					}
-					Files.createFile(collectionFile);
-
-					for (Path p : g.getAllFiles()) {
-						Files.write(collectionFile, (p.getFileName().toString() + "\n").getBytes(),
-								StandardOpenOption.APPEND);
-					}
-				} catch (IOException e) {
-					Logger.log("Error during creation of a collection file for " + g.getName(), e);
-				}
-			}
-		}
-	}
-
+	
 	private void moveCollections(Collection<Group> groups, Path sortingFolder) {
 		sortingFolder = sortingFolder.toAbsolutePath().normalize();
 		for (Group group : groups) {
 			Path destination = group.getContainingFolder().resolve(buildGroupName(group)).toAbsolutePath().normalize();
-			if (((group instanceof MultiGroup && sortingFolder.equals(group.getContainingFolder().toAbsolutePath().normalize())) || moveAllGroupsToFolder)) {
+			if ((group instanceof MultiGroup && sortingFolder.equals(group.getContainingFolder().toAbsolutePath().normalize()))) {
 				if (!Files.exists(destination)) {
 					try {
 						Files.createDirectory(destination);
@@ -111,7 +81,7 @@ public class Sort extends AbstractOperation {
 						throw new IllegalStateException("Moving group has failed", e);
 					}
 				}
-				group.moveToFolder(sortingFolder.resolve(destination));
+				group.moveToFolder(destination);
 			}
 		}
 	}
@@ -131,16 +101,8 @@ public class Sort extends AbstractOperation {
 		this.name = name;
 	}
 
-	public void setMoveCollectionsToFolder(boolean moveCollectionsToFolder) {
-		this.moveCollectionsToFolder = moveCollectionsToFolder;
-	}
-
 	public void setDetectSeries(boolean detectSeries) {
 		this.detectSeries = detectSeries;
-	}
-
-	public void setMoveAllGroupsToFolder(boolean moveAllGroupsToFolder) {
-		this.moveAllGroupsToFolder = moveAllGroupsToFolder;
 	}
 
 	public void setDetectSeriesTime(int timeDiff) {
