@@ -1,6 +1,6 @@
 package de.dieklaut.camtool;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -53,24 +53,24 @@ public class CamToolTest extends FileBasedTest {
 
 	@Test
 	public void testRenderWithRenderScript() throws IOException {
-		for (int i = 6; i < 9; i++) {
-			String file = "series_0" + i + ".JPG";
-			String path = "series/" + file;
+		String firstFileTime = null;
+		for (int i = 1; i <= 3; i++) {
+			String file = "stack_0" + i + ".jpg";
+			String path = "stack/" + file;
 			Files.copy(TestFileHelper.getTestResource(path), Paths.get(file));
+			if (firstFileTime == null) {
+				firstFileTime = FileUtils.getTimestamp(Paths.get(file).toRealPath());
+			}
 		}
 		
 		CamTool.main(new String[] { "init" });
-		CamTool.main(new String[] { "sort", "-c", "-s" });
+		CamTool.main(new String[] { "sort", "-s" });
 		
-		Files.copy(TestFileHelper.getTestResource("scripts/dri.js"), Paths.get(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("20170915165451000_multi").resolve(Constants.FILE_NAME_RENDERSCRIPT));
+		Files.copy(TestFileHelper.getTestResource("scripts/dri.js"), Paths.get(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(firstFileTime + "_multi").resolve(Constants.FILE_NAME_RENDERSCRIPT));
 		
 		CamTool.main(new String[] { "render" });
 
-		assertTrue(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("20170915165451000_multi.jpg")));
-		for (int i = 6; i < 9; i++) {
-			String file = "series_0" + i + ".JPG";
-			assertFalse(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve(file)));
-		}
+		assertEquals(1, Files.list(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL)).count());
 	}
 
 	@Test
@@ -84,19 +84,13 @@ public class CamToolTest extends FileBasedTest {
 		CamTool.main(new String[] { "init" });
 		CamTool.main(new String[] { "sort", "-s" });
 		
-		Path path = Paths.get(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
-		Files.write(path, "series_01.JPG\nseries_03.JPG".getBytes());
+		Path path = Paths.get(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("20170915165451000_multi").resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
+		Files.write(path, "20170915165451000_series_06.JPG\n20170915165451000_series_08.JPG".getBytes());
 		
 		CamTool.main(new String[] { "render" });
 
-		assertTrue(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("series_01.JPG")));
-		assertFalse(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("series_02.JPG")));
-		assertTrue(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("series_03.JPG")));
-		assertFalse(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("series_04.JPG")));
-		assertFalse(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("series_05.JPG")));
-		assertFalse(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("series_06.JPG")));
-		assertFalse(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("series_07.JPG")));
-		assertFalse(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("series_08.JPG")));
-		assertFalse(Files.exists(Paths.get(Constants.FOLDER_ORIGINAL).resolve(Constants.DEFAULT_SORTING_NAME).resolve("series_09.JPG")));
+		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve("20170915165451000_series_06.JPG")));
+		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve("20170915165451000_series_08.JPG")));
+		assertEquals(2, Files.list(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL)).count());
 	}
 }
