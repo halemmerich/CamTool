@@ -16,13 +16,13 @@ public class CopyRenderJob extends RenderJob {
 
 	@Override
 	void storeImpl(Path destination) throws IOException {
-		
 		for (Path current : source) {
+			Path destinationFile = destination;
 			if (Files.isDirectory(destination)) {
-				destination = destination.resolve(current.getFileName());
+				destinationFile = destination.resolve(current.getFileName());
 			}
 			
-			Files.copy(current.toRealPath(), destination);
+			Files.copy(current.toRealPath(), destinationFile);
 		}
 	}
 
