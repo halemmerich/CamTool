@@ -1,6 +1,7 @@
 package de.dieklaut.camtool.external;
 
 import java.nio.file.Path;
+import java.util.Locale;
 
 import org.apache.commons.exec.CommandLine;
 
@@ -49,13 +50,13 @@ public class EnfuseWrapper extends ExternalTool {
 			commandline.addArgument("--exposure-weight=" + String.format("%.2f", exposureWeight));
 		}
 		if (saturationWeight != -1) {
-			commandline.addArgument("--saturation-weight=" + String.format("%.2f", saturationWeight));
+			commandline.addArgument("--saturation-weight=" + String.format(Locale.US, "%.2f", saturationWeight));
 		}
 		if (exposureOptimum != -1) {
-			commandline.addArgument("--exposure-optimum=" + String.format("%.2f", exposureOptimum));
+			commandline.addArgument("--exposure-optimum=" + String.format(Locale.US, "%.2f", exposureOptimum));
 		}
 		if (exposureWidth != -1) {
-			commandline.addArgument("--exposure-width=" + String.format("%.2f", exposureWidth));
+			commandline.addArgument("--exposure-width=" + String.format(Locale.US, "%.2f", exposureWidth));
 		}
 		
 		for (Path current : inputFilePaths) {
