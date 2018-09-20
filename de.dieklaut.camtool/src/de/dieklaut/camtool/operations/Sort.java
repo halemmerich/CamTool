@@ -10,6 +10,7 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.SortingHelper;
@@ -78,7 +79,7 @@ public class Sort extends AbstractOperation {
 					try {
 						Files.createDirectory(destination);
 					} catch (IOException e) {
-						throw new IllegalStateException("Moving group has failed", e);
+						Logger.log("Error during move of collections", Level.WARNING);
 					}
 				}
 				group.moveToFolder(destination);
