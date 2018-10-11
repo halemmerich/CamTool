@@ -133,11 +133,7 @@ public class SingleGroup extends AbstractGroup {
 
 	@Override
 	public String getName() {
-		if (hasOwnFolder()) {
-			return getContainingFolder().getFileName().toString();
-		} else {
-			return FileUtils.getGroupName(getPrimaryFile());
-		}
+		return FileUtils.getGroupName(getPrimaryFile());
 	}
 	
 

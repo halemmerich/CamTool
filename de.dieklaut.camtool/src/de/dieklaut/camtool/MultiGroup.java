@@ -97,38 +97,12 @@ public class MultiGroup extends AbstractGroup {
 
 	@Override
 	public String getName() {
-		Path containingFolder = getContainingFolder();
-		if (Files.exists(containingFolder.resolve(Constants.SORTED_FILE_NAME))) {
-			Optional<Group> first = groups.stream().min(new GroupTimestampComparator());
-
-			if (!first.isPresent()) {
-				throw new IllegalStateException("No first element found while sorting groups, this should not happen");
-			}
-		
-			return first.get().getName();
-		} else {
-			return containingFolder.getFileName().toString();
-		}
+		return getContainingFolder().getFileName().toString();
 	}
 	
 	@Override
 	public boolean hasOwnFolder() {
-		Collection<Path> myFiles = new HashSet<>();
-		
-		for (Path current : getAllFiles()) {
-			try {
-				myFiles.add(current.toRealPath());
-				long numberOfForeignFiles = Files.list(getContainingFolder()).filter(path -> { try {
-					return myFiles.contains(path.toRealPath());
-				} catch (IOException e) {
-					throw new IllegalStateException("Error during canonicalization of path " + path, e);
-				} }).count();
-				return numberOfForeignFiles > 0;
-			} catch (IOException e) {
-				throw new IllegalStateException("Error during detection of own folder for " + getName(), e);
-			}
-		}
-		return false;
+		return true;
 	}
 
 	public void setRenderModifier(RenderModifier renderModifier) {
@@ -178,7 +152,7 @@ public class MultiGroup extends AbstractGroup {
 		Path shortest = null;
 		for (Group g : getGroups()) {
 			Path current = g.getContainingFolder();
-			if (g.hasOwnFolder()) {
+			if (g.hasOwnFolder() && g instanceof MultiGroup) {
 				current = current.getParent();
 			}
 
@@ -192,5 +166,9 @@ public class MultiGroup extends AbstractGroup {
 		}
 		
 		return shortest;
+	}
+	
+	public boolean hasModifiers() {
+		return renderModifier != null;
 	}
 }
