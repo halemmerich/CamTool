@@ -41,13 +41,18 @@ public class Init extends AbstractOperation {
 						Logger.log("Failed to iterate through original folder " + current + " for creating timeline symlinks", e);
 					}
 				} else {
-					String linkName = FileUtils.getTimestamp(current) + "_";
+					boolean simplify = !folder.equals(context.getOriginals());
 					
-					if (!folder.equals(context.getOriginals())) {
-						linkName += FileUtils.getSimplifiedStringRep(context.getOriginals().relativize(current.getParent())) + "-";
-					}
+					String timestamp = FileUtils.getTimestamp(current);
+					Path relativePath = context.getOriginals().relativize(current.getParent());
+					String name = current.getFileName().toString();
 					
-					linkName += current.getFileName();
+					String linkName = null;
+					if (simplify) {
+						linkName = FileUtils.buildFileName(timestamp, relativePath, name);
+					} else {
+						linkName = FileUtils.buildFileName(timestamp, name);
+					}					
 					
 					Path destination = timelineFolder.resolve(linkName);
 					

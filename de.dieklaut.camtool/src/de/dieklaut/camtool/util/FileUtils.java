@@ -152,6 +152,10 @@ public class FileUtils {
 			Files.copy(source, destination);
 		}
 	}
+	
+	public static String getTimestamp(long epoch) {
+		return getTimestamp(Instant.ofEpochMilli(epoch));
+	}
 
 	public static String getTimestamp(Instant instant) {
 		DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
@@ -250,5 +254,17 @@ public class FileUtils {
 
 	public static String getSimplifiedStringRep(Path path) {
 		return path.toString().replaceAll(path.getFileSystem().getSeparator(), "");
+	}
+
+	public static String buildFileName(String timestamp, Path relativePath, String name) {
+		return timestamp + "_" + FileUtils.getSimplifiedStringRep(relativePath) + "-" + name;
+	}
+
+	public static String buildFileName(long epoch, String name) {
+		return buildFileName(getTimestamp(epoch), name);
+	}
+
+	public static String buildFileName(String timestamp, String name) {
+		return timestamp + "_" + name;
 	}
 }
