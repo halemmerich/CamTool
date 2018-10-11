@@ -31,7 +31,7 @@ public class MoveWrapper extends AbstractWrapper {
 	public Options getOptions() {
 		Options options = super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
 		options.addOption(Option.builder(OPT_GROUP_SHORT).longOpt(OPT_GROUP).desc("Sets the group to be moved").hasArg().build());
-		options.addOption(Option.builder(OPT_TARGET_SHORT).longOpt(OPT_TARGET).desc("Sets the target folder").hasArg().build());
+		options.addOption(Option.builder(OPT_TARGET_SHORT).longOpt(OPT_TARGET).desc("Sets the target folder, relative to the groups containing folder").hasArg().build());
 		return options;
 	}
 
