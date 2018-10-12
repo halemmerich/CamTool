@@ -28,18 +28,24 @@ public class CleanTrashTest extends FileBasedTest {
 		Path file1 = TestFileHelper.addFileToSorting(context, Paths.get("file1.arw"), TestFileHelper.getTestResource("A7II.ARW"));
 		Path file2 = TestFileHelper.addFileToSorting(context, Paths.get("file2.arw"), TestFileHelper.getTestResource("NEX5R.ARW"));
 		Path file3 = TestFileHelper.addFileToSorting(context, Paths.get("group/file3.arw"), TestFileHelper.getTestResource("NEX5R.ARW"));
+		Path file4 = TestFileHelper.addFileToSorting(context, Paths.get("multi/file4.arw"), TestFileHelper.getTestResource("A7II.ARW"));
+		Path file5 = TestFileHelper.addFileToSorting(context, Paths.get("multi/file5.arw"), TestFileHelper.getTestResource("NEX5R.ARW"));
 		
 		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
 		
 		Path profile = TestFileHelper.getTestResource("neutral_deleted.pp3");
 		Path profile1 = Files.copy(profile, sorting.resolve(FileUtils.buildFileName(FileUtils.getTimestamp(file1), "file1.pp3")));
 		Path profile3 = Files.copy(profile, sorting.resolve("group").resolve(FileUtils.buildFileName(FileUtils.getTimestamp(file1), "file3.pp3")));
+		Path profile4 = Files.copy(profile, sorting.resolve("multi").resolve(FileUtils.buildFileName(FileUtils.getTimestamp(file1), "file4.pp3")));
 		
 		assertTrue(Files.exists(sorting.resolve(file1.getFileName())));
 		assertTrue(Files.exists(sorting.resolve(profile1.getFileName())));
 		assertTrue(Files.exists(sorting.resolve(file2.getFileName())));
 		assertTrue(Files.exists(sorting.resolve("group").resolve(file3.getFileName())));
 		assertTrue(Files.exists(sorting.resolve("group").resolve(profile3.getFileName().getFileName())));
+		assertTrue(Files.exists(sorting.resolve("multi").resolve(file4.getFileName())));
+		assertTrue(Files.exists(sorting.resolve("multi").resolve(file5.getFileName())));
+		assertTrue(Files.exists(sorting.resolve("multi").resolve(profile4.getFileName().getFileName())));
 		
 		CleanTrash cleanTrash = new CleanTrash(SORTER);
 		cleanTrash.setName(Constants.DEFAULT_SORTING_NAME);
@@ -51,5 +57,8 @@ public class CleanTrashTest extends FileBasedTest {
 		assertFalse(Files.exists(sorting.resolve("group").resolve(file3.getFileName())));
 		assertFalse(Files.exists(sorting.resolve("group").resolve(profile3.getFileName().getFileName())));
 		assertFalse(Files.exists(sorting.resolve("group")));
+		assertFalse(Files.exists(sorting.resolve("multi").resolve(file4.getFileName())));
+		assertTrue(Files.exists(sorting.resolve("multi").resolve(file5.getFileName())));
+		assertFalse(Files.exists(sorting.resolve("multi").resolve(profile4.getFileName().getFileName())));
 	}
 }

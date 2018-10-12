@@ -9,6 +9,7 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
+import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.Sorter;
 
 /**
@@ -40,19 +41,31 @@ public class CleanTrash extends AbstractOperation {
 			throw new IllegalStateException("Could not read groups", e);
 		}
 		
+		recursiveDeleteGroups(groups);
+		
+	}
+
+	private void recursiveDeleteGroups(Collection<Group> groups) {
 		for (Group group : groups) {
+			if (group instanceof MultiGroup) {
+				recursiveDeleteGroups(((MultiGroup) group).getGroups());
+			}
 			if (group.isMarkedAsDeleted()) {
-				for (Path file : group.getAllFiles()) {
-					try {
-						Files.delete(file);
-						Path parent = file.getParent();
-						if (Files.list(parent).count() == 0) {
-							Files.delete(parent);
-						}
-					} catch (IOException e) {
-						Logger.log("Could not delete file " + file, e);
-					}
+				delete(group);
+			}
+		}
+	}
+
+	private void delete(Group group) {
+		for (Path file : group.getAllFiles()) {
+			try {
+				Files.delete(file);
+				Path parent = file.getParent();
+				if (Files.list(parent).count() == 0) {
+					Files.delete(parent);
 				}
+			} catch (IOException e) {
+				Logger.log("Could not delete file " + file, e);
 			}
 		}
 	}
