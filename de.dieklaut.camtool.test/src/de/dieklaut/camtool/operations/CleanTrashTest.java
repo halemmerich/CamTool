@@ -1,10 +1,12 @@
 package de.dieklaut.camtool.operations;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 
@@ -18,39 +20,36 @@ import de.dieklaut.camtool.util.FileUtils;
 public class CleanTrashTest extends FileBasedTest {
 
 	private static final DefaultSorter SORTER = new DefaultSorter();
-	private static final String TEST = "test";
 
 	@Test
 	public void testPerform() throws IOException {		
-		Context context = Context.create(getTestFolder());
+		Context context = TestFileHelper.createComplexContext(getTestFolder());
 		
-		Path source = TestFileHelper.getTestResource("A7II.ARW");
-		Files.copy(source, getTestFolder().resolve("file.arw"));
-		String timestamp = FileUtils.getTimestamp(FileUtils.getCreationDate(source));
+		Path file1 = TestFileHelper.addFileToSorting(context, Paths.get("file1.arw"), TestFileHelper.getTestResource("A7II.ARW"));
+		Path file2 = TestFileHelper.addFileToSorting(context, Paths.get("file2.arw"), TestFileHelper.getTestResource("NEX5R.ARW"));
+		Path file3 = TestFileHelper.addFileToSorting(context, Paths.get("group/file3.arw"), TestFileHelper.getTestResource("NEX5R.ARW"));
 		
-		source = TestFileHelper.getTestResource("NEX5R.ARW");
-		Files.copy(source, getTestFolder().resolve("file2.arw"));
-		String timestamp2 = FileUtils.getTimestamp(FileUtils.getCreationDate(source));
+		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
 		
-		new Init().perform(context);
-		Sort sort = new Sort(SORTER);
-		sort.setName(TEST);
-		sort.perform(context);
-		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(TEST);
+		Path profile = TestFileHelper.getTestResource("neutral_deleted.pp3");
+		Path profile1 = Files.copy(profile, sorting.resolve(FileUtils.buildFileName(FileUtils.getTimestamp(file1), "file1.pp3")));
+		Path profile3 = Files.copy(profile, sorting.resolve("group").resolve(FileUtils.buildFileName(FileUtils.getTimestamp(file1), "file3.pp3")));
 		
-		source = TestFileHelper.getTestResource("neutral_deleted.pp3");
-		Files.copy(source, sorting.resolve(timestamp + "_file.pp3"));
-		assertTrue(Files.exists(sorting.resolve(timestamp2 + "_file2.arw")));
-		assertTrue(Files.exists(sorting.resolve(timestamp + "_file.arw")));
-		assertTrue(Files.exists(sorting.resolve(timestamp + "_file.pp3")));
+		assertTrue(Files.exists(sorting.resolve(file1.getFileName())));
+		assertTrue(Files.exists(sorting.resolve(profile1.getFileName())));
+		assertTrue(Files.exists(sorting.resolve(file2.getFileName())));
+		assertTrue(Files.exists(sorting.resolve("group").resolve(file3.getFileName())));
+		assertTrue(Files.exists(sorting.resolve("group").resolve(profile3.getFileName().getFileName())));
 		
 		CleanTrash cleanTrash = new CleanTrash(SORTER);
-		cleanTrash.setName(TEST);
+		cleanTrash.setName(Constants.DEFAULT_SORTING_NAME);
 		cleanTrash.perform(context);
-		
-		assertTrue(Files.exists(sorting));
-		assertTrue(!Files.exists(sorting.resolve(timestamp + "_file.arw")));
-		assertTrue(Files.exists(sorting.resolve(timestamp2 + "_file2.arw")));
-		assertTrue(!Files.exists(sorting.resolve(timestamp + "_file.pp3")));
+
+		assertFalse(Files.exists(sorting.resolve(file1.getFileName())));
+		assertFalse(Files.exists(sorting.resolve(profile1.getFileName())));
+		assertTrue(Files.exists(sorting.resolve(file2.getFileName())));
+		assertFalse(Files.exists(sorting.resolve("group").resolve(file3.getFileName())));
+		assertFalse(Files.exists(sorting.resolve("group").resolve(profile3.getFileName().getFileName())));
+		assertFalse(Files.exists(sorting.resolve("group")));
 	}
 }

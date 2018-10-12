@@ -28,9 +28,18 @@ public class TestFileHelper {
 		
 		return context;
 	}
-
+	
 	public static Path addFileToSorting(Context context, Path file, long timestamp) throws IOException {
 		Path origFile = createFileWithModifiedDate(context.getOriginals().resolve(file.getFileName()), timestamp);
+		return addFileToSortingImpl(context, file, origFile);
+	}
+	
+	public static Path addFileToSorting(Context context, Path file, Path source) throws IOException {
+		Path origFile = Files.copy(source, context.getOriginals().resolve(file.getFileName()));
+		return addFileToSortingImpl(context, file, origFile);
+	}
+
+	private static Path addFileToSortingImpl(Context context, Path file, Path origFile) throws IOException {
 		Path timelineLink = Files.createSymbolicLink(context.getTimeLine().resolve(FileUtils.buildFileName(FileUtils.getTimestamp(origFile), file.getFileName().toString())), context.getTimeLine().relativize(origFile));
 		Path sorting = context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
 		if (file.getParent() != null) {
