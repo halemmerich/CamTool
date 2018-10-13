@@ -29,32 +29,36 @@ public class DefaultSorter implements Sorter{
 		HashMap<String, Group> nameToGroup = new HashMap<>();
 
 		Files.list(path).forEach(current -> {
-			if (Files.isDirectory(current) && !Files.exists(current.resolve(Constants.SORTED_FILE_NAME))) {
-				MultiGroup multiGroup;
-				try {
-					Collection<Group> groups = identifyGroups(current);
-					Path renderscript = current.resolve(Constants.FILE_NAME_RENDERSCRIPT);
-					Path rendersub = current.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
-					multiGroup = new MultiGroup(groups);
-					if (Files.exists(renderscript)) {
-						multiGroup.setRenderModifier(new JavaScriptRenderModifier(multiGroup, renderscript));
-					} else if (Files.exists(rendersub)) {
-						multiGroup.setRenderModifier(new RenderSubstituteModifier(rendersub));
+			try {
+				if (Files.isDirectory(current) && !Files.exists(current.resolve(Constants.SORTED_FILE_NAME)) && Files.list(current).count() > 0) {
+					MultiGroup multiGroup;
+					try {
+						Collection<Group> groups = identifyGroups(current);
+						Path renderscript = current.resolve(Constants.FILE_NAME_RENDERSCRIPT);
+						Path rendersub = current.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
+						multiGroup = new MultiGroup(groups);
+						if (Files.exists(renderscript)) {
+							multiGroup.setRenderModifier(new JavaScriptRenderModifier(multiGroup, renderscript));
+						} else if (Files.exists(rendersub)) {
+							multiGroup.setRenderModifier(new RenderSubstituteModifier(rendersub));
+						}
+						result.add(multiGroup);
+						nameToGroup.put(multiGroup.getName(), multiGroup);
+					} catch (IOException e) {
+						Logger.log("Error during group analysis of " + path, e);
 					}
-					result.add(multiGroup);
-					nameToGroup.put(multiGroup.getName(), multiGroup);
-				} catch (IOException e) {
-					Logger.log("Error during group analysis of " + path, e);
+				} else if (!current.getFileName().toString().equals(Constants.SORTED_FILE_NAME) && !Files.isDirectory(current)){
+					String groupName = FileUtils.getNamePortion(current);
+					if (current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSCRIPT) || current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSUBSTITUTE) || current.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
+						return;
+					}
+					if (!nameToPaths.containsKey(groupName)) {
+						nameToPaths.put(groupName, new HashSet<>());
+					}
+					nameToPaths.get(groupName).add(current);
 				}
-			} else if (!current.getFileName().toString().equals(Constants.SORTED_FILE_NAME)){
-				String groupName = FileUtils.getNamePortion(current);
-				if (current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSCRIPT) || current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSUBSTITUTE) || current.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
-					return;
-				}
-				if (!nameToPaths.containsKey(groupName)) {
-					nameToPaths.put(groupName, new HashSet<>());
-				}
-				nameToPaths.get(groupName).add(current);
+			} catch (IOException e) {
+				Logger.log("Error during group analysis of " + path, e);
 			}
 		});
 		

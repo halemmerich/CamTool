@@ -22,6 +22,14 @@ public class DefaultSorterTest extends FileBasedTest {
 	private static final DefaultSorter SORTER = new DefaultSorter();
 
 	@Test
+	public void testEmptyFolders() throws IOException {
+		Files.createDirectory(getTestFolder().resolve("test"));
+
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
+		assertEquals(0, sorting.size());
+	}
+	
+	@Test
 	public void testIdentifyGroupsComplexStructure() throws IOException {
 		Files.createFile(getTestFolder().resolve(Constants.SORTED_FILE_NAME));
 		
