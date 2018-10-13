@@ -69,5 +69,25 @@ public class SortingHelper {
 		
 		currentSeries.clear();
 	}
-
+	
+	/**
+	 * Serch groups recursively to find one by name.
+	 * @param groups
+	 * @param nameOfGroup
+	 * @return the found group or null if none are found
+	 */
+	public static Group findGroupToMove(Collection<Group> groups, String nameOfGroup) {
+		for (Group group : groups) {
+			if (nameOfGroup.equals(group.getName())) {
+				return group;
+			}
+			if (group instanceof MultiGroup) {
+				Group result = findGroupToMove(((MultiGroup) group).getGroups(), nameOfGroup);
+				if (result != null) {
+					return result;
+				}
+			}
+		}
+		return null;
+	}
 }

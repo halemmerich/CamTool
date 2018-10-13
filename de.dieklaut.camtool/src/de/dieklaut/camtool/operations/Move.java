@@ -8,8 +8,8 @@ import java.util.Collection;
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Group;
-import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.Sorter;
+import de.dieklaut.camtool.SortingHelper;
 
 public class Move extends AbstractOperation{
 
@@ -46,25 +46,11 @@ public class Move extends AbstractOperation{
 			throw new IllegalStateException("Could not read groups", e);
 		}
 		
-		Group group = findGroupToMove(groups);
+		Group group = SortingHelper.findGroupToMove(groups, nameOfGroup);
 		if (group == null) {
 			throw new IllegalStateException("Could not find group for name " + nameOfGroup);
 		}
 		group.moveToFolder(targetPath);
 	}
 
-	private Group findGroupToMove(Collection<Group> groups) {
-		for (Group group : groups) {
-			if (nameOfGroup.equals(group.getName())) {
-				return group;
-			}
-			if (group instanceof MultiGroup) {
-				Group result = findGroupToMove(((MultiGroup) group).getGroups());
-				if (result != null) {
-					return result;
-				}
-			}
-		}
-		return null;
-	}
 }

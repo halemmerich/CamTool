@@ -8,9 +8,10 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.Sorter;
-import de.dieklaut.camtool.Logger.Level;
+import de.dieklaut.camtool.SortingHelper;
 
 public class Explode extends AbstractOperation {
 
@@ -41,7 +42,7 @@ public class Explode extends AbstractOperation {
 			throw new IllegalStateException("Could not read groups", e);
 		}
 		
-		Group g = Move.findGroupToMove(groups, groupName);
+		Group g = SortingHelper.findGroupToMove(groups, groupName);
 		
 		if (g != null) {
 			if (g instanceof MultiGroup) {
