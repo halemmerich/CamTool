@@ -17,6 +17,7 @@ import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.cmdlinewrapper.AbstractWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.CleanTrashWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.DeleteUnusedWrapper;
+import de.dieklaut.camtool.cmdlinewrapper.ExplodeWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.ExportWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.InitWrapper;
 import de.dieklaut.camtool.cmdlinewrapper.MoveWrapper;
@@ -53,7 +54,7 @@ public class CamTool {
 	};
 
 	private static Engine engine = new Engine(new InitWrapper(), new SortWrapper(sorter), new CleanTrashWrapper(sorter),
-			new RenderWrapper(sorter), new ShowGroupsWrapper(sorter, ui), new MoveWrapper(sorter), new SimplifyWrapper(sorter), new ExportWrapper(),
+			new RenderWrapper(sorter), new ShowGroupsWrapper(sorter, ui), new MoveWrapper(sorter), new SimplifyWrapper(sorter), new ExportWrapper(), new ExplodeWrapper(sorter),
 			new UpdateUnusedWrapper(), new DeleteUnusedWrapper());
 
 	private CamTool() {
