@@ -267,4 +267,15 @@ public class FileUtils {
 	public static String buildFileName(String timestamp, String name) {
 		return timestamp + "_" + name;
 	}
+
+	public static void removeEmptyFolders(Path sortingFolder) throws IOException {
+		Files.list(sortingFolder).filter(current -> {
+			try {
+				return Files.isDirectory(current) && Files.list(current).count() == 0;
+			} catch (IOException e) {
+				Logger.log("Failure during listing of contents for " + current, Level.ERROR);
+				return false;
+			}
+		});
+	}
 }

@@ -11,6 +11,7 @@ import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.Sorter;
+import de.dieklaut.camtool.util.FileUtils;
 
 /**
  * Deletes all {@link Group}s marked as deleted
@@ -42,7 +43,11 @@ public class CleanTrash extends AbstractOperation {
 		}
 		
 		recursiveDeleteGroups(groups);
-		
+		try {
+			FileUtils.removeEmptyFolders(sortingFolder);
+		} catch (IOException e) {
+			Logger.log("Failure during cleanup of empty folders in " + sortingFolder, e);
+		}
 	}
 
 	private void recursiveDeleteGroups(Collection<Group> groups) {
