@@ -54,8 +54,7 @@ public class CleanTrash extends AbstractOperation {
 		for (Group group : groups) {
 			if (group instanceof MultiGroup) {
 				recursiveDeleteGroups(((MultiGroup) group).getGroups());
-			}
-			if (group.isMarkedAsDeleted()) {
+			} else if (group.isMarkedAsDeleted()) {
 				delete(group);
 			}
 		}
