@@ -13,6 +13,7 @@ import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.Sorter;
+import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.renderjob.RenderJob;
 import de.dieklaut.camtool.util.CopyImageResizer;
 import de.dieklaut.camtool.util.CopyVideoResizer;
@@ -41,6 +42,8 @@ public class Render extends AbstractOperation {
 	private int maxDimensionVideoSmall = 1280;
 
 	private Sorter sorter;
+
+	private String group;
 	
 	public Render(Sorter sorter) {
 		this.sorter = sorter;
@@ -100,8 +103,12 @@ public class Render extends AbstractOperation {
 		}
 
 		Collection<RenderJob> renderJobs = new HashSet<>();
-		for (Group group : groups) {
-			renderJobs.add(group.getRenderJob());
+		if (group != null) {
+			renderJobs.add(SortingHelper.findGroupToMove(groups, group).getRenderJob());
+		} else {
+			for (Group group : groups) {
+				renderJobs.add(group.getRenderJob());
+			}
 		}
 
 		Path results_sorting = context.getRoot().resolve(Constants.FOLDER_RESULTS).resolve(sortingName);
@@ -171,6 +178,10 @@ public class Render extends AbstractOperation {
 				Logger.log("Could not fallback to copying for resizing to medium", e, Level.WARNING);
 			}
 		}
+	}
+
+	public void setNameOfGroup(String group) {
+		this.group = group;
 	}
 
 }

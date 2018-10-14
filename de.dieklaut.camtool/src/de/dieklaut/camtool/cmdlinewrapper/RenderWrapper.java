@@ -13,6 +13,8 @@ public class RenderWrapper extends AbstractWrapper {
 	
 	private static final String OPT_NAME_SHORT = "n";
 	private static final String OPT_NAME = "name";
+	private static final String OPT_GROUP_SHORT = "g";
+	private static final String OPT_GROUP = "group";
 	private Sorter sorter;
 	
 	public RenderWrapper(Sorter sorter) {
@@ -21,7 +23,9 @@ public class RenderWrapper extends AbstractWrapper {
 
 	@Override
 	public Options getOptions() {
-		return super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
+		Options options =  super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
+		options.addOption(Option.builder(OPT_GROUP_SHORT).longOpt(OPT_GROUP).desc("Sets the group to be moved").hasArg().build());
+		return options;
 	}
 
 	@Override
@@ -30,6 +34,9 @@ public class RenderWrapper extends AbstractWrapper {
 		render.setImageResizer(new ImagemagickResizer());
 		if (cmdLine.hasOption(OPT_NAME)) {
 			render.setSortingName(cmdLine.getOptionValue(OPT_NAME));
+		}
+		if (cmdLine.hasOption(OPT_GROUP)) {
+			render.setNameOfGroup(cmdLine.getOptionValue(OPT_GROUP));
 		}
 		return render;
 	}
