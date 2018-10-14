@@ -269,13 +269,17 @@ public class FileUtils {
 	}
 
 	public static void removeEmptyFolders(Path sortingFolder) throws IOException {
-		Files.list(sortingFolder).filter(current -> {
+		Path [] toBeDeleted = Files.list(sortingFolder).filter(current -> {
 			try {
 				return Files.isDirectory(current) && Files.list(current).count() == 0;
 			} catch (IOException e) {
 				Logger.log("Failure during listing of contents for " + current, Level.ERROR);
 				return false;
 			}
-		});
+		}).toArray(size -> new Path[size]);
+		
+		for (Path path : toBeDeleted) {
+			FileUtils.deleteRecursive(path, true);
+		}
 	}
 }
