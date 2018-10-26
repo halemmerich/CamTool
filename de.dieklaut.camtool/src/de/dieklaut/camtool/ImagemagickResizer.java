@@ -16,8 +16,10 @@ public class ImagemagickResizer implements ImageResizer {
 		commandline.addArgument("-strip");
 		commandline.addArgument("-quality");
 		commandline.addArgument(Integer.toString(qualityPercentage), false);
-		commandline.addArgument("-resize");
-		commandline.addArgument(maxDimension + "x" + maxDimension);
+		if (maxDimension == -1) {
+			commandline.addArgument("-resize");
+			commandline.addArgument(maxDimension + "x" + maxDimension);
+		}
 		commandline.addArgument("-unsharp");
 		commandline.addArgument("0x0.75+0.75+0.008");
 		commandline.addArgument(destinationFile.toAbsolutePath().toString(), false);

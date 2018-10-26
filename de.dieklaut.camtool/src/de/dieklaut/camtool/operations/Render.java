@@ -32,8 +32,10 @@ public class Render extends AbstractOperation {
 
 	private ImageResizer imageResizer = new CopyImageResizer();
 	private VideoResizer videoResizer = new CopyVideoResizer();
+	private int qualityFull = 98;
 	private int qualityMedium = 90;
 	private int qualitySmall = 85;
+	private int qualityVideoFull = 90;
 	private int qualityVideoMedium = 80;
 	private int qualityVideoSmall = 70;
 	private int maxDimensionSmall = 2000;
@@ -112,19 +114,31 @@ public class Render extends AbstractOperation {
 		}
 
 		Path results_sorting = context.getRoot().resolve(Constants.FOLDER_RESULTS).resolve(sortingName);
+		Path destination_direct = results_sorting.resolve(Constants.RENDER_TYPE_DIRECT);
 		Path destination_full = results_sorting.resolve(Constants.RENDER_TYPE_FULL);
 		Path destination_medium = results_sorting.resolve(Constants.RENDER_TYPE_MEDIUM);
 		Path destination_small = results_sorting.resolve(Constants.RENDER_TYPE_SMALL);
 
 		try {
-			Files.createDirectories(destination_full);
+			Files.createDirectories(destination_direct);
 			for (RenderJob job : renderJobs) {
 				try {
-					job.store(destination_full);
+					job.store(destination_direct);
 				} catch (IOException e) {
 					Logger.log("Failed to execute render job " + job, e, Level.WARNING);
 				}
 			}
+		} catch (IOException e) {
+			throw new IllegalStateException("Creating full size results folder failed", e);
+		}
+
+		try {
+			Files.createDirectories(destination_full);
+			Files.list(destination_direct).forEach(file -> {
+				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
+					convertToOutFormat(file, destination_full.resolve(file.getFileName()));
+				}
+			});
 		} catch (IOException e) {
 			throw new IllegalStateException("Creating full size results folder failed", e);
 		}
@@ -174,6 +188,20 @@ public class Render extends AbstractOperation {
 		} else {
 			try {
 				Files.copy(file, destination_medium);
+			} catch (IOException e) {
+				Logger.log("Could not fallback to copying for resizing to medium", e, Level.WARNING);
+			}
+		}
+	}
+
+	private void convertToOutFormat(Path file, Path destination) {
+		if (FileTypeHelper.isVideoFile(file)) {
+			videoResizer.resize(-1, file, destination, qualityVideoFull);
+		} else if (FileTypeHelper.isImageFile(file)) {
+			imageResizer.resize(-1, file, destination, qualityFull);
+		} else {
+			try {
+				Files.copy(file, destination);
 			} catch (IOException e) {
 				Logger.log("Could not fallback to copying for resizing to medium", e, Level.WARNING);
 			}
