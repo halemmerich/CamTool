@@ -6,7 +6,7 @@ public class FileTypeHelper {
 
 	private static String [] rawFileSuffixes = new String [] {"arw", "nef"};
 	private static String [] videoFileSuffixes = new String [] {"mp4", "mpg", "avi", "avchd", "mkv", "mts"};
-	private static String [] imageFileSuffixes = new String [] {"jpg", "png", "gif"};
+	private static String [] imageFileSuffixes = new String [] {"jpg", "png", "gif", "tif", "tiff"};
 	private static String [] renderscriptFileSuffixes = new String [] { Constants.FILE_NAME_RENDERSCRIPT_SUFFIX };
 	
 	private static boolean endsWithOne(Path path, String ... strings) {
