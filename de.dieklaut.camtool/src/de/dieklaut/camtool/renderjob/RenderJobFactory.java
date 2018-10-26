@@ -19,7 +19,7 @@ public class RenderJobFactory {
 	public static RenderJob getRenderJob(Path mainFile, Path[] helperFiles, String name) {
 		if (FileTypeHelper.isRenderscript(mainFile)) {
 			return new RenderJavaScriptRenderJob(name, mainFile, helperFiles);
-		} else if (FileTypeHelper.isRawImageFile(mainFile)) {
+		} else if (FileTypeHelper.isRawImageFile(mainFile) || hasPp3(helperFiles, mainFile) ) {
 			if (useRawtherapee) {
 				return new RawTherapeeRenderJob(new RawTherapeeWrapper(), mainFile, helperFiles);
 			} else if (useDummyRawJob) {
@@ -28,8 +28,16 @@ public class RenderJobFactory {
 		} else if (FileTypeHelper.isVideoFile(mainFile)) {
 			return new LinkRenderJob(mainFile);
 		}
-		
 		return new CopyRenderJob(mainFile);
+	}
+
+	private static boolean hasPp3(Path[] helperFiles, Path mainFile) {
+		for (Path current : helperFiles) {
+			if (current.getFileName().toString().equals(mainFile.getFileName().toString() + ".pp3")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

@@ -79,7 +79,7 @@ public class SingleGroup extends AbstractGroup {
 
 		if (toBeRendered == null) {
 			for (Path element : getAllFiles()) {
-				if (FileTypeHelper.isRawImageFile(element) || FileTypeHelper.isVideoFile(element)) {
+				if (FileTypeHelper.isRawImageFile(element) || FileTypeHelper.isVideoFile(element) || FileTypeHelper.isImageFile(element)) {
 					toBeRendered = element;
 					break;
 				}
