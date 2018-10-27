@@ -22,7 +22,7 @@ public class RawTherapeeRenderJob extends RenderJob {
 	void storeImpl(Path destination) throws IOException {
 		processWrapper.setInputFile(mainFile.toAbsolutePath().toString());
 		processWrapper.setOutputFile(destination.toAbsolutePath().toString());
-		processWrapper.setJpgQuality(95, 3);
+		processWrapper.setJpgQuality(100, 3);
 		
 		for (Path currentFile : helperFiles) {
 			if (FileTypeHelper.isRawTherapeeProfile(currentFile)) {
