@@ -25,8 +25,6 @@ public class RenderJobFactory {
 			} else if (useDummyRawJob) {
 				return new DummyRawRenderJob(mainFile);
 			}
-		} else if (FileTypeHelper.isVideoFile(mainFile)) {
-			return new LinkRenderJob(mainFile);
 		}
 		return new CopyRenderJob(mainFile);
 	}
