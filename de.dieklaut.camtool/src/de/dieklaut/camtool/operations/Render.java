@@ -136,7 +136,7 @@ public class Render extends AbstractOperation {
 			Files.createDirectories(destination_full);
 			Files.list(destination_direct).forEach(file -> {
 				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
-					convertToOutFormat(file, destination_full.resolve(file.getFileName()));
+					convertToFull(file, destination_full);
 				}
 			});
 		} catch (IOException e) {
@@ -194,11 +194,11 @@ public class Render extends AbstractOperation {
 		}
 	}
 
-	private void convertToOutFormat(Path file, Path destination) {
+	private void convertToFull(Path file, Path destination) {
 		if (FileTypeHelper.isVideoFile(file)) {
-			videoResizer.resize(-1, file, destination, qualityVideoFull);
-		} else if (FileTypeHelper.isImageFile(file)) {
-			imageResizer.resize(-1, file, destination, qualityFull);
+			videoResizer.resize(-1, file, destination.resolve(file.getFileName()), qualityVideoFull);
+		} else if (FileTypeHelper.isImageFile(file)) {			
+			imageResizer.resize(-1, file, destination.resolve(FileUtils.removeSuffix(file.getFileName().toString()) + ".jpg"), qualityFull);
 		} else {
 			try {
 				Files.copy(file, destination);
