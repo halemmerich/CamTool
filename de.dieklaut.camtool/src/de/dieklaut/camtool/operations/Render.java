@@ -52,6 +52,8 @@ public class Render extends AbstractOperation {
 	private Sorter sorter;
 
 	private String groupName;
+
+	private boolean force;
 	
 	public Render(Sorter sorter) {
 		this.sorter = sorter;
@@ -135,7 +137,10 @@ public class Render extends AbstractOperation {
 		
 		for (Group group : groups) {
 			String newChecksum = hasChanges(group, sourceState);
-			if (newChecksum != null) {
+			if (force || newChecksum != null) {
+				if (force) {
+					newChecksum = FileUtils.getChecksum(group.getAllFiles());
+				}
 				RenderJob renderJob = group.getRenderJob();
 				renderJobToGroupName.put(renderJob, group.getName());
 				renderJobToChecksum.put(renderJob, newChecksum);
@@ -305,6 +310,10 @@ public class Render extends AbstractOperation {
 
 	public void setNameOfGroup(String group) {
 		this.groupName = group;
+	}
+
+	public void setForce(boolean hasOption) {
+		this.force = true;
 	}
 
 }

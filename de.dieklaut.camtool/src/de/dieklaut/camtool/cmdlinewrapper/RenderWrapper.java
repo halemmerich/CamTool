@@ -15,6 +15,8 @@ public class RenderWrapper extends AbstractWrapper {
 	private static final String OPT_NAME = "name";
 	private static final String OPT_GROUP_SHORT = "g";
 	private static final String OPT_GROUP = "group";
+	private static final String OPT_GROUP_FORCE = "f";
+	private static final String OPT_FORCE = "force";
 	private Sorter sorter;
 	
 	public RenderWrapper(Sorter sorter) {
@@ -24,6 +26,7 @@ public class RenderWrapper extends AbstractWrapper {
 	@Override
 	public Options getOptions() {
 		Options options =  super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
+		options.addOption(Option.builder(OPT_GROUP_FORCE).longOpt(OPT_FORCE).desc("Forces overwriting ").build());
 		options.addOption(Option.builder(OPT_GROUP_SHORT).longOpt(OPT_GROUP).desc("Sets the group to be moved").hasArg().build());
 		return options;
 	}
@@ -37,6 +40,9 @@ public class RenderWrapper extends AbstractWrapper {
 		}
 		if (cmdLine.hasOption(OPT_GROUP)) {
 			render.setNameOfGroup(cmdLine.getOptionValue(OPT_GROUP));
+		}
+		if (cmdLine.hasOption(OPT_FORCE)) {
+			render.setForce(cmdLine.hasOption(OPT_FORCE));
 		}
 		return render;
 	}
