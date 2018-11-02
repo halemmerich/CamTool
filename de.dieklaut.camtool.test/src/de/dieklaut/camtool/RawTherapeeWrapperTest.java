@@ -23,8 +23,7 @@ public class RawTherapeeWrapperTest {
 		wrapper.setInputFile(rawFile.toString());
 		wrapper.setOutputFile(destination.toString());
 		wrapper.addProfileOption(sidecar.toString());
-		wrapper.setJpgQuality(95, 3);
 
-		assertEquals("[rawtherapee-cli, -o, whatever, -j95, -js3, -d, -p, test.pp3, -c, test.arw]", wrapper.getCommandLine().toString());
+		assertEquals("[rawtherapee-cli, -n, -b8, -Y, -o, whatever, -d, -p, test.pp3, -c, test.arw]", wrapper.getCommandLine().toString());
 	}
 }
