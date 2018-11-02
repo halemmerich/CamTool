@@ -3,6 +3,8 @@ package de.dieklaut.camtool;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
 
 import de.dieklaut.camtool.renderjob.RenderJob;
 import de.dieklaut.camtool.renderjob.RenderJavaScriptScriptMultiRenderJob;
@@ -34,6 +36,11 @@ public class JavaScriptRenderModifier implements RenderModifier {
 	@Override
 	public Path getContainingFolder() {
 		return renderScript.getParent();
+	}
+
+	@Override
+	public Collection<Path> getAllFiles() {
+		return Arrays.asList(new Path [] {renderScript});
 	}
 
 }

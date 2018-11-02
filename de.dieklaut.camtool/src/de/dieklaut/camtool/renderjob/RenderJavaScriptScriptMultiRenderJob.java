@@ -39,11 +39,12 @@ public class RenderJavaScriptScriptMultiRenderJob extends RenderJob {
 
 		Path resultDir = Files.createTempDirectory("camtool_results");
 		
-		if (!JavaScriptExecutor.execRenderScript(renderscriptFile, multiGroup.getName(), resultDir, workDir, Collections.emptyMap())) {
+		if (JavaScriptExecutor.execRenderScript(renderscriptFile, multiGroup.getName(), resultDir, workDir, Collections.emptyMap())) {
+			FileUtils.copyRecursive(resultDir, destination);
+		} else {
 			Logger.log("Render script execution failed", Level.ERROR);
 		}
 
-		FileUtils.copyRecursive(resultDir, destination);
 		FileUtils.deleteRecursive(workDir, true);
 		FileUtils.deleteRecursive(resultDir, true);
 	}

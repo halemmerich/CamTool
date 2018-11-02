@@ -54,6 +54,9 @@ public class MultiGroup extends AbstractGroup {
 	@Override
 	public Collection<Path> getAllFiles() {
 		Set<Path> paths = new HashSet<Path>();
+		if (renderModifier != null) {
+			paths.addAll(renderModifier.getAllFiles());
+		}
 		for (Group group : groups) {
 			paths.addAll(group.getAllFiles());
 		}
