@@ -25,10 +25,31 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 
+import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
 
 public class FileUtils {
+	
+	public static String getCreator(Path filePath) {
+		try (InputStream stream = Files.newInputStream(filePath)){
+			Metadata metadata = ImageMetadataReader.readMetadata(stream);
+
+			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
+
+			for (ExifIFD0Directory directory : directories) {
+				String model = directory.getString(ExifIFD0Directory.TAG_MODEL);
+				if (model != null) {
+					return model;
+				}
+			}
+		} catch (ImageProcessingException | IOException e) {
+			Logger.log("Error during parsing of image file " + filePath + " for exif data for a creator, falling back to default",
+					e, Level.DEBUG);
+		}
+		return Constants.UNKNOWN;
+	}
+	
 	public static Instant getCreationDate(Path filePath) {
 		try (InputStream stream = Files.newInputStream(filePath)){
 			Metadata metadata = ImageMetadataReader.readMetadata(stream);

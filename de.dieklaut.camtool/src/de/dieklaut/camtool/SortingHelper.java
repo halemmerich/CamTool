@@ -4,9 +4,11 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import de.dieklaut.camtool.Logger.Level;
 
@@ -16,9 +18,25 @@ public class SortingHelper {
 		List<Group> sortedByTimestampGroups = new ArrayList<>(sorting);
 
 		sortedByTimestampGroups.sort(new GroupTimestampComparator());
-		
 		//TODO: Split into separate series for different cameras
+		
+		Map<String, List<Group>> groupsByCreator = new HashMap<>();
+		
+		for (Group current : sortedByTimestampGroups) {
+			String creator = current.getCreator();
+			if (!groupsByCreator.containsKey(creator)) {
+				groupsByCreator.put(creator, new LinkedList<>());
+			}
+			groupsByCreator.get(creator).add(current);
+		}
 
+		for (List<Group> current : groupsByCreator.values()) {
+			combine(sorting, detectSeriesTimeDiff, current);
+		}
+	}
+
+	private static void combine(Collection<Group> sorting, int detectSeriesTimeDiff,
+			List<Group> sortedByTimestampGroups) {
 		Instant lastTimestamp = null;
 		Duration lastDuration = null;
 

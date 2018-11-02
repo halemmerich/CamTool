@@ -184,4 +184,9 @@ public class SingleGroup extends AbstractGroup {
 			return destination;
 		}
 	}
+
+	@Override
+	public String getCreator() {
+		return FileUtils.getCreator(getPrimaryFile());
+	}
 }

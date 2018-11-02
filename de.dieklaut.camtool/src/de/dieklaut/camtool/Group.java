@@ -65,4 +65,6 @@ public interface Group{
 	 * @return the name for this group
 	 */
 	public String getName();
+	
+	public String getCreator();
 }

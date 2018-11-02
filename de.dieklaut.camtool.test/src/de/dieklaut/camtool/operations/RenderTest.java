@@ -139,6 +139,11 @@ public class RenderTest extends FileBasedTest {
 							return group.getName();
 						}
 
+						@Override
+						public String getCreator() {
+							return group.getCreator();
+						}
+
 					});
 				}
 				return groups;

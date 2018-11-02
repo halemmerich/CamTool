@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -173,5 +174,23 @@ public class MultiGroup extends AbstractGroup {
 	
 	public boolean hasModifiers() {
 		return renderModifier != null;
+	}
+
+	@Override
+	public String getCreator() {
+		String creator = null;
+		Iterator<Group> iter = getGroups().iterator();
+		if (iter.hasNext()) {
+			creator = iter.next().getCreator();
+		} else {
+			return Constants.UNKNOWN;
+		}
+		
+		while(iter.hasNext()){
+			if (!creator.equals(iter.next().getName())) {
+				return Constants.UNKNOWN;
+			}
+		}
+		return creator;
 	}
 }

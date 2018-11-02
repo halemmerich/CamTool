@@ -47,6 +47,8 @@ public class SortTest extends FileBasedTest {
 		
 	}
 	
+	//TODO implement test for correct detection of series from multiple cameras
+	
 	@Test
 	public void moveSeries() throws IOException {
 		Collection<Group> groups = new LinkedList<>();
