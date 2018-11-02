@@ -194,7 +194,7 @@ public class DefaultSorterTest extends FileBasedTest {
 		assertEquals(1, sorting.size());
 		Group group = sorting.iterator().next();
 		Collection<Path> files = group.getAllFiles();
-		assertEquals(0, files.size());
+		assertEquals(1, files.size());
 		assertThat(group, new IsInstanceOf(MultiGroup.class));
 		assertThat(group.getRenderJob(), new IsInstanceOf(RenderJavaScriptScriptMultiRenderJob.class));
 	}

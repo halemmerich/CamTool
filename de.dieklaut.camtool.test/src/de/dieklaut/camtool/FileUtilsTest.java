@@ -2,6 +2,7 @@ package de.dieklaut.camtool;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -122,5 +123,72 @@ public class FileUtilsTest extends FileBasedTest {
 
 		assertEquals("2530393705", FileUtils.getChecksum(paths));
 		assertEquals("2530393705", FileUtils.getChecksum(pathsReversed));
+	}
+	
+	@Test
+	public void testCopyRecursive() throws IOException {
+		Path source = Files.createDirectories(getTestFolder().resolve("source"));
+		Path destination = Files.createDirectories(getTestFolder().resolve("dest"));
+		Path testfile = Files.createFile(source.resolve("testfile"));
+		Path subdir = Files.createDirectory(source.resolve("subdir"));
+		Path subfile = Files.createFile(subdir.resolve("subfile"));
+		
+		FileUtils.copyRecursive(source,destination);
+
+		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
+		assertTrue(Files.exists(destination.resolve(subdir.getFileName())));
+		assertTrue(Files.exists(destination.resolve(subdir.getFileName()).resolve(subfile.getFileName())));
+		assertEquals(2, Files.list(destination).count());
+		assertEquals(1, Files.list(destination.resolve(subdir.getFileName())).count());
+	}
+	
+	@Test
+	public void testCopyRecursiveFile() throws IOException {
+		Path source = Files.createDirectories(getTestFolder().resolve("source"));
+		Path testfile = Files.createFile(source.resolve("testfile"));
+		Path destination = Files.createDirectories(getTestFolder().resolve("dest").resolve(testfile.getFileName()));
+		
+		FileUtils.copyRecursive(source,destination);
+
+		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
+		assertEquals(1, Files.list(destination).count());
+	}
+	
+	@Test
+	public void testCopyRecursiveFileToDirectory() throws IOException {
+		Path source = Files.createDirectories(getTestFolder().resolve("source"));
+		Path testfile = Files.createFile(source.resolve("testfile"));
+		Path destination = Files.createDirectories(getTestFolder().resolve("dest"));
+		
+		FileUtils.copyRecursive(testfile,destination);
+
+		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
+		assertEquals(1, Files.list(destination).count());
+	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void testCopyRecursiveDirectoryToFile() throws IOException {
+		Path source = Files.createDirectories(getTestFolder().resolve("source"));
+		Files.createFile(source.resolve("testfile"));
+		Path destination = Files.createFile(getTestFolder().resolve("dest"));
+		
+		FileUtils.copyRecursive(source,destination);
+	}
+	
+	@Test
+	public void testCopyRecursiveNonExistingDestination() throws IOException {
+		Path source = Files.createDirectories(getTestFolder().resolve("source"));
+		Path destination = getTestFolder().resolve("dest");
+		Path testfile = Files.createFile(source.resolve("testfile"));
+		Path subdir = Files.createDirectory(source.resolve("subdir"));
+		Path subfile = Files.createFile(subdir.resolve("subfile"));
+		
+		FileUtils.copyRecursive(source,destination);
+
+		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
+		assertTrue(Files.exists(destination.resolve(subdir.getFileName())));
+		assertTrue(Files.exists(destination.resolve(subdir.getFileName()).resolve(subfile.getFileName())));
+		assertEquals(2, Files.list(destination).count());
+		assertEquals(1, Files.list(destination.resolve(subdir.getFileName())).count());
 	}
 }

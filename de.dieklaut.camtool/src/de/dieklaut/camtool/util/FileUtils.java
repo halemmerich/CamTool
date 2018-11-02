@@ -7,6 +7,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.time.Instant;
@@ -138,11 +139,9 @@ public class FileUtils {
 
 	public static void copyRecursive(Path source, Path destination) throws IOException {
 		if (Files.isDirectory(source)) {
-			if (!Files.isDirectory(destination)) {
-				throw new IllegalArgumentException("Both arguments must be directories");
-			}
 			Files.list(source).forEach(current -> {
 				try {
+					Files.createDirectories(destination);
 					copyRecursive(current, destination.resolve(current.getFileName()));
 				} catch (IOException e) {
 					throw new IllegalStateException(
@@ -150,7 +149,11 @@ public class FileUtils {
 				}
 			});
 		} else {
-			Files.copy(source, destination);
+			Path fileDest = destination;
+			if (Files.isDirectory(fileDest)) {
+				fileDest = destination.resolve(source.getFileName());
+			}
+			Files.copy(source, fileDest, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 	
