@@ -307,4 +307,15 @@ public class FileUtils {
 		});
 		return Long.toString(crc.getValue());
 	}
+	
+	public static void hardlinkOrCopy(Path source, Path destination) throws IOException {
+		if (!Files.isDirectory(source) && Files.isDirectory(destination)) {
+			destination = destination.resolve(source.getFileName());
+		}
+		try {
+			Files.createLink(destination, source);
+		} catch (UnsupportedOperationException e) {
+			Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
 }

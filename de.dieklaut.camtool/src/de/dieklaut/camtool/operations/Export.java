@@ -8,6 +8,7 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
+import de.dieklaut.camtool.util.FileUtils;
 
 /**
  * This exports the rendering results of a sorting into an arbitrary folder.
@@ -59,11 +60,16 @@ public class Export extends AbstractOperation {
 		
 		try {
 			Files.list(resultFolder).forEach(file -> {
+				Path realfile;
 				try {
-					Path realfile = file.toRealPath();
-					Files.copy(realfile, destination.resolve(file.getFileName()));
-				} catch (IOException e) {
-					Logger.log("Linking file " + file + " to " + Constants.FOLDER_TIMELINE + " did cause an error", e);
+					realfile = file.toRealPath();
+					try {
+						FileUtils.hardlinkOrCopy(realfile, destination.resolve(file.getFileName()));
+					} catch (IOException e) {
+						Logger.log("Linking/copying file " + file + " to " + Constants.FOLDER_TIMELINE + " did cause an error", e);
+					}
+				} catch (IOException e2) {
+					Logger.log("Resolving the real path for " + file + " did cause an error", e2);
 				}
 			});
 		} catch (IOException e) {

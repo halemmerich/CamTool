@@ -3,9 +3,10 @@ package de.dieklaut.camtool.renderjob;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
+
+import de.dieklaut.camtool.util.FileUtils;
 
 public class CopyRenderJob extends RenderJob {
 
@@ -23,7 +24,7 @@ public class CopyRenderJob extends RenderJob {
 				destinationFile = destination.resolve(current.getFileName());
 			}
 			
-			Files.copy(current.toRealPath(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+			FileUtils.hardlinkOrCopy(current.toRealPath(), destinationFile);
 		}
 	}
 

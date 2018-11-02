@@ -3,7 +3,6 @@ package de.dieklaut.camtool.operations;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -263,7 +262,7 @@ public class Render extends AbstractOperation {
 			imageResizer.resize(maxDimensionSmall, file, destination_small, qualitySmall);
 		} else {
 			try {
-				Files.copy(file, destination_small, StandardCopyOption.REPLACE_EXISTING);
+				FileUtils.hardlinkOrCopy(file, destination_small);
 			} catch (IOException e) {
 				Logger.log("Could not fallback to copying for resizing to small", e, Level.WARNING);
 				return false;
@@ -279,7 +278,7 @@ public class Render extends AbstractOperation {
 			imageResizer.resize(maxDimensionMedium, file, destination_medium, qualityMedium);
 		} else {
 			try {
-				Files.copy(file, destination_medium, StandardCopyOption.REPLACE_EXISTING);
+				FileUtils.hardlinkOrCopy(file, destination_medium);
 			} catch (IOException e) {
 				Logger.log("Could not fallback to copying for resizing to medium", e, Level.WARNING);
 				return false;
@@ -295,7 +294,7 @@ public class Render extends AbstractOperation {
 			imageResizer.resize(-1, file, destination.resolve(FileUtils.removeSuffix(file.getFileName().toString()) + ".jpg"), qualityFull);
 		} else {
 			try {
-				Files.copy(file, destination.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+				FileUtils.hardlinkOrCopy(file, destination.resolve(file.getFileName()));
 			} catch (IOException e) {
 				Logger.log("Could not fallback to copying for resizing to full", e, Level.WARNING);
 				return false;

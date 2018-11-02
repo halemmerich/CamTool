@@ -191,4 +191,28 @@ public class FileUtilsTest extends FileBasedTest {
 		assertEquals(2, Files.list(destination).count());
 		assertEquals(1, Files.list(destination.resolve(subdir.getFileName())).count());
 	}
+	
+	@Test
+	public void testHardlinkOrCopy() throws IOException {
+		Path source = Files.createDirectories(getTestFolder().resolve("source"));
+		Path testfile = Files.createFile(source.resolve("testfile"));
+		Path destination = Files.createDirectories(getTestFolder().resolve("dest").resolve(testfile.getFileName()));
+		
+		FileUtils.hardlinkOrCopy(testfile, destination);
+
+		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
+		assertEquals(1, Files.list(destination).count());
+	}
+	
+	@Test
+	public void testHardlinkOrCopyDestFolder() throws IOException {
+		Path source = Files.createDirectories(getTestFolder().resolve("source"));
+		Path destination = Files.createDirectories(getTestFolder().resolve("dest"));
+		Path testfile = Files.createFile(source.resolve("testfile"));
+		
+		FileUtils.hardlinkOrCopy(testfile, destination);
+
+		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
+		assertEquals(1, Files.list(destination).count());
+	}
 }
