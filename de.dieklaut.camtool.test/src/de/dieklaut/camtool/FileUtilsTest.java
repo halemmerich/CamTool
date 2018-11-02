@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -100,5 +103,24 @@ public class FileUtilsTest extends FileBasedTest {
 	@Test
 	public void testGetSimplifiedStringRep() {
 		assertEquals("thisisrelative", FileUtils.getSimplifiedStringRep(Paths.get("this/is/relative")));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetChecksumNoInput() {
+		FileUtils.getChecksum(Collections.emptySet());
+	}
+
+	@Test
+	public void testGetChecksum() {
+		List<Path> paths = new LinkedList<>();
+		paths.add(TestFileHelper.getTestResource("A7II.ARW"));
+		paths.add(TestFileHelper.getTestResource("NEX5R.ARW"));
+		
+		List<Path> pathsReversed = new LinkedList<>();
+		pathsReversed.add(TestFileHelper.getTestResource("NEX5R.ARW"));
+		pathsReversed.add(TestFileHelper.getTestResource("A7II.ARW"));
+
+		assertEquals("2530393705", FileUtils.getChecksum(paths));
+		assertEquals("2530393705", FileUtils.getChecksum(pathsReversed));
 	}
 }

@@ -1,5 +1,6 @@
 package de.dieklaut.camtool.operations;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -7,15 +8,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import de.dieklaut.camtool.AbstractGroup;
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
+import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.TestFileHelper;
+import de.dieklaut.camtool.renderjob.RenderJob;
 import de.dieklaut.camtool.renderjob.RenderJobFactory;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -55,6 +64,118 @@ public class RenderTest extends FileBasedTest {
 		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_MEDIUM).resolve(timestamp + "_file.jpg")));
 		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_SMALL)));
 		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_SMALL).resolve(timestamp + "_file.jpg")));
+	}
+
+	@Test
+	public void testPerformTwice() throws IOException {
+		Context context = Context.create(getTestFolder());
+		
+		Path source = TestFileHelper.getTestResource("A7II.ARW");
+		Files.copy(source, getTestFolder().resolve("file.arw"));
+		
+		AtomicInteger renderJobCounter = new AtomicInteger(0);
+		
+		new Init().perform(context);
+		Sorter sorter = new Sorter() {
+
+			@Override
+			public Collection<Group> identifyGroups(Path path) throws IOException {
+				return wrapGroups(new DefaultSorter().identifyGroups(path));
+			}
+
+			private Collection<Group> wrapGroups(Collection<Group> identifyGroups) {
+				Collection<Group> groups = new HashSet<>();
+				for (Group group : identifyGroups) {
+					groups.add(new AbstractGroup() {
+
+						@Override
+						public Collection<Path> getAllFiles() {
+							return group.getAllFiles();
+						}
+
+						@Override
+						public RenderJob getRenderJob() {
+							renderJobCounter.incrementAndGet();
+							return group.getRenderJob();
+						}
+
+						@Override
+						public boolean isMarkedAsDeleted() {
+							return group.isMarkedAsDeleted();
+						}
+
+						@Override
+						public boolean hasOwnFolder() {
+							return group.hasOwnFolder();
+						}
+
+						@Override
+						public Path getContainingFolder() {
+							return group.getContainingFolder();
+						}
+
+						@Override
+						public String getType() {
+							return group.getType();
+						}
+
+						@Override
+						public void moveToFolder(Path destination) {
+							group.moveToFolder(destination);
+						}
+
+						@Override
+						public Instant getTimestamp() {
+							return group.getTimestamp();
+						}
+
+						@Override
+						public Duration getDuration() {
+							return group.getDuration();
+						}
+
+						@Override
+						public String getName() {
+							return group.getName();
+						}
+
+					});
+				}
+				return groups;
+			}
+			
+		};
+		Sort sort = new Sort(sorter);
+		sort.setName(TEST);
+		sort.perform(context);
+		
+		RenderJobFactory.useRawtherapee = false;
+		
+		//First "normal" rendering
+		Render render = new Render(sorter);
+		render.setSortingName(TEST);
+		
+		render.perform(context);
+		
+		assertEquals(1, renderJobCounter.get());
+		
+		//Rendering again, without changes
+		render = new Render(sorter);
+		render.setSortingName(TEST);
+		
+		render.perform(context);
+		
+		assertEquals(1, renderJobCounter.get());
+		
+		//Rendering with additional pp3 file
+		Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(TEST).resolve(FileUtils.getTimestamp(source) + "_file1.arw.pp3"));
+
+		render = new Render(sorter);
+		render.setSortingName(TEST);
+		
+		render.perform(context);
+		
+		assertEquals(2, renderJobCounter.get());
 	}
 
 	@Test

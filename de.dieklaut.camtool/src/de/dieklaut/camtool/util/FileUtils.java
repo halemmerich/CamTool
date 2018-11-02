@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Collection;
 import java.util.Date;
+import java.util.zip.CRC32;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
@@ -165,6 +166,11 @@ public class FileUtils {
 		return formatter.format(instant);
 	}
 
+	/**
+	 * Returns the timestamp string for a given file according to {@link #getCreationDate(Path)}.
+	 * @param file
+	 * @return the timestamp
+	 */
 	public static String getTimestamp(Path file) {
 		return getTimestamp(getCreationDate(file));
 	}
@@ -281,5 +287,21 @@ public class FileUtils {
 		for (Path path : toBeDeleted) {
 			FileUtils.deleteRecursive(path, true);
 		}
+	}
+	
+	public static String getChecksum(Collection<Path> paths) {
+		if (paths.size() == 0) {
+			throw new IllegalArgumentException("No input files for checksum creation");
+		}
+		CRC32 crc = new CRC32();
+		
+		paths.stream().sorted().forEachOrdered(path -> {
+			try {
+				crc.update(Files.readAllBytes(path));
+			} catch (IOException e) {
+				Logger.log("Failure during creation of group checksum for " + path, e);
+			}
+		});
+		return Long.toString(crc.getValue());
 	}
 }
