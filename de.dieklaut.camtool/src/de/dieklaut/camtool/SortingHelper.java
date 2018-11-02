@@ -16,6 +16,8 @@ public class SortingHelper {
 		List<Group> sortedByTimestampGroups = new ArrayList<>(sorting);
 
 		sortedByTimestampGroups.sort(new GroupTimestampComparator());
+		
+		//TODO: Split into separate series for different cameras
 
 		Instant lastTimestamp = null;
 		Duration lastDuration = null;
@@ -72,17 +74,20 @@ public class SortingHelper {
 	
 	/**
 	 * Serch groups recursively to find one by name.
+	 * 
+	 * TODO: Remove this method and implement a unique way to identify groups without danger of duplicates.
+	 * 
 	 * @param groups
 	 * @param nameOfGroup
 	 * @return the found group or null if none are found
 	 */
-	public static Group findGroupToMove(Collection<Group> groups, String nameOfGroup) {
+	public static Group findGroupByName(Collection<Group> groups, String nameOfGroup) {
 		for (Group group : groups) {
 			if (nameOfGroup.equals(group.getName())) {
 				return group;
 			}
 			if (group instanceof MultiGroup) {
-				Group result = findGroupToMove(((MultiGroup) group).getGroups(), nameOfGroup);
+				Group result = findGroupByName(((MultiGroup) group).getGroups(), nameOfGroup);
 				if (result != null) {
 					return result;
 				}

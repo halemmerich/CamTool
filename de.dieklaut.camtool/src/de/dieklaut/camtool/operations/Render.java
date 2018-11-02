@@ -127,7 +127,7 @@ public class Render extends AbstractOperation {
 		loadSourceState(sourceState, sourceStatePath);
 		
 		if (groupName != null) {
-			Group group = SortingHelper.findGroupToMove(groups, groupName);
+			Group group = SortingHelper.findGroupByName(groups, groupName);
 			groups = new HashSet<>();
 			groups.add(group);
 		}

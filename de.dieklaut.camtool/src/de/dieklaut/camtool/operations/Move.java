@@ -46,7 +46,7 @@ public class Move extends AbstractOperation{
 			throw new IllegalStateException("Could not read groups", e);
 		}
 		
-		Group group = SortingHelper.findGroupToMove(groups, nameOfGroup);
+		Group group = SortingHelper.findGroupByName(groups, nameOfGroup);
 		if (group == null) {
 			throw new IllegalStateException("Could not find group for name " + nameOfGroup);
 		}

@@ -42,7 +42,7 @@ public class Explode extends AbstractOperation {
 			throw new IllegalStateException("Could not read groups", e);
 		}
 		
-		Group g = SortingHelper.findGroupToMove(groups, groupName);
+		Group g = SortingHelper.findGroupByName(groups, groupName);
 		
 		if (g != null) {
 			if (g instanceof MultiGroup) {
