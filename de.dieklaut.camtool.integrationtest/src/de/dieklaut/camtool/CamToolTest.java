@@ -89,8 +89,8 @@ public class CamToolTest extends FileBasedTest {
 		
 		CamTool.main(new String[] { "render" });
 
-		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve("20170915165451000_series_06.JPG")));
-		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve("20170915165451000_series_08.JPG")));
-		assertEquals(2, Files.list(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL)).count());
+		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve("20170915165451000_series_06.jpg")));
+		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve("20170915165451000_series_08.jpg")));
+		assertEquals(3, Files.list(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL)).count());
 	}
 }
