@@ -129,25 +129,15 @@ public class MultiGroup extends AbstractGroup {
 		}
 		
 		try {
-			if (Files.list(destination).filter(path -> !Files.isDirectory(path)).count() == 0) {
-				// This means the camtool sidecar file if any need to be converted
-				if (renderModifier != null) {
-					renderModifier.move(destination.resolve(FileUtils.getGroupName(destination.getFileName())));
-				}
-			} else {
-				if (renderModifier != null) {
-					renderModifier.move(destination.resolve(FileUtils.getGroupName(destination.getFileName())));
-				}
+			if (Files.list(destination).count() != 0) {
+				// Destination not empty, move to subfolder
+				destination = destination.resolve(getContainingFolder().getFileName().toString());
 			}
-		} catch (IOException e) {
-			Logger.log("Failure during move of group " + getName(), e);
-		}
-		for (Group g : getGroups()) {
-			if (g instanceof SingleGroup) {
-				g.moveToFolder(destination);
-			} else {
-				g.moveToFolder(destination.resolve(g.getName()));
-			}
+			
+			FileUtils.moveRecursive(getContainingFolder(), destination);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 	

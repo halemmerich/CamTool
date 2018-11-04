@@ -215,4 +215,24 @@ public class FileUtilsTest extends FileBasedTest {
 		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
 		assertEquals(1, Files.list(destination).count());
 	}
+	
+	@Test
+	public void testMoveRecursive() throws IOException {
+		Path source = Files.createDirectories(getTestFolder().resolve("source"));
+		Path destination = Files.createDirectories(getTestFolder().resolve("dest"));
+		Path linktarget = Files.createFile(getTestFolder().resolve("linktarget"));
+		
+		Path testfile = Files.createFile(source.resolve("testfile"));
+		Path link = Files.createSymbolicLink(source.resolve("link"), linktarget);
+		Path testdir = Files.createDirectories(source.resolve("testdir"));
+		Path subfile = Files.createFile(testdir.resolve("sub"));
+		Path sublink = Files.createSymbolicLink(testdir.resolve("sublink"), testdir.relativize(linktarget));
+		
+		FileUtils.moveRecursive(source, destination);
+
+		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
+		assertTrue(Files.exists(destination.resolve(testdir.getFileName()).resolve(subfile.getFileName())));
+		assertEquals("../linktarget", Files.readSymbolicLink(destination.resolve(link.getFileName())).toString());
+		assertEquals("../../linktarget", Files.readSymbolicLink(destination.resolve(testdir.getFileName()).resolve(sublink.getFileName())).toString());
+	}
 }

@@ -343,4 +343,32 @@ public class FileUtils {
 			Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
+
+	public static void moveRecursive(Path source, Path destination) throws IOException {		
+		if (Files.isDirectory(source)) {
+			Files.list(source).forEach(current -> {
+				try {
+					if (Files.isDirectory(current)) {
+						moveRecursive(current, destination.resolve(current.getFileName()));
+					} else {
+						moveRecursive(current, destination);
+					}
+				} catch (IOException e) {
+					throw new IllegalStateException(
+							"Could not move recursively from " + current + " to " + destination);
+				}
+			});
+		} else {
+			Path fileDest = destination;
+			if (Files.isDirectory(fileDest)) {
+				fileDest = destination.resolve(source.getFileName());
+			}
+			if (Files.isSymbolicLink(source)) {
+				FileUtils.moveSymlink(source, destination);
+			} else {
+				FileUtils.hardlinkOrCopy(source, fileDest);
+				Files.delete(source);
+			}
+		}
+	}
 }

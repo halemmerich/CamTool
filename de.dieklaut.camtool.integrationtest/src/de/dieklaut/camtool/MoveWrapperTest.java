@@ -21,14 +21,16 @@ public class MoveWrapperTest extends WorkingDirTest {
 		Path file1 = TestFileHelper.addFileToSorting(context, Paths.get("file1.arw"), 1000);
 		Path file2 = TestFileHelper.addFileToSorting(context, Paths.get("file2.arw"), 2000);
 		Path file3 = TestFileHelper.addFileToSorting(context, Paths.get("file3.arw"), 3000);
+		Path file4 = TestFileHelper.addFileToSorting(context, Paths.get("group/file4.arw"), 4000);
 		
 		Path sorting = Paths.get(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).toAbsolutePath();
 
 		CamTool.workingDir = sorting;
-		CamTool.main(new String [] {"move", "-c", sorting.resolve(file1.getFileName()).toString(), sorting.resolve(file2.getFileName()).toString()});
+		CamTool.main(new String [] {"move", "-c", sorting.resolve(file1.getFileName()).toString(), sorting.resolve(file2.getFileName()).toString(), sorting.resolve(file4.getParent().getFileName()).toString()});
 
 		assertTrue(Files.exists(sorting.resolve(FileUtils.getTimestampPortion(file1.getFileName().toString()) + "_multi").resolve(file1.getFileName())));
 		assertTrue(Files.exists(sorting.resolve(FileUtils.getTimestampPortion(file1.getFileName().toString()) + "_multi").resolve(file2.getFileName())));
+		assertTrue(Files.exists(sorting.resolve(FileUtils.getTimestampPortion(file1.getFileName().toString()) + "_multi").resolve("group").resolve(file4.getFileName())));
 		assertTrue(Files.exists(sorting.resolve(file3.getFileName())));
 	}
 	

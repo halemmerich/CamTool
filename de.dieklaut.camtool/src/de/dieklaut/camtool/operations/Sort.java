@@ -82,7 +82,9 @@ public class Sort extends AbstractOperation {
 						Logger.log("Error during move of collections", Level.WARNING);
 					}
 				}
-				group.moveToFolder(destination);
+				for (Group g : ((MultiGroup) group).getGroups()) {
+					g.moveToFolder(destination);
+				}
 			}
 		}
 	}

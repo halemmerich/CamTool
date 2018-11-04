@@ -93,14 +93,6 @@ public class MoveTest extends FileBasedTest {
 
 		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG")));
 		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(subfolder).resolve(testGroupName).resolve(timestamp_file3 + "_file3.JPG")));
-		
-		move = new Move(SORTER);
-		move.setNameOfGroup(testGroupName);
-		move.setTargetPath(Paths.get("..").resolve(".."));
-		move.perform(context);
-
-		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG")));
-		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(subfolder).resolve(testGroupName).resolve(timestamp_file3 + "_file3.JPG")));
 	}
 	
 	@Test
@@ -109,7 +101,7 @@ public class MoveTest extends FileBasedTest {
 		TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file1.JPG"), time);
 		TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file2.ARW"), time + 2500);
 		String timestamp_file3 = FileUtils.getTimestamp(TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file3.JPG"), time + 5000));
-		String timestamp_file4 = FileUtils.getTimestamp(TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file4.JPG"), time + 6000));
+		FileUtils.getTimestamp(TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file4.JPG"), time + 6000));
 		
 		context = Context.create(getTestFolder());
 
@@ -129,15 +121,6 @@ public class MoveTest extends FileBasedTest {
 
 		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG")));
 		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(subfolder).resolve(testGroupName).resolve(timestamp_file3 + "_file3.JPG")));
-		
-		move = new Move(SORTER);
-		move.setNameOfGroup(testGroupName);
-		move.setTargetPath(Paths.get(".."));
-		move.perform(context);
-
-		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("sub").resolve(timestamp_file3 + "_file3.JPG")));
-		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("sub").resolve(timestamp_file4 + "_file4.JPG")));
-		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(subfolder).resolve(testGroupName).resolve(timestamp_file3 + "_file3.JPG")));
 		
 	}
 	
