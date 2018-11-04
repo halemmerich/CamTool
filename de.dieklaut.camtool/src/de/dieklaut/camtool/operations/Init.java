@@ -35,11 +35,7 @@ public class Init extends AbstractOperation {
 		try {
 			Files.list(folder).forEach(current -> {
 				if (Files.isDirectory(current)) {
-					try {
-						Files.list(current).forEach(sub -> createTimeLineEntries(current, timelineFolder, context));
-					} catch (IOException e) {
-						Logger.log("Failed to iterate through original folder " + current + " for creating timeline symlinks", e);
-					}
+					createTimeLineEntries(current, timelineFolder, context);
 				} else {
 					boolean simplify = !folder.equals(context.getOriginals());
 					
