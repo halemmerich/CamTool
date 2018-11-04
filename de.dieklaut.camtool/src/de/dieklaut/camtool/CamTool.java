@@ -43,6 +43,8 @@ public class CamTool {
 	private static Options options = new Options().addOption(helpOption);
 
 	private static Sorter sorter = new DefaultSorter();
+	
+	public static Path workingDir = Paths.get("").toAbsolutePath();
 
 	private static UserInterface ui = new UserInterface() {
 
@@ -86,7 +88,7 @@ public class CamTool {
 				operationWrapper = new AbstractWrapper() {
 
 					@Override
-					public Operation getOperation(CommandLine cmdLine) {
+					public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 						return new AbstractOperation() {
 
 							@Override
@@ -101,6 +103,11 @@ public class CamTool {
 						return "Invalid operation";
 					}
 
+					@Override
+					public String getUsage() {
+						return "";
+					}
+
 				};
 			}
 
@@ -110,11 +117,10 @@ public class CamTool {
 				Options operationOptions = operationWrapper.getOptions();
 				CommandLine cmd = parser.parse(operationOptions, Arrays.copyOfRange(args, 1, args.length));
 				if (cmd.hasOption(helpOption.getOpt())) {
-					printOperationHelp(operationWrapper.getName(), operationOptions);
+					printOperationHelp(operationWrapper);
 					return;
 				}
 				Context context = null;
-				Path workingDir = Paths.get("").toAbsolutePath();
 				if (operationWrapper instanceof InitWrapper) {
 					try {
 						context = Context.create(workingDir);
@@ -125,7 +131,7 @@ public class CamTool {
 					context = findContext(workingDir);
 				}
 
-				Operation operation = operationWrapper.getOperation(cmd);
+				Operation operation = operationWrapper.getOperation(cmd, workingDir);
 				Logger.log("Performing operation " + operation.getName(), Level.INFO);
 				operation.perform(context);
 			} catch (ParseException e) {
@@ -169,7 +175,7 @@ public class CamTool {
 		}
 	}
 
-	private static void printOperationHelp(String operation, Options operationOptions) {
-		formatter.printHelp(APPLICATION_NAME + " " + operation + " " + APPLICATION_OPTIONS, operationOptions);
+	private static void printOperationHelp(OperationWrapper wrapper) {
+		formatter.printHelp(APPLICATION_NAME + " " + wrapper.getUsage(), wrapper.getOptions());
 	}
 }

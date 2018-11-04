@@ -18,6 +18,7 @@ public class Explode extends AbstractOperation {
 	private String sortingName = Constants.DEFAULT_SORTING_NAME;
 	private Sorter sorter;
 	private String groupName;
+	private Path groupPath;
 	
 	public Explode(Sorter sorter) {
 		this.sorter = sorter;
@@ -31,6 +32,10 @@ public class Explode extends AbstractOperation {
 		this.groupName = groupName; 
 	}
 	
+	public void setGroupPath(Path groupPath) {
+		this.groupPath = groupPath; 
+	}
+	
 	@Override
 	public void perform(Context context) {
 		Collection<Group> groups;
@@ -42,7 +47,13 @@ public class Explode extends AbstractOperation {
 			throw new IllegalStateException("Could not read groups", e);
 		}
 		
-		Group g = SortingHelper.findGroupByName(groups, groupName);
+		Group g = null;
+		if (groupName != null) {
+			g = SortingHelper.findGroupByName(groups, groupName);
+		}
+		if (groupPath != null) {
+			g = SortingHelper.findGroupByPath(groups, groupPath);
+		}
 		
 		if (g != null) {
 			if (g instanceof MultiGroup) {
@@ -58,7 +69,13 @@ public class Explode extends AbstractOperation {
 				Logger.log("Group with name " + groupName + " is not a MultiGroup", Level.ERROR);
 			}
 		} else {
-			Logger.log("Did not find a group with name " + groupName, Level.ERROR);
+			if (groupName != null) {
+				Logger.log("Did not find a group with name " + groupName, Level.ERROR);
+			} else if (groupPath != null) {
+				Logger.log("Did not find a group with path " + groupPath, Level.ERROR);
+			} else {
+				Logger.log("No group specified", Level.ERROR);
+			}
 		}
 	}
 

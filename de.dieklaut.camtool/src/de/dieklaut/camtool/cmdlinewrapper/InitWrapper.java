@@ -1,5 +1,7 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Path;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
@@ -15,7 +17,7 @@ public class InitWrapper extends AbstractWrapper {
 	}
 
 	@Override
-	public Operation getOperation(CommandLine cmdLine) {
+	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 		return new Init();
 	}
 

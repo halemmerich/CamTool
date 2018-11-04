@@ -1,5 +1,7 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Path;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -24,7 +26,7 @@ public class CleanTrashWrapper extends AbstractWrapper {
 	}
 
 	@Override
-	public Operation getOperation(CommandLine cmdLine) {
+	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 		CleanTrash render = new CleanTrash(sorter);
 		if (cmdLine.hasOption(OPT_NAME)) {
 			render.setName(cmdLine.getOptionValue(OPT_NAME));

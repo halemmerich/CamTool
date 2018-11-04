@@ -4,6 +4,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 public abstract class AbstractWrapper implements OperationWrapper{
+	private static final String APPLICATION_OPTIONS = "<options>";
 
 	private static final String OPT_HELP_SHORT = "h";
 	private static final String OPT_HELP = "help";
@@ -16,6 +17,11 @@ public abstract class AbstractWrapper implements OperationWrapper{
 	@Override
 	public String getName() {
 		return getClass().getSimpleName().replaceAll("Wrapper", "");
+	}
+	
+	@Override
+	public String getUsage() {
+		return getName() + " " + APPLICATION_OPTIONS;
 	}
 	
 }

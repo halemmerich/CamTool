@@ -1,5 +1,7 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Path;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -20,7 +22,7 @@ public class DeleteUnusedWrapper extends AbstractWrapper {
 	}
 
 	@Override
-	public Operation getOperation(CommandLine cmdLine) {
+	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 		DeleteUnused deleteUnused = new DeleteUnused();
 		if (cmdLine.hasOption(OPT_NO_AUTO_UPDATE)) {
 			deleteUnused.setAutoUpdateBeforeDeletion(false);

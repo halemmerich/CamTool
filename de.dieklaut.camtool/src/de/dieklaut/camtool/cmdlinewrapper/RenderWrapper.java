@@ -1,5 +1,7 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Path;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -32,7 +34,7 @@ public class RenderWrapper extends AbstractWrapper {
 	}
 
 	@Override
-	public Operation getOperation(CommandLine cmdLine) {
+	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 		Render render = new Render(sorter);
 		render.setImageResizer(new ImagemagickResizer());
 		if (cmdLine.hasOption(OPT_NAME)) {

@@ -17,6 +17,7 @@ public class Move extends AbstractOperation{
 	private Sorter sorter;
 	private String nameOfGroup;
 	private Path targetPath = Paths.get("../");
+	private Path groupPath;
 	
 	public Move(Sorter sorter) {
 		super();
@@ -45,12 +46,22 @@ public class Move extends AbstractOperation{
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not read groups", e);
 		}
+		Group group = null;
+		if (groupPath != null) {
+			group = SortingHelper.findGroupByPath(groups, groupPath);
+		}
+		if (nameOfGroup != null) {
+			group = SortingHelper.findGroupByName(groups, nameOfGroup);
+		}
 		
-		Group group = SortingHelper.findGroupByName(groups, nameOfGroup);
 		if (group == null) {
 			throw new IllegalStateException("Could not find group for name " + nameOfGroup);
 		}
 		group.moveToFolder(targetPath);
+	}
+
+	public void setPathOfGroup(Path path) {
+		this.groupPath = path;
 	}
 
 }

@@ -1,5 +1,7 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Path;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
@@ -22,9 +24,10 @@ public interface OperationWrapper {
 	 * Constructs an {@link Operation} from command line options.
 	 * 
 	 * @param cmdLine
+	 * @param workingDir 
 	 * @return
 	 */
-	public Operation getOperation(CommandLine cmdLine);
+	public Operation getOperation(CommandLine cmdLine, Path workingDir);
 
 	/**
 	 * @return the name which is to be used for command line access to this
@@ -36,4 +39,6 @@ public interface OperationWrapper {
 	 * @return a textual description of the operation
 	 */
 	public String getHelp();
+
+	public String getUsage();
 }

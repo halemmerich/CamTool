@@ -1,5 +1,7 @@
 package de.dieklaut.camtool;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -100,17 +102,57 @@ public class SortingHelper {
 	 * @return the found group or null if none are found
 	 */
 	public static Group findGroupByName(Collection<Group> groups, String nameOfGroup) {
+		Group candidate = null;
 		for (Group group : groups) {
 			if (nameOfGroup.equals(group.getName())) {
-				return group;
+				if (candidate == null) {
+					candidate = group;
+				} else {
+					throw new IllegalStateException("The given name " + nameOfGroup + " is not unique");
+				}
 			}
 			if (group instanceof MultiGroup) {
 				Group result = findGroupByName(((MultiGroup) group).getGroups(), nameOfGroup);
 				if (result != null) {
-					return result;
+					if (candidate == null) {
+						candidate = result;
+					} else {
+						throw new IllegalStateException("The given name " + nameOfGroup + " is not unique");
+					}
 				}
 			}
 		}
+		return candidate;
+	}
+
+	public static Group findGroupByPath(Collection<Group> groups, Path groupPath) {
+		for (Group group : groups) {
+			if (group instanceof MultiGroup) {
+				if (group.getContainingFolder().toAbsolutePath().equals(groupPath.toAbsolutePath())) {
+					return group;
+				}
+				
+				Group result = findGroupByPath(((MultiGroup) group).getGroups(), groupPath);
+				if (result != null) {
+					return result;
+				}
+			}
+			if (group.getAllFiles().stream().anyMatch(path -> path.toAbsolutePath().equals(groupPath.toAbsolutePath()))) {
+				return group;
+			}
+		}
 		return null;
+	}
+
+	public static String detectSortingFromDir(Path workingDir) {
+		if (Files.exists(workingDir.resolve(Constants.SORTED_FILE_NAME))) {
+			return workingDir.getFileName().toString();
+		} else {
+			if (workingDir.getParent() != null) {
+				return detectSortingFromDir(workingDir.getParent());
+			} else {
+				throw new IllegalArgumentException("No sorting detecting in " + workingDir + " or parents");
+			}
+		}
 	}
 }

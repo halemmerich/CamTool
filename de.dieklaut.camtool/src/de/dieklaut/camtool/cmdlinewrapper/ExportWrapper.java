@@ -1,5 +1,6 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.cli.CommandLine;
@@ -28,7 +29,7 @@ public class ExportWrapper extends AbstractWrapper {
 	}
 
 	@Override
-	public Operation getOperation(CommandLine cmdLine) {
+	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 		Export export = new Export();
 		if (cmdLine.hasOption(OPT_NAME)) {
 			export.setName(cmdLine.getOptionValue(OPT_NAME));

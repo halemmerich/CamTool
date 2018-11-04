@@ -1,10 +1,14 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import de.dieklaut.camtool.Sorter;
+import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.operations.Explode;
 import de.dieklaut.camtool.operations.Operation;
 
@@ -30,15 +34,28 @@ public class ExplodeWrapper extends AbstractWrapper {
 	}
 
 	@Override
-	public Operation getOperation(CommandLine cmdLine) {
+	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 		Explode explode = new Explode(sorter);
-		if (cmdLine.hasOption(OPT_NAME)) {
-			String optionValue = cmdLine.getOptionValue(OPT_NAME);
-			explode.setSortingName(optionValue);
+		
+		if (cmdLine.getArgList().size() > 0) {
+			explode.setSortingName(SortingHelper.detectSortingFromDir(workingDir));
+			
+			Path groupPath = Paths.get(cmdLine.getArgList().get(0));
+			if (groupPath.isAbsolute()) {
+				explode.setGroupPath(groupPath);	
+			} else {
+				explode.setGroupPath(workingDir.resolve(groupPath));	
+			}
+		} else {
+			if (cmdLine.hasOption(OPT_NAME)) {
+				String optionValue = cmdLine.getOptionValue(OPT_NAME);
+				explode.setSortingName(optionValue);
+			}
+			if (cmdLine.hasOption(OPT_GROUP)) {
+				explode.setGroupName(cmdLine.getOptionValue(OPT_GROUP));
+			}
 		}
-		if (cmdLine.hasOption(OPT_GROUP)) {
-			explode.setGroupName(cmdLine.getOptionValue(OPT_GROUP));
-		}
+		
 		return explode;
 	}
 

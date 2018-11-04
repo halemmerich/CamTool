@@ -1,5 +1,7 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Path;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -31,7 +33,7 @@ public class ShowGroupsWrapper extends AbstractWrapper {
 	}
 
 	@Override
-	public Operation getOperation(CommandLine cmdLine) {
+	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 		ShowGroups showGroups = new ShowGroups(sorter, ui);
 		if (cmdLine.hasOption(OPT_NAME)) {
 			showGroups.setSortingName(cmdLine.getOptionValue(OPT_NAME));

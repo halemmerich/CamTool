@@ -1,5 +1,7 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Path;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -33,7 +35,7 @@ public class SortWrapper extends AbstractWrapper {
 	}
 
 	@Override
-	public Operation getOperation(CommandLine cmdLine) {
+	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 		Sort sort = new Sort(sorter);
 		if (cmdLine.hasOption(OPT_NAME)) {
 			sort.setName(cmdLine.getOptionValue(OPT_NAME));

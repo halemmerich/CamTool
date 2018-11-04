@@ -227,7 +227,11 @@ public class FileUtils {
 
 	public static long getTimestampPortion(Path current) {
 		String filename = current.getFileName().toString();
-		return Long.parseLong(filename.substring(0, filename.indexOf('_')));
+		return Long.parseLong(getTimestampPortion(filename));
+	}
+	
+	public static String getTimestampPortion(String filename) {
+		return filename.substring(0, filename.indexOf('_'));
 	}
 
 	public static String getGroupName(Path current) {
