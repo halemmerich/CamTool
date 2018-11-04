@@ -7,6 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import de.dieklaut.camtool.Sorter;
+import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.operations.Operation;
 import de.dieklaut.camtool.operations.Simplify;
 
@@ -31,6 +32,8 @@ public class SimplifyWrapper extends AbstractWrapper {
 		Simplify simplify = new Simplify(sorter);
 		if (cmdLine.hasOption(OPT_NAME)) {
 			simplify.setSortingName(cmdLine.getOptionValue(OPT_NAME));
+		} else {
+			simplify.setSortingName(SortingHelper.detectSortingFromDir(workingDir));
 		}
 		return simplify;
 	}

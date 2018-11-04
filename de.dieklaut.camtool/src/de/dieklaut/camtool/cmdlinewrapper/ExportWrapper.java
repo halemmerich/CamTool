@@ -7,6 +7,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.operations.Export;
 import de.dieklaut.camtool.operations.Operation;
 
@@ -33,6 +34,8 @@ public class ExportWrapper extends AbstractWrapper {
 		Export export = new Export();
 		if (cmdLine.hasOption(OPT_NAME)) {
 			export.setName(cmdLine.getOptionValue(OPT_NAME));
+		} else {
+			export.setName(SortingHelper.detectSortingFromDir(workingDir));
 		}
 		if (cmdLine.hasOption(OPT_TYPE)) {
 			export.setType(cmdLine.getOptionValue(OPT_TYPE));

@@ -2,6 +2,7 @@ package de.dieklaut.camtool;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Before;
@@ -13,6 +14,7 @@ import de.dieklaut.camtool.util.FileUtils;
 public class CamToolTest extends FileBasedTest {
 
 	private static final String TEST = "test";
+	private static Path camtoolWorkingDir = Paths.get(CamTool.workingDir.toString());
 
 	@Before
 	public void setUp() throws InterruptedException, IOException {
@@ -22,6 +24,7 @@ public class CamToolTest extends FileBasedTest {
 			System.exit(1);
 		}
 		Files.list(Paths.get("")).forEach(currentPath -> FileUtils.deleteRecursive(currentPath, false));
+		CamTool.workingDir = camtoolWorkingDir;
 	}
 
 	@Test
@@ -58,7 +61,7 @@ public class CamToolTest extends FileBasedTest {
 
 	@Test
 	public void callSortWithName() {
-		CamTool.main(new String[] { "init" });
+		callInitNoArgs();
 		CamTool.main(new String[] { "sort", "-n", TEST });
 	}
 
@@ -89,6 +92,7 @@ public class CamToolTest extends FileBasedTest {
 	@Test
 	public void callCleanTrashNoArgs() {
 		callSortNoArgs();
+		CamTool.workingDir = Paths.get("", Constants.FOLDER_SORTED + "/" + Constants.DEFAULT_SORTING_NAME);
 		CamTool.main(new String[] { "cleantrash" });
 	}
 
@@ -102,6 +106,7 @@ public class CamToolTest extends FileBasedTest {
 	public void callRenderNoArgs() {
 		callSortNoArgs();
 		RenderJobFactory.useRawtherapee = false;
+		CamTool.workingDir = Paths.get(Constants.FOLDER_SORTED + "/" + Constants.DEFAULT_SORTING_NAME);
 		CamTool.main(new String[] { "render" });
 	}
 
@@ -122,6 +127,7 @@ public class CamToolTest extends FileBasedTest {
 	@Test
 	public void callExportNoArgs() {
 		callRenderNoArgs();
+		CamTool.workingDir = Paths.get(Constants.FOLDER_SORTED + "/" + Constants.DEFAULT_SORTING_NAME);
 		CamTool.main(new String[] { "export" });
 	}
 

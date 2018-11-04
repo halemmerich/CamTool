@@ -27,8 +27,8 @@ public class CamToolTest extends WorkingDirTest {
 		
 		CamTool.main(new String[] { "init" });
 		CamTool.main(new String[] { "sort" });
-		CamTool.main(new String[] { "showGroups" });
-		CamTool.main(new String[] { "render" });
+		CamTool.main(new String[] { "showGroups", "-n", Constants.DEFAULT_SORTING_NAME });
+		CamTool.main(new String[] { "render", "-n", Constants.DEFAULT_SORTING_NAME });
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class CamToolTest extends WorkingDirTest {
 		
 		Files.copy(TestFileHelper.getTestResource("scripts/dri.js"), Paths.get(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(firstFileTime + "_multi").resolve(Constants.FILE_NAME_RENDERSCRIPT));
 		
-		CamTool.main(new String[] { "render" });
+		CamTool.main(new String[] { "render", "-n", Constants.DEFAULT_SORTING_NAME });
 
 		assertEquals(1, Files.list(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL)).count());
 	}
@@ -67,7 +67,7 @@ public class CamToolTest extends WorkingDirTest {
 		Path path = Paths.get(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("20170915165451000_multi").resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
 		Files.write(path, "20170915165451000_series_06.JPG\n20170915165451000_series_08.JPG".getBytes());
 		
-		CamTool.main(new String[] { "render" });
+		CamTool.main(new String[] { "render", "-n", Constants.DEFAULT_SORTING_NAME });
 
 		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve("20170915165451000_series_06.jpg")));
 		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve("20170915165451000_series_08.jpg")));

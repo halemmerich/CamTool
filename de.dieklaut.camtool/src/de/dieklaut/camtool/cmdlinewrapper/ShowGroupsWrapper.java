@@ -7,6 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import de.dieklaut.camtool.Sorter;
+import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.UserInterface;
 import de.dieklaut.camtool.operations.Operation;
 import de.dieklaut.camtool.operations.ShowGroups;
@@ -37,6 +38,8 @@ public class ShowGroupsWrapper extends AbstractWrapper {
 		ShowGroups showGroups = new ShowGroups(sorter, ui);
 		if (cmdLine.hasOption(OPT_NAME)) {
 			showGroups.setSortingName(cmdLine.getOptionValue(OPT_NAME));
+		} else {
+			showGroups.setSortingName(SortingHelper.detectSortingFromDir(workingDir));
 		}
 		if (cmdLine.hasOption(OPT_VERBOSITY)) {
 			showGroups.setVerbosity(Integer.parseInt(cmdLine.getOptionValue(OPT_VERBOSITY)));

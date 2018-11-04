@@ -7,6 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import de.dieklaut.camtool.Sorter;
+import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.operations.CleanTrash;
 import de.dieklaut.camtool.operations.Operation;
 
@@ -27,11 +28,13 @@ public class CleanTrashWrapper extends AbstractWrapper {
 
 	@Override
 	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
-		CleanTrash render = new CleanTrash(sorter);
+		CleanTrash clean = new CleanTrash(sorter);
 		if (cmdLine.hasOption(OPT_NAME)) {
-			render.setName(cmdLine.getOptionValue(OPT_NAME));
+			clean.setName(cmdLine.getOptionValue(OPT_NAME));
+		} else {
+			clean.setName(SortingHelper.detectSortingFromDir(workingDir));
 		}
-		return render;
+		return clean;
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import org.apache.commons.cli.Options;
 
 import de.dieklaut.camtool.ImagemagickResizer;
 import de.dieklaut.camtool.Sorter;
+import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.operations.Operation;
 import de.dieklaut.camtool.operations.Render;
 
@@ -39,6 +40,8 @@ public class RenderWrapper extends AbstractWrapper {
 		render.setImageResizer(new ImagemagickResizer());
 		if (cmdLine.hasOption(OPT_NAME)) {
 			render.setSortingName(cmdLine.getOptionValue(OPT_NAME));
+		} else {
+			render.setSortingName(SortingHelper.detectSortingFromDir(workingDir));
 		}
 		if (cmdLine.hasOption(OPT_GROUP)) {
 			render.setNameOfGroup(cmdLine.getOptionValue(OPT_GROUP));
