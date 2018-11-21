@@ -322,10 +322,16 @@ public class FileUtils {
 			throw new IllegalArgumentException("No input files for checksum creation");
 		}
 		CRC32 crc = new CRC32();
-		
+
+        
 		paths.stream().sorted().forEachOrdered(path -> {
-			try {
-				crc.update(Files.readAllBytes(path));
+			try (InputStream in = Files.newInputStream(path)) {
+				final byte[] buf = new byte[4096];
+				int bytesRead = in.read(buf, 0, buf.length);
+				do {
+					bytesRead = in.read(buf, 0, buf.length);
+					crc.update(buf);
+				} while (bytesRead > -1);
 			} catch (IOException e) {
 				Logger.log("Failure during creation of group checksum for " + path, e);
 			}
