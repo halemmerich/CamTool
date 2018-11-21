@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.time.Instant;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,18 +66,26 @@ public class FileUtilsTest extends FileBasedTest {
 	}
 	
 	@Test
+	public void testGetSuffix() {
+		assertEquals(".arw.pp3", FileUtils.getSuffix(Paths.get("asdf").resolve("12345_asdf.arw.pp3")));
+		assertEquals(".arw", FileUtils.getSuffix(Paths.get("asdf").resolve("12345_asdf.arw")));
+		assertEquals("", FileUtils.getSuffix(Paths.get("asdf").resolve("12345_asdf")));
+	}
+	
+	@Test
 	public void testGetTimestampPortion() {
-		assertEquals(12345, FileUtils.getTimestampPortion(Paths.get("asdf").resolve("12345_asdf.arw.pp3")));
-		assertEquals(12345, FileUtils.getTimestampPortion(Paths.get("asdf").resolve("12345_asdf.arw")));
-		assertEquals(12345, FileUtils.getTimestampPortion(Paths.get("asdf").resolve("12345_asdf")));
+		assertEquals("12345", FileUtils.getTimestampPortion(Paths.get("asdf").resolve("12345_asdf.arw.pp3")));
+		assertEquals("12345", FileUtils.getTimestampPortion(Paths.get("asdf").resolve("12345_asdf.arw")));
+		assertEquals("12345", FileUtils.getTimestampPortion(Paths.get("asdf").resolve("12345_asdf")));
 	}
 	
 	@Test
 	public void testGetCreationDate() {
 		assertEquals(1499505230000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("A7II.ARW")).toEpochMilli());
 		assertEquals(1499503995000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("NEX5R.ARW")).toEpochMilli());
-		assertEquals(1501103070993l, FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS")).toEpochMilli());
-		assertEquals(1501103071000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("XAVC.MP4")).toEpochMilli());
+		//assertEquals(1501103070993l, FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS")).toEpochMilli());
+		//assertEquals(1501103071000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("XAVC.MP4")).toEpochMilli());
+		assertEquals(0l, FileUtils.getCreationDate(Paths.get("19700101000000000_XAVC.MP4")).toEpochMilli());
 	}
 	
 	@Test
@@ -87,8 +98,14 @@ public class FileUtilsTest extends FileBasedTest {
 	public void testGetTimestamp() {
 		assertEquals("20170708091350000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("A7II.ARW"))));
 		assertEquals("20170708085315000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("NEX5R.ARW"))));
-		assertEquals("20170726210430993", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS"))));
-		assertEquals("20170726210431000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("XAVC.MP4"))));
+		assertEquals("20190104091144948", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS"))));
+		assertEquals("20190104091144978", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("XAVC.MP4"))));
+	}
+	
+	@Test
+	public void testGetInstant() throws ParseException {
+		Instant now = Instant.now();
+		assertEquals(now, FileUtils.getInstant(FileUtils.getTimestamp(now)));
 	}
 	
 	@Test
@@ -234,5 +251,60 @@ public class FileUtilsTest extends FileBasedTest {
 		assertTrue(Files.exists(destination.resolve(testdir.getFileName()).resolve(subfile.getFileName())));
 		assertEquals("../linktarget", Files.readSymbolicLink(destination.resolve(link.getFileName())).toString());
 		assertEquals("../../linktarget", Files.readSymbolicLink(destination.resolve(testdir.getFileName()).resolve(sublink.getFileName())).toString());
+	}
+	
+	@Test
+	public void testChangeLinkTargetFilename() throws IOException {
+		Path targetfolder = Files.createDirectories(getTestFolder().resolve("targetfolder"));
+		Path linkfolder = Files.createDirectories(getTestFolder().resolve("linkfolder"));
+		
+		Path linktarget = Files.createFile(targetfolder.resolve("linktarget"));
+		Path link = Files.createSymbolicLink(linkfolder.resolve("link"), linktarget);
+		
+		FileUtils.changeLinkTargetFilename(link, "newname");
+		
+		assertEquals(targetfolder.resolve("newname"), Files.readSymbolicLink(link));
+	}
+	
+	@Test
+	public void testRenameFile() throws IOException {
+		Path sourcefolder = Files.createDirectories(getTestFolder().resolve("sourcefolder"));
+		Path linkfolder = Files.createDirectories(getTestFolder().resolve("linkfolder"));
+		Path linkfolder2 = Files.createDirectories(getTestFolder().resolve("linkfolder2"));
+
+		Path linktarget = Files.createFile(sourcefolder.resolve("linktarget"));
+		Path link = Files.createSymbolicLink(linkfolder.resolve("20200000000000000_link"), linktarget);
+		Path link2 = Files.createSymbolicLink(linkfolder2.resolve("20200000000000000_link"), link);
+		
+		FileUtils.renameFile(linktarget, getTestFolder(), "newname");
+
+		assertTrue(Files.exists(sourcefolder.resolve("newname")));
+		assertEquals(sourcefolder.resolve("newname"), Files.readSymbolicLink(link));
+		assertEquals(link, Files.readSymbolicLink(link2));
+		
+	}
+	
+	@Test
+	public void testUpdateFilenameToLinkTargetname() throws IOException {
+		Path linktarget = Files.createFile(getTestFolder().resolve("linktarget"));
+		Path linkfolder = Files.createDirectories(getTestFolder().resolve("linkfolder"));
+		Path link = Files.createSymbolicLink(linkfolder.resolve("20200000000000000_link"), linktarget);
+		
+		assertEquals(linktarget.getFileName(), FileUtils.updateFilenameToLinkTargetname(link).getFileName());
+		
+	}
+	
+	@Test
+	public void testGetByRegex() throws IOException {
+		Files.createFile(getTestFolder().resolve("asdf"));
+		Path file2 = Files.createFile(getTestFolder().resolve("sdfg"));
+		Path file3 = Files.createDirectory(getTestFolder().resolve("dfgh"));
+		Files.createFile(getTestFolder().resolve("fghj"));
+		
+		Collection<Path> result = FileUtils.getByRegex(getTestFolder(), "dfg");
+		assertEquals(2, result.size());
+		assertTrue(result.contains(file2));
+		assertTrue(result.contains(file3));
+		
 	}
 }

@@ -11,7 +11,7 @@ import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.SortingHelper;
 
-public class Move extends AbstractOperation{
+public class Timeshift extends AbstractOperation{
 
 	private String sortingName = Constants.DEFAULT_SORTING_NAME;
 	private Sorter sorter;
@@ -19,7 +19,7 @@ public class Move extends AbstractOperation{
 	private Path targetPath = Paths.get("../");
 	private Path groupPath;
 	
-	public Move(Sorter sorter) {
+	public Timeshift(Sorter sorter) {
 		super();
 		this.sorter = sorter;
 	}
@@ -62,11 +62,6 @@ public class Move extends AbstractOperation{
 
 	public void setPathOfGroup(Path path) {
 		this.groupPath = path;
-	}
-
-	public void setDifference(String optionValue) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

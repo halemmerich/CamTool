@@ -1,5 +1,9 @@
 package de.dieklaut.camtool.util;
 
+import static java.time.temporal.ChronoField.DAY_OF_MONTH;
+import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
+import static java.time.temporal.ChronoField.YEAR;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,11 +16,17 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Date;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
 import com.drew.imaging.ImageMetadataReader;
@@ -52,6 +62,15 @@ public class FileUtils {
 	}
 	
 	public static Instant getCreationDate(Path filePath) {
+		try {
+			Long timestamp;
+			if ((timestamp = FileUtils.getTimestampPortionEpoch(filePath)) != null) {
+				return Instant.ofEpochMilli(timestamp);
+			}
+		} catch (Exception e) {
+			Logger.log("No timestamp found in " + filePath,
+					e, Level.TRACE);
+		}
 		try (InputStream stream = Files.newInputStream(filePath)){
 			Metadata metadata = ImageMetadataReader.readMetadata(stream);
 
@@ -179,6 +198,10 @@ public class FileUtils {
 		}
 	}
 	
+	public static long getEpoch(String timestamp) {
+		return getInstant(timestamp).toEpochMilli();
+	}
+	
 	public static String getTimestamp(long epoch) {
 		return getTimestamp(Instant.ofEpochMilli(epoch));
 	}
@@ -191,6 +214,22 @@ public class FileUtils {
 		return formatter.format(instant);
 	}
 
+	public static Instant getInstant(String timestamp) {
+		DateTimeFormatter f = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendValue(YEAR, 4)
+                .appendValue(MONTH_OF_YEAR, 2)
+                .appendValue(DAY_OF_MONTH, 2)
+                .appendValue(ChronoField.HOUR_OF_DAY, 2)
+                .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+                .appendValue(ChronoField.SECOND_OF_MINUTE, 2)
+                .appendValue(ChronoField.MILLI_OF_SECOND, 3)
+                .toFormatter().withZone(ZoneId.of("Z"));
+		//f = DateTimeFormatter.ofPattern("uuuuMMddHHmmssSSS");
+		TemporalAccessor parsed = f.parse(timestamp);
+		return Instant.from(parsed);
+	}
+
 	/**
 	 * Returns the timestamp string for a given file according to {@link #getCreationDate(Path)}.
 	 * @param file
@@ -200,6 +239,13 @@ public class FileUtils {
 		return getTimestamp(getCreationDate(file));
 	}
 
+	/**
+	 * Moves a symlink to a new folder while retaining the same target. If the symlink was absolute it will be relativized.
+	 * @param current
+	 * @param destination
+	 * @return
+	 * @throws IOException
+	 */
 	public static Path moveSymlink(Path current, Path destination) throws IOException {
 		Path currentTarget = Files.readSymbolicLink(current);
 		
@@ -226,13 +272,17 @@ public class FileUtils {
 		return newLink;
 	}
 
-	public static long getTimestampPortion(Path current) {
+	public static long getTimestampPortionEpoch(Path current) {
 		String filename = current.getFileName().toString();
-		return Long.parseLong(getTimestampPortion(filename));
+		return FileUtils.getEpoch(getTimestampPortion(filename));
 	}
 	
 	public static String getTimestampPortion(String filename) {
 		return filename.substring(0, filename.indexOf('_'));
+	}
+	
+	public static String getTimestampPortion(Path path) {
+		return getTimestampPortion(path.getFileName().toString());
 	}
 
 	public static String getGroupName(Path current) {
@@ -255,6 +305,17 @@ public class FileUtils {
 			return filename.substring(filename.indexOf('_') + 1);
 		}
 		return filename;
+	}
+
+	public static String getSuffix(Path path) {
+		return getSuffix(path.getFileName().toString());
+	}
+
+	public static String getSuffix(String filename) {
+		if (filename.contains(".")) {
+			return filename.substring(filename.indexOf("."), filename.length());
+		}
+		return "";
 	}
 
 	public static String removeSuffix(String fileName) {
@@ -377,5 +438,59 @@ public class FileUtils {
 				Files.delete(source);
 			}
 		}
+	}
+
+	public static void changeLinkTargetFilename(Path link, String newFileName) throws IOException {
+		if (!Files.isSymbolicLink(link)) {
+			throw new IllegalArgumentException("The given path is not a symlink " + link);
+		}
+		Path currentTarget = Files.readSymbolicLink(link);
+		Path newTarget = currentTarget.getParent().resolve(newFileName);
+		Files.delete(link);
+		Files.createSymbolicLink(link, newTarget);
+	}
+	
+	public static void renameFile(Path file, Path root, String newName) throws IOException {
+		Path realfile = file.toAbsolutePath();
+		Files.walk(root).filter(p -> {
+			if (Files.isSymbolicLink(p)) {
+				try {
+					Path linkTarget = FileUtils.resolve(p).toAbsolutePath();
+					Logger.log("Found file " + p + " -> " + linkTarget, Level.TRACE);
+					return realfile.equals(linkTarget);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return false;
+		}).forEach(p -> {
+			try {
+				FileUtils.changeLinkTargetFilename(p, newName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+		Files.move(file, file.getParent().resolve(newName));
+	}
+
+	public static Path updateFilenameToLinkTargetname(Path link) throws IOException {
+		if (!Files.isSymbolicLink(link)) {
+			throw new IllegalArgumentException("Argument must be a symbolic link");
+		}
+		return Files.move(link, link.getParent().resolve(Files.readSymbolicLink(link).getFileName()));
+	}
+
+	public static Collection<Path> getByRegex(Path root, String selectingRegex) throws IOException {
+		Pattern pattern = Pattern.compile(selectingRegex);
+		Predicate<String> pred = pattern.asPredicate();
+		return Files.list(root).filter(p -> {
+			return pred.test(p.getFileName().toString());
+		}).collect(Collectors.toSet());
+	}
+	
+	public static Path resolve(Path symlink) throws IOException{
+		return symlink.getParent().resolve(Files.readSymbolicLink(symlink)).normalize();		
 	}
 }

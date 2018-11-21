@@ -56,7 +56,7 @@ public class ShowGroupsTest extends FileBasedTest{
 			public boolean test(Path t) {
 				return t.getFileName().toString().contains("file2");
 			}
-		}).findFirst().get()) + "";
+		}).findFirst().get().toString()) + "";
 		
 		Path collection = Files.createFile(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(TEST).resolve("file.camtool_collection"));
 		Files.write(collection, (timestamp + "_file2\n" + timestamp + "_file3\n" + timestamp + "_file4\n").getBytes());

@@ -92,12 +92,12 @@ public class Sort extends AbstractOperation {
 	private String buildGroupName(Group group) {
 		long currentMin = Long.MAX_VALUE;
 		for (Path current : group.getAllFiles()) {
-			long stamp = FileUtils.getTimestampPortion(current);
+			long stamp = FileUtils.getTimestampPortionEpoch(current);
 			if (stamp < currentMin) {
 				currentMin = stamp;
 			}
 		}
-		return currentMin + "_" + group.getType();
+		return FileUtils.getTimestamp(currentMin) + "_" + group.getType();
 	}
 
 	public void setName(String name) {
