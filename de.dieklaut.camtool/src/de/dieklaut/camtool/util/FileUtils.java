@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -345,7 +346,7 @@ public class FileUtils {
 		}
 		try {
 			Files.createLink(destination, source);
-		} catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException | FileSystemException e) {
 			Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
