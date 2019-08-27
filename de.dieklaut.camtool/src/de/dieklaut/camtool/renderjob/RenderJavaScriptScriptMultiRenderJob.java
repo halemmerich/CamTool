@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
@@ -30,7 +32,8 @@ public class RenderJavaScriptScriptMultiRenderJob extends RenderJob {
 	}
 
 	@Override
-	void storeImpl(Path destination) throws IOException {
+	public
+	Set<Path> storeImpl(Path destination) throws IOException {
 		Path workDir = Files.createTempDirectory("camtool_workdir");
 
 		for (Group group : multiGroup.getGroups()) {
@@ -45,8 +48,17 @@ public class RenderJavaScriptScriptMultiRenderJob extends RenderJob {
 			Logger.log("Render script execution failed", Level.ERROR);
 		}
 
+		Set<Path> rendered = Files.list(resultDir).collect(Collectors.toSet());
+		//FIXME: correctly handle recursive files/folders
 		FileUtils.deleteRecursive(workDir, true);
 		FileUtils.deleteRecursive(resultDir, true);
+		return rendered;
+	}
+
+	@Override
+	public
+	Set<Path> getPredictedResultsImpl(Path destination) throws IOException {
+		return null;
 	}
 
 }

@@ -3,6 +3,8 @@ package de.dieklaut.camtool.renderjob;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.dieklaut.camtool.Group;
 
@@ -15,10 +17,21 @@ public class MultiRenderJob extends RenderJob {
 	}
 
 	@Override
-	void storeImpl(Path destination) throws IOException {
+	public Set<Path> storeImpl(Path destination) throws IOException {
+		Set<Path> rendered = new HashSet<>();
 		for (Group g : groups) {
-			g.getRenderJob().store(destination);
+			rendered.addAll(g.getRenderJob().store(destination));
 		}
+		return rendered;
+	}
+
+	@Override
+	public Set<Path> getPredictedResultsImpl(Path destination) throws IOException {
+		Set<Path> result = new HashSet<>();
+		for (Group g : groups) {
+			result.addAll(g.getRenderJob().getPredictedResults(destination));
+		}
+		return result;
 	}
 
 }

@@ -12,6 +12,7 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
@@ -24,6 +25,8 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -41,9 +44,9 @@ import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
 
 public class FileUtils {
-	
+
 	public static String getCreator(Path filePath) {
-		try (InputStream stream = Files.newInputStream(filePath)){
+		try (InputStream stream = Files.newInputStream(filePath)) {
 			Metadata metadata = ImageMetadataReader.readMetadata(stream);
 
 			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
@@ -55,12 +58,12 @@ public class FileUtils {
 				}
 			}
 		} catch (ImageProcessingException | IOException e) {
-			Logger.log("Error during parsing of image file " + filePath + " for exif data for a creator, falling back to default",
-					e, Level.DEBUG);
+			Logger.log("Error during parsing of image file " + filePath
+					+ " for exif data for a creator, falling back to default", e, Level.DEBUG);
 		}
 		return Constants.UNKNOWN;
 	}
-	
+
 	public static Instant getCreationDate(Path filePath) {
 		try {
 			Long timestamp;
@@ -68,10 +71,9 @@ public class FileUtils {
 				return Instant.ofEpochMilli(timestamp);
 			}
 		} catch (Exception e) {
-			Logger.log("No timestamp found in " + filePath,
-					e, Level.TRACE);
+			Logger.log("No timestamp found in " + filePath, e, Level.TRACE);
 		}
-		try (InputStream stream = Files.newInputStream(filePath)){
+		try (InputStream stream = Files.newInputStream(filePath)) {
 			Metadata metadata = ImageMetadataReader.readMetadata(stream);
 
 			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
@@ -83,12 +85,13 @@ public class FileUtils {
 				}
 			}
 		} catch (ImageProcessingException | IOException e) {
-			Logger.log("Error during parsing of image file " + filePath + " for exif data for a creation date, falling back to file creation date",
-					e, Level.DEBUG);
+			Logger.log("Error during parsing of image file " + filePath
+					+ " for exif data for a creation date, falling back to file creation date", e, Level.DEBUG);
 		}
 
 		try {
-			Logger.log("No date found in image file " + filePath + " exif data, falling back to file creation date", Level.INFO);
+			Logger.log("No date found in image file " + filePath + " exif data, falling back to file creation date",
+					Level.INFO);
 			return Files.readAttributes(filePath, BasicFileAttributes.class).lastModifiedTime().toInstant();
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not get the creation date from file " + filePath, e);
@@ -96,7 +99,7 @@ public class FileUtils {
 	}
 
 	public static Duration getCreationDuration(Path filePath) {
-		try (InputStream stream = Files.newInputStream(filePath)){
+		try (InputStream stream = Files.newInputStream(filePath)) {
 			Metadata metadata = ImageMetadataReader.readMetadata(stream);
 
 			Collection<ExifSubIFDDirectory> directories = metadata.getDirectoriesOfType(ExifSubIFDDirectory.class);
@@ -107,7 +110,7 @@ public class FileUtils {
 					Duration result = Duration.ofNanos((long) (shutterspeed * 1000000));
 
 					Logger.log("Found creation duration for file " + filePath + " " + result, Level.DEBUG);
-					
+
 					return result;
 				}
 				if (directory.containsTag(ExifSubIFDDirectory.TAG_EXPOSURE_TIME)) {
@@ -115,41 +118,38 @@ public class FileUtils {
 					Duration result = Duration.ofNanos((long) (shutterspeed * 1000000000));
 
 					Logger.log("Found creation duration for file " + filePath + " " + result, Level.DEBUG);
-					
+
 					return result;
 				}
 			}
-			
-			
+
 		} catch (ImageProcessingException | IOException | MetadataException e) {
-			Logger.log("Could not parse image file exif data for a shutter duration, falling back to duration 0",
-					e, Level.DEBUG);
+			Logger.log("Could not parse image file exif data for a shutter duration, falling back to duration 0", e,
+					Level.DEBUG);
 		}
 
 		return Duration.ZERO;
 	}
 
 	/**
-	 * @param path
-	 *            the {@link Path} to be deleted
-	 * @param force
-	 *            set to true, if read only files should be deleted
+	 * @param path  the {@link Path} to be deleted
+	 * @param force set to true, if read only files should be deleted
 	 * @throws FileOperationException
 	 */
 	public static void deleteRecursive(Path path, boolean force) {
 		File candidate = path.toFile();
-		
+
 		if (force && !Files.isSymbolicLink(path)) {
 			candidate.setWritable(true);
 		}
-		
+
 		if (Files.isDirectory(path)) {
 			try {
 				Files.list(path).forEach(file -> deleteRecursive(file, force));
 			} catch (IOException e) {
 				throw new IllegalStateException("Could get delete contents of " + path + " recursive", e);
 			}
-			
+
 			// Delete directory if empty
 			try (DirectoryStream<Path> directoryCandidate = Files.newDirectoryStream(path)) {
 				if (!directoryCandidate.iterator().hasNext()) {
@@ -175,7 +175,6 @@ public class FileUtils {
 			}
 		}
 
-		
 	}
 
 	public static void copyRecursive(Path source, Path destination) throws IOException {
@@ -197,11 +196,11 @@ public class FileUtils {
 			Files.copy(source, fileDest, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
-	
+
 	public static long getEpoch(String timestamp) {
 		return getInstant(timestamp).toEpochMilli();
 	}
-	
+
 	public static String getTimestamp(long epoch) {
 		return getTimestamp(Instant.ofEpochMilli(epoch));
 	}
@@ -215,23 +214,19 @@ public class FileUtils {
 	}
 
 	public static Instant getInstant(String timestamp) {
-		DateTimeFormatter f = new DateTimeFormatterBuilder()
-                .parseCaseInsensitive()
-                .appendValue(YEAR, 4)
-                .appendValue(MONTH_OF_YEAR, 2)
-                .appendValue(DAY_OF_MONTH, 2)
-                .appendValue(ChronoField.HOUR_OF_DAY, 2)
-                .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-                .appendValue(ChronoField.SECOND_OF_MINUTE, 2)
-                .appendValue(ChronoField.MILLI_OF_SECOND, 3)
-                .toFormatter().withZone(ZoneId.of("Z"));
-		//f = DateTimeFormatter.ofPattern("uuuuMMddHHmmssSSS");
+		DateTimeFormatter f = new DateTimeFormatterBuilder().parseCaseInsensitive().appendValue(YEAR, 4)
+				.appendValue(MONTH_OF_YEAR, 2).appendValue(DAY_OF_MONTH, 2).appendValue(ChronoField.HOUR_OF_DAY, 2)
+				.appendValue(ChronoField.MINUTE_OF_HOUR, 2).appendValue(ChronoField.SECOND_OF_MINUTE, 2)
+				.appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter().withZone(ZoneId.of("Z"));
+		// f = DateTimeFormatter.ofPattern("uuuuMMddHHmmssSSS");
 		TemporalAccessor parsed = f.parse(timestamp);
 		return Instant.from(parsed);
 	}
 
 	/**
-	 * Returns the timestamp string for a given file according to {@link #getCreationDate(Path)}.
+	 * Returns the timestamp string for a given file according to
+	 * {@link #getCreationDate(Path)}.
+	 * 
 	 * @param file
 	 * @return the timestamp
 	 */
@@ -240,7 +235,9 @@ public class FileUtils {
 	}
 
 	/**
-	 * Moves a symlink to a new folder while retaining the same target. If the symlink was absolute it will be relativized.
+	 * Moves a symlink to a new folder while retaining the same target. If the
+	 * symlink was absolute it will be relativized.
+	 * 
 	 * @param current
 	 * @param destination
 	 * @return
@@ -248,7 +245,7 @@ public class FileUtils {
 	 */
 	public static Path moveSymlink(Path current, Path destination) throws IOException {
 		Path currentTarget = Files.readSymbolicLink(current);
-		
+
 		if (!Files.exists(destination)) {
 			Files.createDirectories(destination);
 		}
@@ -259,14 +256,14 @@ public class FileUtils {
 		} else {
 			symlinkTarget = current.getParent().resolve(currentTarget).toRealPath(LinkOption.NOFOLLOW_LINKS);
 		}
-		
+
 		Path newSymlink = destination.toRealPath(LinkOption.NOFOLLOW_LINKS).resolve(current.getFileName());
-		
+
 		Path relativeTarget = symlinkTarget;
 		if (relativeTarget.isAbsolute()) {
 			relativeTarget = newSymlink.getParent().relativize(symlinkTarget);
 		}
-		
+
 		Path newLink = Files.createSymbolicLink(newSymlink, relativeTarget);
 		Files.delete(current);
 		return newLink;
@@ -276,11 +273,11 @@ public class FileUtils {
 		String filename = current.getFileName().toString();
 		return FileUtils.getEpoch(getTimestampPortion(filename));
 	}
-	
+
 	public static String getTimestampPortion(String filename) {
 		return filename.substring(0, filename.indexOf('_'));
 	}
-	
+
 	public static String getTimestampPortion(Path path) {
 		return getTimestampPortion(path.getFileName().toString());
 	}
@@ -318,6 +315,10 @@ public class FileUtils {
 		return "";
 	}
 
+	public static Path removeSuffix(Path fileName) {
+		return Paths.get(removeSuffix(fileName.toString()));
+	}
+
 	public static String removeSuffix(String fileName) {
 		if (!fileName.contains(".")) {
 			throw new IllegalArgumentException("The given file name contains no '.', hence no suffix to remove");
@@ -340,7 +341,9 @@ public class FileUtils {
 	public static void setReadOnlyRecursive(Path path) {
 		if (Files.isDirectory(path)) {
 			try {
-				Files.list(path).forEach(current -> {setReadOnlyRecursive(current);});
+				Files.list(path).forEach(current -> {
+					setReadOnlyRecursive(current);
+				});
 			} catch (IOException e) {
 				Logger.log("Error while setting " + path + " to readonly", e);
 			}
@@ -369,7 +372,7 @@ public class FileUtils {
 	}
 
 	public static void removeEmptyFolders(Path sortingFolder) throws IOException {
-		Path [] toBeDeleted = Files.list(sortingFolder).filter(current -> {
+		Path[] toBeDeleted = Files.list(sortingFolder).filter(current -> {
 			try {
 				return Files.isDirectory(current) && Files.list(current).count() == 0;
 			} catch (IOException e) {
@@ -377,19 +380,18 @@ public class FileUtils {
 				return false;
 			}
 		}).toArray(size -> new Path[size]);
-		
+
 		for (Path path : toBeDeleted) {
 			FileUtils.deleteRecursive(path, true);
 		}
 	}
-	
+
 	public static String getChecksum(Collection<Path> paths) {
 		if (paths.size() == 0) {
 			throw new IllegalArgumentException("No input files for checksum creation");
 		}
 		CRC32 crc = new CRC32();
 
-        
 		paths.stream().sorted().forEachOrdered(path -> {
 			try (InputStream in = Files.newInputStream(path)) {
 				final byte[] buf = new byte[4096];
@@ -404,7 +406,7 @@ public class FileUtils {
 		});
 		return Long.toString(crc.getValue());
 	}
-	
+
 	public static void hardlinkOrCopy(Path source, Path destination) throws IOException {
 		if (!Files.isDirectory(source) && Files.isDirectory(destination)) {
 			destination = destination.resolve(source.getFileName());
@@ -416,7 +418,7 @@ public class FileUtils {
 		}
 	}
 
-	public static void moveRecursive(Path source, Path destination) throws IOException {		
+	public static void moveRecursive(Path source, Path destination) throws IOException {
 		if (Files.isDirectory(source)) {
 			Files.list(source).forEach(current -> {
 				try {
@@ -444,6 +446,44 @@ public class FileUtils {
 		}
 	}
 
+	public static void deleteEverythingBut(Path destination_direct, Set<Path> keep) throws IOException {
+		if (!Files.isDirectory(destination_direct)) {
+			throw new IllegalArgumentException(destination_direct.toString() + " is not a directory");
+		}
+		Set<Path> absolutePaths = new HashSet<>();
+		absolutePaths = Files.list(destination_direct).map(path -> path.toAbsolutePath().normalize())
+				.collect(Collectors.toSet());
+		for (Path p : keep) {
+			absolutePaths.remove(p.toAbsolutePath().normalize());
+		}
+		Set<Path> cleanedPaths = new HashSet<>(absolutePaths);
+
+		try {
+			Files.list(destination_direct).forEach(current -> {
+				current = current.toAbsolutePath().normalize();
+				if (Files.isDirectory(current)) {
+					try {
+						deleteEverythingBut(current, keep);
+					} catch (IOException e) {
+						Logger.log("Failure during deletion of everything but " + current.toString(), e, Level.WARNING);
+					}
+				}
+				if (cleanedPaths.contains(current)) {
+					try {
+						if ((Files.isDirectory(current) && Files.list(current).count() == 0)
+								|| !Files.isDirectory(current)) {
+							Files.deleteIfExists(current);
+						}
+					} catch (IOException e) {
+						Logger.log("Failure during deletion of " + current.toString(), e, Level.WARNING);
+					}
+				}
+			});
+		} catch (IOException e) {
+			Logger.log("Failure during preparation of cleaning " + destination_direct.toString(), e, Level.WARNING);
+		}
+	}
+
 	public static void changeLinkTargetFilename(Path link, String newFileName) throws IOException {
 		if (!Files.isSymbolicLink(link)) {
 			throw new IllegalArgumentException("The given path is not a symlink " + link);
@@ -452,11 +492,11 @@ public class FileUtils {
 		Path newTarget = currentTarget.getParent().resolve(newFileName);
 
 		Logger.log("Change link target filename of " + link + " -> " + currentTarget + " to " + newTarget, Level.TRACE);
-		
+
 		Files.delete(link);
 		Files.createSymbolicLink(link, newTarget);
 	}
-	
+
 	public static void renameFile(Path file, Path root, String newName) throws IOException {
 		Path realfile = file.toAbsolutePath();
 		Files.walk(root).filter(p -> {
@@ -495,13 +535,48 @@ public class FileUtils {
 			return pred.test(p.getFileName().toString());
 		}).collect(Collectors.toSet());
 	}
-	
-	public static Path resolve(Path symlink) throws IOException{
-		return symlink.getParent().resolve(Files.readSymbolicLink(symlink)).normalize();		
+
+	public static Path resolve(Path symlink) throws IOException {
+		return symlink.getParent().resolve(Files.readSymbolicLink(symlink)).normalize();
 	}
 
 	public static void changeTimestamp(Path file, Path root, String targetFileStamp) throws IOException {
-		String newName = FileUtils.buildFileName(targetFileStamp, FileUtils.getNamePortion(file), FileUtils.getSuffix(file));
+		String newName = FileUtils.buildFileName(targetFileStamp, FileUtils.getNamePortion(file),
+				FileUtils.getSuffix(file));
 		FileUtils.renameFile(file, root, newName);
+	}
+
+	public static void deleteAllFilesNotExistingIn(Path referenceDir, Path pathToBeCleaned, boolean ignoreSuffix)
+			throws IOException {
+		Set<Path> sourcefiles = Files.list(referenceDir).map(p -> {
+			if (ignoreSuffix) {
+				return FileUtils.removeSuffix(p.getFileName());
+			} else {
+				return p.getFileName();
+			}
+		}).collect(Collectors.toSet());
+		Set<Path> targetfiles = Files.list(pathToBeCleaned).map(p -> {
+			if (ignoreSuffix) {
+				return FileUtils.removeSuffix(p.getFileName());
+			} else {
+				return p.getFileName();
+			}
+		}).collect(Collectors.toSet());
+		targetfiles.removeAll(sourcefiles);
+		targetfiles.forEach(p -> {
+			try {
+				Files.list(pathToBeCleaned).filter(c -> {
+					return FileUtils.removeSuffix(c.getFileName()).equals(p);
+				}).forEach(c -> {
+					try {
+						Files.delete(c);
+					} catch (IOException e) {
+						Logger.log("Delete failed", e);
+					}
+				});
+			} catch (IOException e) {
+				Logger.log("Delete failed", e);
+			}
+		});
 	}
 }

@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -72,8 +73,10 @@ public class RenderTest extends FileBasedTest {
 		
 		Path source = TestFileHelper.getTestResource("A7II.ARW");
 		Files.copy(source, getTestFolder().resolve("file.arw"));
-		
+
 		AtomicInteger renderJobCounter = new AtomicInteger(0);
+		AtomicInteger storeCounter = new AtomicInteger(0);
+		AtomicInteger predictCounter = new AtomicInteger(0);
 		
 		new Init().perform(context);
 		Sorter sorter = new Sorter() {
@@ -96,7 +99,22 @@ public class RenderTest extends FileBasedTest {
 						@Override
 						public RenderJob getRenderJob() {
 							renderJobCounter.incrementAndGet();
-							return group.getRenderJob();
+							RenderJob job = group.getRenderJob();
+							return new RenderJob() {
+
+								@Override
+								public Set<Path> storeImpl(Path destination) throws IOException {
+									storeCounter.incrementAndGet();
+									return job.storeImpl(destination);
+								}
+
+								@Override
+								public Set<Path> getPredictedResultsImpl(Path destination) throws IOException {
+									predictCounter.incrementAndGet();
+									return job.getPredictedResultsImpl(destination);
+								}
+								
+							};
 						}
 
 						@Override
@@ -161,8 +179,10 @@ public class RenderTest extends FileBasedTest {
 		render.setSortingName(TEST);
 		
 		render.perform(context);
-		
+
 		assertEquals(1, renderJobCounter.get());
+		assertEquals(1, storeCounter.get());
+		assertEquals(1, predictCounter.get());
 		
 		//Rendering again, without changes
 		render = new Render(sorter);
@@ -170,17 +190,33 @@ public class RenderTest extends FileBasedTest {
 		
 		render.perform(context);
 		
-		assertEquals(1, renderJobCounter.get());
+		assertEquals(2, renderJobCounter.get());
+		assertEquals(1, storeCounter.get());
+		assertEquals(2, predictCounter.get());
+		
+		//Rendering again, without changes and a file to clear from full size results
+		Path toBeDeleted = Files.createFile(getTestFolder().resolve(Constants.FOLDER_RESULTS).resolve(TEST).resolve(Constants.RENDER_TYPE_FULL).resolve("20200101120000000_fileasdf.jpg"));
+		render = new Render(sorter);
+		render.setSortingName(TEST);
+		
+		render.perform(context);
+		
+		assertFalse(Files.exists(toBeDeleted));
+		assertEquals(3, renderJobCounter.get());
+		assertEquals(1, storeCounter.get());
+		assertEquals(3, predictCounter.get());
 		
 		//Rendering with additional pp3 file
-		Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(TEST).resolve(FileUtils.getTimestamp(source) + "_file1.arw.pp3"));
+		Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(TEST).resolve(FileUtils.getTimestamp(source) + "_file.arw.pp3"));
 
 		render = new Render(sorter);
 		render.setSortingName(TEST);
 		
 		render.perform(context);
 		
-		assertEquals(2, renderJobCounter.get());
+		assertEquals(4, renderJobCounter.get());
+		assertEquals(2, storeCounter.get());
+		assertEquals(4, predictCounter.get());
 	}
 
 	@Test

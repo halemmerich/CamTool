@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
@@ -54,7 +55,7 @@ public class Render extends AbstractOperation {
 	private String groupName;
 
 	private boolean force;
-	
+
 	public Render(Sorter sorter) {
 		this.sorter = sorter;
 	}
@@ -62,7 +63,7 @@ public class Render extends AbstractOperation {
 	public void setSortingName(String sortingName) {
 		this.sortingName = sortingName;
 	}
-	
+
 	public void setImageResizer(ImageResizer imageResizer) {
 		this.imageResizer = imageResizer;
 	}
@@ -120,12 +121,12 @@ public class Render extends AbstractOperation {
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not create direct result folder", e);
 		}
-		
+
 		Properties sourceState = new Properties();
-		
+
 		Path sourceStatePath = destination_direct.resolve(Constants.FILE_NAME_SOURCESTATE);
 		loadSourceState(sourceState, sourceStatePath);
-		
+
 		if (groupName != null) {
 			Group group = SortingHelper.findGroupByName(groups, groupName);
 			groups = new HashSet<>();
@@ -134,30 +135,55 @@ public class Render extends AbstractOperation {
 
 		Map<RenderJob, String> renderJobToGroupName = new HashMap<>();
 		Map<RenderJob, String> renderJobToChecksum = new HashMap<>();
-		
+
+		Set<Path> rendered = new HashSet<>();
+		rendered.add(sourceStatePath);
+
+		boolean predictionFailed = false;
+		boolean errorDuringJobCreations = false;
+
 		for (Group group : groups) {
 			String newChecksum = hasChanges(group, sourceState);
-			if (force || newChecksum != null) {
-				if (force) {
-					newChecksum = FileUtils.getChecksum(group.getAllFiles());
+			RenderJob renderJob = group.getRenderJob();
+			try {
+				Collection<? extends Path> predictedResults = renderJob.getPredictedResults(destination_direct);
+				predictionFailed |= predictedResults == null;
+
+				if (force || newChecksum != null || predictionFailed) {
+					if (force) {
+						newChecksum = FileUtils.getChecksum(group.getAllFiles());
+					}
+					renderJobToGroupName.put(renderJob, group.getName());
+					renderJobToChecksum.put(renderJob, newChecksum);
+				} else {
+					rendered.addAll(predictedResults);
 				}
-				RenderJob renderJob = group.getRenderJob();
-				renderJobToGroupName.put(renderJob, group.getName());
-				renderJobToChecksum.put(renderJob, newChecksum);
+			} catch (IOException e) {
+				Logger.log("Render job creation failed", e);
+				errorDuringJobCreations = true;
 			}
 		}
-		
+
 		Path destination_full = results_sorting.resolve(Constants.RENDER_TYPE_FULL);
 		Path destination_medium = results_sorting.resolve(Constants.RENDER_TYPE_MEDIUM);
 		Path destination_small = results_sorting.resolve(Constants.RENDER_TYPE_SMALL);
-		
+
 		for (RenderJob job : renderJobToGroupName.keySet()) {
 			try {
 				sourceState.setProperty(renderJobToGroupName.get(job), renderJobToChecksum.get(job));
-				job.store(destination_direct);
-				sourceState.store(Files.newOutputStream(sourceStatePath), "Last update on " + Calendar.getInstance().getTime());
+				rendered.addAll(job.store(destination_direct));
+				sourceState.store(Files.newOutputStream(sourceStatePath),
+						"Last update on " + Calendar.getInstance().getTime());
 			} catch (IOException e) {
 				Logger.log("Failed to execute render job " + job, e, Level.WARNING);
+			}
+		}
+
+		if (!errorDuringJobCreations) {
+			try {
+				FileUtils.deleteEverythingBut(destination_direct, rendered);
+			} catch (IOException e) {
+				Logger.log("Failed to clean old results after rendering", e, Level.WARNING);
 			}
 		}
 
@@ -167,18 +193,24 @@ public class Render extends AbstractOperation {
 			Path sourceStatePathFull = destination_full.resolve(Constants.FILE_NAME_SOURCESTATE);
 			loadSourceState(sourceStateFull, sourceStatePathFull);
 			Files.list(destination_direct).forEach(file -> {
-				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME) && !file.getFileName().toString().equals(Constants.FILE_NAME_SOURCESTATE)) {
+				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)
+						&& !file.getFileName().toString().equals(Constants.FILE_NAME_SOURCESTATE)) {
+					if (Files.exists(file)) {
+
+					}
 					String checksum = hasChanges(file, sourceStateFull);
 					if (checksum != null && convertToFull(file, destination_full)) {
 						sourceStateFull.setProperty(file.toString(), checksum);
 						try {
-							sourceStateFull.store(Files.newOutputStream(sourceStatePathFull), "Last update on " + Calendar.getInstance().getTime());
+							sourceStateFull.store(Files.newOutputStream(sourceStatePathFull),
+									"Last update on " + Calendar.getInstance().getTime());
 						} catch (IOException e) {
 							Logger.log("Error during save of source state file for full size", e);
 						}
 					}
 				}
 			});
+			FileUtils.deleteAllFilesNotExistingIn(destination_direct, destination_full, true);
 		} catch (IOException e) {
 			throw new IllegalStateException("Creating full size results folder failed", e);
 		}
@@ -189,18 +221,21 @@ public class Render extends AbstractOperation {
 			Path sourceStatePathMedium = destination_medium.resolve(Constants.FILE_NAME_SOURCESTATE);
 			loadSourceState(sourceStateMedium, sourceStatePathMedium);
 			Files.list(destination_full).forEach(file -> {
-				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME) && !file.getFileName().toString().equals(Constants.FILE_NAME_SOURCESTATE)) {
+				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)
+						&& !file.getFileName().toString().equals(Constants.FILE_NAME_SOURCESTATE)) {
 					String checksum = hasChanges(file, sourceStateMedium);
 					if (checksum != null && downsizeToMedium(file, destination_medium.resolve(file.getFileName()))) {
 						sourceStateMedium.setProperty(file.toString(), checksum);
 						try {
-							sourceStateMedium.store(Files.newOutputStream(sourceStatePathMedium), "Last update on " + Calendar.getInstance().getTime());
+							sourceStateMedium.store(Files.newOutputStream(sourceStatePathMedium),
+									"Last update on " + Calendar.getInstance().getTime());
 						} catch (IOException e) {
 							Logger.log("Error during save of source state file for medium size", e);
 						}
 					}
 				}
 			});
+			FileUtils.deleteAllFilesNotExistingIn(destination_full, destination_medium, false);
 		} catch (IOException e) {
 			throw new IllegalStateException("Creating medium size result files failed", e);
 		}
@@ -211,18 +246,21 @@ public class Render extends AbstractOperation {
 			Path sourceStatePathSmall = destination_small.resolve(Constants.FILE_NAME_SOURCESTATE);
 			loadSourceState(sourceStateSmall, sourceStatePathSmall);
 			Files.list(destination_full).forEach(file -> {
-				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME) && !file.getFileName().toString().equals(Constants.FILE_NAME_SOURCESTATE)) {
+				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)
+						&& !file.getFileName().toString().equals(Constants.FILE_NAME_SOURCESTATE)) {
 					String checksum = hasChanges(file, sourceStateSmall);
 					if (checksum != null && downsizeToSmall(file, destination_small.resolve(file.getFileName()))) {
 						sourceStateSmall.setProperty(file.toString(), checksum);
 						try {
-							sourceStateSmall.store(Files.newOutputStream(sourceStatePathSmall), "Last update on " + Calendar.getInstance().getTime());
+							sourceStateSmall.store(Files.newOutputStream(sourceStatePathSmall),
+									"Last update on " + Calendar.getInstance().getTime());
 						} catch (IOException e) {
 							Logger.log("Error during save of source state file for medium size", e);
 						}
 					}
 				}
 			});
+			FileUtils.deleteAllFilesNotExistingIn(destination_medium, destination_small, false);
 		} catch (IOException e) {
 			throw new IllegalStateException("Creating small size result files failed", e);
 		}
@@ -253,7 +291,7 @@ public class Render extends AbstractOperation {
 	}
 
 	private String hasChanges(Path path, Properties sourceState) {
-		String checksum = FileUtils.getChecksum(Arrays.asList(new Path [] {path}));
+		String checksum = FileUtils.getChecksum(Arrays.asList(new Path[] { path }));
 		if (sourceState.containsKey(path.toString()) && sourceState.getProperty(path.toString()).equals(checksum)) {
 			return null;
 		}
@@ -295,8 +333,9 @@ public class Render extends AbstractOperation {
 	private boolean convertToFull(Path file, Path destination) {
 		if (FileTypeHelper.isVideoFile(file)) {
 			videoResizer.resize(-1, file, destination.resolve(file.getFileName()), qualityVideoFull);
-		} else if (FileTypeHelper.isImageFile(file)) {			
-			imageResizer.resize(-1, file, destination.resolve(FileUtils.removeSuffix(file.getFileName().toString()) + ".jpg"), qualityFull);
+		} else if (FileTypeHelper.isImageFile(file)) {
+			imageResizer.resize(-1, file,
+					destination.resolve(FileUtils.removeSuffix(file.getFileName().toString()) + ".jpg"), qualityFull);
 		} else {
 			try {
 				FileUtils.hardlinkOrCopy(file, destination.resolve(file.getFileName()));

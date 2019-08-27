@@ -8,7 +8,17 @@ import org.apache.commons.exec.CommandLine;
 public class RawTherapeeWrapper extends ExternalTool {
 	
 	public enum FileType {
-		TIFF_16_COMPRESSED, PNG_8, JPG
+		TIFF_16_COMPRESSED("tif"), PNG_8("png"), JPG("jpg");
+
+		private String suffix = "";
+		
+		private FileType(String suffix) {
+			this.suffix = suffix;
+		}
+		
+		public String getSuffix() {
+			return suffix;
+		}
 	}
 	
 	String commandLine = "rawtherapee-cli";
@@ -38,6 +48,10 @@ public class RawTherapeeWrapper extends ExternalTool {
 	
 	public void setOutputFileType(FileType type) {
 		this.type = type;
+	}
+	
+	public FileType getOutputFileType() {
+		return this.type;
 	}
 	
 	@Override

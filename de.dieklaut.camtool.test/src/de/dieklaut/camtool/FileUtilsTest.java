@@ -12,8 +12,10 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -251,6 +253,44 @@ public class FileUtilsTest extends FileBasedTest {
 		assertTrue(Files.exists(destination.resolve(testdir.getFileName()).resolve(subfile.getFileName())));
 		assertEquals("../linktarget", Files.readSymbolicLink(destination.resolve(link.getFileName())).toString());
 		assertEquals("../../linktarget", Files.readSymbolicLink(destination.resolve(testdir.getFileName()).resolve(sublink.getFileName())).toString());
+	}
+	
+	@Test
+	public void testDeleteEverythingBut() throws IOException {
+		Path dir = Files.createDirectories(getTestFolder().resolve("testdir"));
+		Path toBeDeleted = Files.createFile(dir.resolve("toBeDeleted"));
+		Path toStay = Files.createFile(dir.resolve("toStay"));
+		Set<Path> keep = new HashSet<>();
+		keep.add(toStay);
+		
+		FileUtils.deleteEverythingBut(dir, keep);
+
+		assertTrue(Files.exists(toStay));
+		assertFalse(Files.exists(toBeDeleted));
+	}
+	
+	@Test
+	public void testDeleteEverythingButRecursive() throws IOException {
+		Path dir = Files.createDirectories(getTestFolder().resolve("testdir"));
+		Path subdir = Files.createDirectories(dir.resolve("subdir"));
+		Path subdirToBeDeleted = Files.createDirectories(dir.resolve("subdirToBeDeleted"));
+		Path toBeDeleted = Files.createFile(subdir.resolve("toBeDeleted"));
+		Path toStay = Files.createFile(dir.resolve("toStay"));
+		Path toStaySub = Files.createFile(subdir.resolve("toStay"));
+		Path toBeDeletedSub = Files.createFile(subdirToBeDeleted.resolve("toBeDeleted"));
+		
+		Set<Path> keep = new HashSet<>();
+		keep.add(toStay);
+		keep.add(toStaySub);
+		
+		FileUtils.deleteEverythingBut(dir, keep);
+
+		assertTrue(Files.exists(subdir));
+		assertTrue(Files.exists(toStay));
+		assertTrue(Files.exists(toStaySub));
+		assertFalse(Files.exists(subdirToBeDeleted));
+		assertFalse(Files.exists(toBeDeleted));
+		assertFalse(Files.exists(toBeDeletedSub));
 	}
 	
 	@Test
