@@ -23,7 +23,7 @@ public class CamToolTest extends FileBasedTest {
 					"DO NOT EXECUTE THIS TEST WITHOUT SETTING A DEDICATED WORKING DIRECTORY!\nIT WILL DESTROY YOUR STUFF!\n\n!!!!ALL CONTENTS OF THE WORKING DIRECTORY WILL BE DELETED!!!!");
 			System.exit(1);
 		}
-		Files.list(Paths.get("")).forEach(currentPath -> FileUtils.deleteRecursive(currentPath, false));
+		Files.list(Paths.get("").toAbsolutePath()).forEach(currentPath -> FileUtils.deleteRecursive(currentPath, true));
 		CamTool.workingDir = camtoolWorkingDir;
 	}
 
