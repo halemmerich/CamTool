@@ -6,11 +6,12 @@ import java.util.Collection;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
+import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class ModifyTimestamp extends AbstractOperation {
 
-	private long difference;
+	private long difference = 0;
 	private String selectingRegex;
 
 	public ModifyTimestamp() {
@@ -26,6 +27,9 @@ public class ModifyTimestamp extends AbstractOperation {
 
 	@Override
 	public void perform(Context context) {
+		if (selectingRegex == null || selectingRegex.isEmpty()) {
+			throw new IllegalArgumentException("Regex for file selection is needed");
+		}
 		Collection<Path> filesToBeShifted;
 		try {
 			filesToBeShifted = FileUtils.getByRegex(context.getTimeLine(), selectingRegex);
@@ -33,8 +37,7 @@ public class ModifyTimestamp extends AbstractOperation {
 				shiftFile(file, context, difference);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.log("Error during shifting", e);
 		}
 	}
 

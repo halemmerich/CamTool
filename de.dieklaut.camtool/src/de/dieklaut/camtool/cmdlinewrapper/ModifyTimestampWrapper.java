@@ -25,7 +25,7 @@ public class ModifyTimestampWrapper extends AbstractWrapper {
 		Options options = super.getOptions().addOption(Option.builder(OPT_REGEX_SHORT).longOpt(OPT_REGEX)
 				.desc("Set the regex to choose files to be shifted").hasArg().build());
 		options.addOption(Option.builder(OPT_DIFFERENCE_SHORT).longOpt(OPT_DIFFERENCE)
-				.desc("Time difference to be applied in milliseconds").build());
+				.desc("Time difference to be applied in milliseconds").hasArg().build());
 		return options;
 	}
 
