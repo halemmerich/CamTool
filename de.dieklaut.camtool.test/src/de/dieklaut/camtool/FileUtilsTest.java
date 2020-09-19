@@ -138,8 +138,8 @@ public class FileUtilsTest extends FileBasedTest {
 		pathsReversed.add(TestFileHelper.getTestResource("NEX5R.ARW"));
 		pathsReversed.add(TestFileHelper.getTestResource("A7II.ARW"));
 
-		assertEquals("2530393705", FileUtils.getChecksum(paths));
-		assertEquals("2530393705", FileUtils.getChecksum(pathsReversed));
+		assertEquals("1973464274", FileUtils.getChecksum(paths));
+		assertEquals("1973464274", FileUtils.getChecksum(pathsReversed));
 	}
 	
 	@Test
