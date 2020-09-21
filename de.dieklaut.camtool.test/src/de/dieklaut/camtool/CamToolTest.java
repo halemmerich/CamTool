@@ -149,6 +149,18 @@ public class CamToolTest extends FileBasedTest {
 		CamTool.main(new String[] { "updateunused" });
 	}
 
+	@Test
+	public void callUpdateTimestampsNoArgs() {
+		callSortNoArgs();
+		CamTool.main(new String[] { "updateunused" });
+	}
+
+	@Test
+	public void callUpdateTimestampsWithName() {
+		callSortNoArgs();
+		CamTool.main(new String[] { "updateunused", "-n", TEST });
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void callTimeshiftNoArgs() {
 		callSortNoArgs();

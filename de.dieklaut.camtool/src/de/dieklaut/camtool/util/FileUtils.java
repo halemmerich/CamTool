@@ -364,6 +364,10 @@ public class FileUtils {
 		return timestamp + "_" + name;
 	}
 
+	public static String buildFileName(String timestamp, String name, String suffix) {
+		return timestamp + "_" + name + suffix;
+	}
+
 	public static void removeEmptyFolders(Path sortingFolder) throws IOException {
 		Path [] toBeDeleted = Files.list(sortingFolder).filter(current -> {
 			try {
@@ -446,6 +450,9 @@ public class FileUtils {
 		}
 		Path currentTarget = Files.readSymbolicLink(link);
 		Path newTarget = currentTarget.getParent().resolve(newFileName);
+
+		Logger.log("Change link target filename of " + link + " -> " + currentTarget + " to " + newTarget, Level.TRACE);
+		
 		Files.delete(link);
 		Files.createSymbolicLink(link, newTarget);
 	}
@@ -456,7 +463,6 @@ public class FileUtils {
 			if (Files.isSymbolicLink(p)) {
 				try {
 					Path linkTarget = FileUtils.resolve(p).toAbsolutePath();
-					Logger.log("Found file " + p + " -> " + linkTarget, Level.TRACE);
 					return realfile.equals(linkTarget);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -492,5 +498,10 @@ public class FileUtils {
 	
 	public static Path resolve(Path symlink) throws IOException{
 		return symlink.getParent().resolve(Files.readSymbolicLink(symlink)).normalize();		
+	}
+
+	public static void changeTimestamp(Path file, Path root, String targetFileStamp) throws IOException {
+		String newName = FileUtils.buildFileName(targetFileStamp, FileUtils.getNamePortion(file), FileUtils.getSuffix(file));
+		FileUtils.renameFile(file, root, newName);
 	}
 }
