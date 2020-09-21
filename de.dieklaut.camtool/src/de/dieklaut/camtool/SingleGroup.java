@@ -61,7 +61,7 @@ public class SingleGroup extends AbstractGroup {
 			return forFile(toBeRendered, elements.toArray(new Path[elements.size()]));
 		}
 
-		return new CopyRenderJob(elements.iterator().next());
+		return new CopyRenderJob(toBeRendered);
 	}
 
 	private RenderJob forFile(Path mainFile, Path... helperFiles) {
