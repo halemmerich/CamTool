@@ -29,10 +29,11 @@ public class UpdateTimestampTest extends FileBasedTest {
 		Path file3 = TestFileHelper.addFileToSorting(context, Paths.get("group/file3.arw"), TestFileHelper.getTestResource("NEX5R.ARW"));
 		Path file4 = TestFileHelper.addFileToSorting(context, Paths.get("multi/file4.arw"), TestFileHelper.getTestResource("A7II.ARW"));
 		Path file5 = TestFileHelper.addFileToSorting(context, Paths.get("multi/file5.arw"), TestFileHelper.getTestResource("NEX5R.ARW"));
-		
-		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
-		
+
 		String modifiedTimestamp = "20200101120000000";
+		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
+		Path file6 = Files.createFile(sorting.resolve(FileUtils.buildFileName(modifiedTimestamp, "asdf",".test")));
+		
 
 		Files.move(file1, file1.getParent().resolve(FileUtils.buildFileName(modifiedTimestamp, FileUtils.getNamePortion(file1), FileUtils.getSuffix(file1))));
 		Files.move(file2, file2.getParent().resolve(FileUtils.buildFileName(modifiedTimestamp, FileUtils.getNamePortion(file2), FileUtils.getSuffix(file2))));
@@ -57,5 +58,6 @@ public class UpdateTimestampTest extends FileBasedTest {
 		assertTrue(Files.exists(sorting.resolve("multi").resolve(renamedFile4.getFileName())));
 		assertTrue(Files.exists(sorting.resolve("multi").resolve(renamedFile5.getFileName())));
 		assertTrue(Files.exists(sorting.resolve("multi").resolve(profile4.getFileName().getFileName())));
+		assertTrue(Files.exists(file6));
 	}
 }

@@ -86,6 +86,7 @@ public class UpdateTimestamp extends AbstractOperation {
 
 		if (targetFileStamp.isEmpty()) {
 			Logger.log("Could not get a target file stamp for group " + group.getName(), Level.INFO);
+			return;
 		}
 
 		for (Path file : group.getAllFiles()) {
