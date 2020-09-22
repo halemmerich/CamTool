@@ -57,14 +57,8 @@ public class RenderTest extends FileBasedTest {
 		
 		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
 		assertTrue(Files.exists(results));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_DIRECT)));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_DIRECT).resolve(timestamp + "_file.jpg")));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_FULL)));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_FULL).resolve(timestamp + "_file.jpg")));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_MEDIUM)));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_MEDIUM).resolve(timestamp + "_file.jpg")));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_SMALL)));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(Constants.RENDER_TYPE_SMALL).resolve(timestamp + "_file.jpg")));
+		assertTrue(Files.exists(results.resolve(TEST)));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(timestamp + "_file.jpg")));
 	}
 
 	@Test
@@ -195,7 +189,7 @@ public class RenderTest extends FileBasedTest {
 		assertEquals(2, predictCounter.get());
 		
 		//Rendering again, without changes and a file to clear from full size results
-		Path toBeDeleted = Files.createFile(getTestFolder().resolve(Constants.FOLDER_RESULTS).resolve(TEST).resolve(Constants.RENDER_TYPE_FULL).resolve("20200101120000000_fileasdf.jpg"));
+		Path toBeDeleted = Files.createFile(getTestFolder().resolve(Constants.FOLDER_RESULTS).resolve(TEST).resolve("20200101120000000_fileasdf.jpg"));
 		render = new Render(sorter);
 		render.setSortingName(TEST);
 		
@@ -235,16 +229,7 @@ public class RenderTest extends FileBasedTest {
 		
 		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
 		assertTrue(Files.exists(results));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_DIRECT)));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_DIRECT).resolve(FileUtils.getTimestamp(file1) + "_file1.jpg")));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL)));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve(FileUtils.getTimestamp(file1) + "_file1.jpg")));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_MEDIUM)));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_MEDIUM).resolve(FileUtils.getTimestamp(file1) + "_file1.jpg")));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_SMALL)));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_SMALL).resolve(FileUtils.getTimestamp(file1) + "_file1.jpg")));
-		assertFalse(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_FULL).resolve(FileUtils.getTimestamp(file2) + "_file2.jpg")));
-		assertFalse(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_MEDIUM).resolve(FileUtils.getTimestamp(file2) + "_file2.jpg")));
-		assertFalse(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(Constants.RENDER_TYPE_SMALL).resolve(FileUtils.getTimestamp(file2) + "_file2.jpg")));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME)));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(FileUtils.getTimestamp(file1) + "_file1.jpg")));
 	}
 }

@@ -7,8 +7,11 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import de.dieklaut.camtool.FfmpegResizer;
+import de.dieklaut.camtool.ImagemagickResizer;
 import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.operations.Export;
+import de.dieklaut.camtool.operations.ExportType;
 import de.dieklaut.camtool.operations.Operation;
 
 public class ExportWrapper extends AbstractWrapper {
@@ -32,13 +35,15 @@ public class ExportWrapper extends AbstractWrapper {
 	@Override
 	public Operation getOperation(CommandLine cmdLine, Path workingDir) {
 		Export export = new Export();
+		export.setImageResizer(new ImagemagickResizer());
+		export.setVideoResizer(new FfmpegResizer());
 		if (cmdLine.hasOption(OPT_NAME)) {
 			export.setName(cmdLine.getOptionValue(OPT_NAME));
 		} else {
 			export.setName(SortingHelper.detectSortingFromDir(workingDir));
 		}
 		if (cmdLine.hasOption(OPT_TYPE)) {
-			export.setType(cmdLine.getOptionValue(OPT_TYPE));
+			export.setType(ExportType.get(cmdLine.getOptionValue(OPT_TYPE)));
 		}
 		if (cmdLine.hasOption(OPT_DESTINATION)) {
 			export.setDestination(Paths.get(cmdLine.getOptionValue(OPT_DESTINATION)));

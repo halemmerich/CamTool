@@ -13,10 +13,6 @@ public interface Constants {
 	public static final String FILE_PROPERTIES = ".properties";
 	public static final String DEFAULT_SORTING_NAME = "normal";
 	public static final String FILE_NAME_DELETED_SUFFIX = ".deleted";
-	public static final String RENDER_TYPE_MEDIUM = "medium";
-	public static final String RENDER_TYPE_DIRECT = "direct";
-	public static final String RENDER_TYPE_FULL = "full";
-	public static final String RENDER_TYPE_SMALL = "small";
 	public static final String DEFAULT_EXPORT_NAME = "export";
 	public static final String FILE_NAME_CAMTOOL = "camtool_";
 	public static final String FILE_NAME_CAMTOOL_SUFFIX = "." + FILE_NAME_CAMTOOL;

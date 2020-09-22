@@ -50,7 +50,7 @@ public class ExportTest extends FileBasedTest {
 	public void testPerformNoDestination() throws IOException {
 		Export export = new Export();
 		export.setName(TEST);
-		export.setType(Constants.RENDER_TYPE_MEDIUM);
+		export.setType(ExportType.MEDIUM);
 		export.perform(context);
 		
 		Path results = getTestFolder().resolve(Constants.DEFAULT_EXPORT_NAME);
@@ -67,7 +67,7 @@ public class ExportTest extends FileBasedTest {
 		
 		Export export = new Export();
 		export.setName(TEST);
-		export.setType(Constants.RENDER_TYPE_MEDIUM);
+		export.setType(ExportType.MEDIUM);
 		export.setDestination(tempDest);
 		export.perform(context);
 		
