@@ -41,12 +41,12 @@ public class Render extends AbstractOperation {
 	private VideoResizer videoResizer = new CopyVideoResizer();
 	private int qualityFull = 98;
 	private int qualityMedium = 90;
-	private int qualitySmall = 85;
+	private int qualitySmall = 75;
 	private int qualityVideoFull = 90;
 	private int qualityVideoMedium = 80;
 	private int qualityVideoSmall = 70;
-	private int maxDimensionSmall = 2000;
-	private int maxDimensionMedium = 3000;
+	private int maxDimensionSmall = 1440;
+	private int maxDimensionMedium = 2560;
 	private int maxDimensionVideoMedium = 1920;
 	private int maxDimensionVideoSmall = 1280;
 
