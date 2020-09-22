@@ -8,6 +8,8 @@ import de.dieklaut.camtool.external.ExternalTool;
 import de.dieklaut.camtool.util.ImageResizer;
 
 public class ImagemagickResizer implements ImageResizer {
+	
+	boolean resizeToArea = true;
 
 	@Override
 	public boolean resize(int maxDimension, Path sourceFile, Path destinationFile, int qualityPercentage) {
@@ -19,7 +21,11 @@ public class ImagemagickResizer implements ImageResizer {
 		commandline.addArgument(Integer.toString(qualityPercentage), false);
 		if (maxDimension > 0) {
 			commandline.addArgument("-resize");
-			commandline.addArgument(maxDimension + "x" + maxDimension);
+			if (resizeToArea) {
+				commandline.addArgument(maxDimension * maxDimension + "@");
+			} else {
+				commandline.addArgument(maxDimension + "x" + maxDimension);
+			}
 			commandline.addArgument("-unsharp");
 			commandline.addArgument("0x0.75+0.75+0.008");
 		}
