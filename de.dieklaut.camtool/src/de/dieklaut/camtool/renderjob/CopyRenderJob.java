@@ -42,7 +42,6 @@ public class CopyRenderJob extends RenderJob {
 				destinationFile = destination.resolve(current.getFileName());
 			}
 
-			FileUtils.hardlinkOrCopy(current.toRealPath(), destinationFile);
 			rendered.add(destinationFile);
 		}
 		return rendered;
