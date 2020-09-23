@@ -161,6 +161,12 @@ public class CamToolTest extends FileBasedTest {
 		CamTool.main(new String[] { "updateunused", "-n", TEST });
 	}
 
+	@Test
+	public void callUpdateTimestampsWithNameAndMultiGroup() {
+		callSortNoArgs();
+		CamTool.main(new String[] { "updateunused", "-n", TEST , "-m"});
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void callTimeshiftNoArgs() {
 		callSortNoArgs();
@@ -171,6 +177,12 @@ public class CamToolTest extends FileBasedTest {
 	public void callTimeshiftWithRegexAndDiff() {
 		callSortNoArgs();
 		CamTool.main(new String[] { "timeshift", "-d", "60000", "-r", ".*" });
+	}
+
+	@Test
+	public void callTimeshiftWithRegexAndStamp() {
+		callSortNoArgs();
+		CamTool.main(new String[] { "timeshift", "-s", "20200824103043000", "-r", ".*" });
 	}
 
 	@Test

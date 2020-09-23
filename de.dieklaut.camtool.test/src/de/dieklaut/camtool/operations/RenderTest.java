@@ -216,8 +216,8 @@ public class RenderTest extends FileBasedTest {
 	@Test
 	public void testPerformOneGroup() throws IOException {
 		Context context = TestFileHelper.createComplexContext(getTestFolder());
-		Path file1 = TestFileHelper.addFileToSorting(context, Paths.get("group/file1.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
-		Path file2 = TestFileHelper.addFileToSorting(context, Paths.get("file2.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+		TestFileHelper.addFileToSorting(context, Paths.get("group/file1.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+		TestFileHelper.addFileToSorting(context, Paths.get("file2.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
 
 		Sorter sorter = new DefaultSorter();		
 		RenderJobFactory.useRawtherapee = false;
@@ -230,6 +230,75 @@ public class RenderTest extends FileBasedTest {
 		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
 		assertTrue(Files.exists(results));
 		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME)));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve(FileUtils.getTimestamp(file1) + "_file1.jpg")));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group.jpg")));
+	}
+
+	@Test
+	public void testPerformMultiGroup() throws IOException {
+		Context context = TestFileHelper.createComplexContext(getTestFolder());
+		Path file1 = TestFileHelper.addFileToSorting(context, Paths.get("group/file1.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+		Path file2 = TestFileHelper.addFileToSorting(context, Paths.get("group/file2.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+
+		Sorter sorter = new DefaultSorter();		
+		RenderJobFactory.useRawtherapee = false;
+		
+		Render render = new Render(sorter);
+		render.setSortingName(Constants.DEFAULT_SORTING_NAME);
+		render.setNameOfGroup("group");
+		render.perform(context);
+		
+		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
+		assertTrue(Files.exists(results));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME)));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group_" + FileUtils.getTimestamp(file1) + "_file1.jpg")));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group_" + FileUtils.getTimestamp(file2) + "_file2.jpg")));
+	}
+
+	@Test
+	public void testPerformSubstituteOneFile() throws IOException {
+		Context context = TestFileHelper.createComplexContext(getTestFolder());
+		TestFileHelper.addFileToSorting(context, Paths.get("group/file1.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+		TestFileHelper.addFileToSorting(context, Paths.get("group/file2.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+		Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("group").resolve("substitute"));
+		Path camtool_sub = Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("group").resolve("camtool_rendersubstitute"));
+		Files.write(camtool_sub, "substitute".getBytes());
+
+		Sorter sorter = new DefaultSorter();		
+		RenderJobFactory.useRawtherapee = false;
+		
+		Render render = new Render(sorter);
+		render.setSortingName(Constants.DEFAULT_SORTING_NAME);
+		render.setNameOfGroup("group");
+		render.perform(context);
+		
+		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
+		assertTrue(Files.exists(results));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME)));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group")));
+	}
+
+	@Test
+	public void testPerformSubstituteMultipleFiles() throws IOException {
+		Context context = TestFileHelper.createComplexContext(getTestFolder());
+		TestFileHelper.addFileToSorting(context, Paths.get("group/file1.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+		TestFileHelper.addFileToSorting(context, Paths.get("group/file2.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+		Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("group").resolve("substitute"));
+		Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("group").resolve("substitute2"));
+		Path camtool_sub = Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("group").resolve("camtool_rendersubstitute"));
+		Files.write(camtool_sub, "substitute\nsubstitute2".getBytes());
+
+		Sorter sorter = new DefaultSorter();		
+		RenderJobFactory.useRawtherapee = false;
+		
+		Render render = new Render(sorter);
+		render.setSortingName(Constants.DEFAULT_SORTING_NAME);
+		render.setNameOfGroup("group");
+		render.perform(context);
+		
+		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
+		assertTrue(Files.exists(results));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME)));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group_substitute")));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group_substitute2")));
 	}
 }

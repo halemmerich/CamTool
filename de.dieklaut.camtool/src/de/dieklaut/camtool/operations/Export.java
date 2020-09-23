@@ -97,7 +97,7 @@ public class Export extends AbstractOperation {
 					}
 				}
 			});
-			FileUtils.deleteAllFilesNotExistingIn(destination, destination, true);
+			FileUtils.deleteAllFilesNotExistingIn(resultFolder, destination, true);
 		} catch (IOException e) {
 			throw new IllegalStateException("Creating full size results folder failed", e);
 		}
