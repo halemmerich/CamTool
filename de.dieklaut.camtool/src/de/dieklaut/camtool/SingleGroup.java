@@ -32,8 +32,8 @@ public class SingleGroup extends AbstractGroup {
 	public SingleGroup(Collection<Path> elements) {
 		this.elements = elements;
 	}
-	
-	public SingleGroup(Path ... elements) {
+
+	public SingleGroup(Path... elements) {
 		this.elements = new HashSet<Path>();
 		for (Path e : elements) {
 			this.elements.add(e);
@@ -77,12 +77,22 @@ public class SingleGroup extends AbstractGroup {
 			}
 		}
 
-		if (toBeRendered == null) {
-			for (Path element : getAllFiles()) {
-				if (FileTypeHelper.isRawImageFile(element) || FileTypeHelper.isVideoFile(element) || FileTypeHelper.isImageFile(element)) {
-					toBeRendered = element;
-					break;
-				}
+		for (Path element : getAllFiles()) {
+			if (toBeRendered == null && FileTypeHelper.isRawImageFile(element)) {
+				toBeRendered = element;
+				break;
+			}
+		}
+		for (Path element : getAllFiles()) {
+			if (toBeRendered == null && FileTypeHelper.isVideoFile(element)) {
+				toBeRendered = element;
+				break;
+			}
+		}
+		for (Path element : getAllFiles()) {
+			if (toBeRendered == null && FileTypeHelper.isImageFile(element)) {
+				toBeRendered = element;
+				break;
 			}
 		}
 
@@ -135,7 +145,6 @@ public class SingleGroup extends AbstractGroup {
 	public String getName() {
 		return FileUtils.getGroupName(getPrimaryFile());
 	}
-	
 
 	@Override
 	public boolean hasOwnFolder() {
@@ -149,7 +158,8 @@ public class SingleGroup extends AbstractGroup {
 
 	@Override
 	public Path getContainingFolder() {
-		// This only works, because groups are expected to reside on one file system hierarchy level
+		// This only works, because groups are expected to reside on one file system
+		// hierarchy level
 		return getAllFiles().iterator().next().toAbsolutePath().getParent();
 	}
 
