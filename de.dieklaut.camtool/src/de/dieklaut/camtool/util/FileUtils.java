@@ -275,7 +275,10 @@ public class FileUtils {
 	}
 
 	public static String getTimestampPortion(String filename) {
-		return filename.substring(0, filename.indexOf('_'));
+		if (filename.contains("_")) {
+			return filename.substring(0, filename.indexOf('_'));	
+		}
+		return null;
 	}
 
 	public static String getTimestampPortion(Path path) {
@@ -518,7 +521,10 @@ public class FileUtils {
 				e.printStackTrace();
 			}
 		});
-		Files.move(file, file.getParent().resolve(newName));
+		Path newPath = file.getParent().resolve(newName);
+		Files.move(file, newPath);
+		Logger.log("Renamed " + file + " to " + newPath, Level.TRACE);
+		
 	}
 
 	public static Path updateFilenameToLinkTargetname(Path link) throws IOException {
