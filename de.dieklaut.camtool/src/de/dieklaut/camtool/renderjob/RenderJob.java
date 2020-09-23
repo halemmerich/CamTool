@@ -32,7 +32,7 @@ public abstract class RenderJob {
 	 */
 	abstract public Set<Path> storeImpl(Path destination) throws IOException;
 
-	public Collection<? extends Path> getPredictedResults(Path destination) throws IOException {
+	public Collection<Path> getPredictedResults(Path destination) throws IOException {
 		Logger.log("Performing prediction for " + this.getClass().getSimpleName(), Level.INFO);
 		return getPredictedResultsImpl(destination);
 	}
