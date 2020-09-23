@@ -14,6 +14,9 @@ public class ModifyTimestampWrapper extends AbstractWrapper {
 	private static final String OPT_DIFFERENCE_SHORT = "d";
 	private static final String OPT_DIFFERENCE = "difference";
 
+	private static final String OPT_TIMESTAMP_SHORT = "t";
+	private static final String OPT_TIMESTAMP = "timestamp";
+
 	private static final String OPT_REGEX_SHORT = "r";
 	private static final String OPT_REGEX = "regex";
 
@@ -26,6 +29,8 @@ public class ModifyTimestampWrapper extends AbstractWrapper {
 				.desc("Set the regex to choose files to be shifted").hasArg().build());
 		options.addOption(Option.builder(OPT_DIFFERENCE_SHORT).longOpt(OPT_DIFFERENCE)
 				.desc("Time difference to be applied in milliseconds").hasArg().build());
+		options.addOption(Option.builder(OPT_TIMESTAMP_SHORT).longOpt(OPT_TIMESTAMP)
+				.desc("Timestamp to be applied in milliseconds").hasArg().build());
 		return options;
 	}
 
@@ -39,6 +44,10 @@ public class ModifyTimestampWrapper extends AbstractWrapper {
 			if (cmdLine.hasOption(OPT_DIFFERENCE)) {
 				String optionValue = cmdLine.getOptionValue(OPT_DIFFERENCE);
 				ModifyTimestamp.setDifference(Long.parseLong(optionValue));
+			}
+			if (cmdLine.hasOption(OPT_TIMESTAMP)) {
+				String optionValue = cmdLine.getOptionValue(OPT_TIMESTAMP);
+				ModifyTimestamp.setTimestamp(optionValue);
 			}
 			return ModifyTimestamp;
 	}
