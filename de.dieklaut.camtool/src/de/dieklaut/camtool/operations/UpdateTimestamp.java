@@ -25,6 +25,7 @@ public class UpdateTimestamp extends AbstractOperation {
 
 	private String sortingName = Constants.DEFAULT_SORTING_NAME;
 	private Sorter sorter;
+	private boolean handleMultiGroups = false;
 
 	public UpdateTimestamp(Sorter sorter) {
 		this.sorter = sorter;
@@ -32,6 +33,10 @@ public class UpdateTimestamp extends AbstractOperation {
 
 	public void setName(String sortingName) {
 		this.sortingName = sortingName;
+	}
+	
+	public void setHandleMultiGroups(boolean handleMultiGroups) {
+		this.handleMultiGroups = handleMultiGroups;
 	}
 
 	@Override
@@ -51,7 +56,23 @@ public class UpdateTimestamp extends AbstractOperation {
 	private void recursiveUpdateTimestamp(Collection<Group> groups, Path sortingFolder) {
 		for (Group group : groups) {
 			if (group instanceof MultiGroup) {
-				Logger.log("Multi group handling not implemented", Level.INFO);
+				if (handleMultiGroups) {
+					recursiveUpdateTimestamp(((MultiGroup) group).getGroups(), sortingFolder);
+					Path containingFolder = group.getContainingFolder();
+					String groupFolderNameTimestamp = FileUtils.getTimestampPortion(containingFolder);
+					String newFileName = FileUtils.buildFileName(FileUtils.getTimestamp(group.getTimestamp()), FileUtils.getNamePortion(containingFolder), FileUtils.getSuffix(containingFolder));
+					if (groupFolderNameTimestamp != null && !groupFolderNameTimestamp.isEmpty()) {
+						try {
+							FileUtils.renameFile(containingFolder, sortingFolder.getParent(), newFileName);
+							Logger.log("Renamed " + containingFolder + " to " + newFileName, Level.INFO);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				} else {
+					Logger.log("Multi group handling deactivated", Level.INFO);
+				}
 			} else if (group instanceof SingleGroup) {
 				updateTimestamp((SingleGroup) group, sortingFolder);
 			} else {

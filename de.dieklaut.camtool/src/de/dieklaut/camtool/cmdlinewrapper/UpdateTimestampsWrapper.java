@@ -12,9 +12,11 @@ import de.dieklaut.camtool.operations.Operation;
 import de.dieklaut.camtool.operations.UpdateTimestamp;
 
 public class UpdateTimestampsWrapper extends AbstractWrapper {
-	
+
 	private static final String OPT_NAME_SHORT = "n";
 	private static final String OPT_NAME = "name";
+	private static final String OPT_MULTI_GROUP_SHORT = "m";
+	private static final String OPT_MULTI_GROUP = "multigroups";
 	private Sorter sorter;
 	
 	public UpdateTimestampsWrapper(Sorter sorter) {
@@ -23,7 +25,9 @@ public class UpdateTimestampsWrapper extends AbstractWrapper {
 
 	@Override
 	public Options getOptions() {
-		return super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
+		Options options =  super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
+		options.addOption(Option.builder(OPT_MULTI_GROUP_SHORT).longOpt(OPT_MULTI_GROUP).desc("Enables multi group modification").build());
+		return options;
 	}
 
 	@Override
@@ -33,6 +37,9 @@ public class UpdateTimestampsWrapper extends AbstractWrapper {
 			update.setName(cmdLine.getOptionValue(OPT_NAME));
 		} else {
 			update.setName(SortingHelper.detectSortingFromDir(workingDir));
+		}
+		if (cmdLine.hasOption(OPT_MULTI_GROUP)) {
+			update.setHandleMultiGroups(true);
 		}
 		return update;
 	}
