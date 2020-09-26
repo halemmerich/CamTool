@@ -62,11 +62,8 @@ public class Export extends AbstractOperation {
 		}
 		
 		if (destination == null) {
-			destination = context.getRoot().resolve(Constants.DEFAULT_EXPORT_NAME);
+			destination = context.getRoot().resolve(Constants.DEFAULT_EXPORT_NAME).resolve(context.getName());
 		}
-	
-		destination = destination.resolve(context.getName());
-		
 		
 		if (!Files.exists(destination)) {
 			try {
