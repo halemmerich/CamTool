@@ -125,6 +125,13 @@ public class CamToolTest extends FileBasedTest {
 	}
 
 	@Test
+	public void callRenderWithNameAndFilter() {
+		callSortWithName();
+		RenderJobFactory.useRawtherapee = false;
+		CamTool.main(new String[] { "render", "-n", TEST , "-r", "pp3minmax,Rank,4,5"});
+	}
+
+	@Test
 	public void callExportNoArgs() {
 		callRenderNoArgs();
 		CamTool.workingDir = Paths.get(Constants.FOLDER_SORTED + "/" + Constants.DEFAULT_SORTING_NAME);

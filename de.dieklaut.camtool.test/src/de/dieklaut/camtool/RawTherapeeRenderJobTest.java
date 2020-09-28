@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 import org.apache.commons.exec.CommandLine;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class RawTherapeeRenderJobTest{
 		};
 		
 		RawTherapeeRenderJob job = new RawTherapeeRenderJob(checkCommandlineCall, rawFile, sidecar);
-		job.store(destination);
+		job.store(destination, Collections.emptySet());
 		
 		assertEquals(1, callCount);
 	}

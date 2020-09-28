@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 
-import de.dieklaut.camtool.renderjob.CopyRenderJob;
+import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
 
@@ -20,10 +20,11 @@ public class RenderSubstituteModifier implements RenderModifier {
 	}
 
 	@Override
-	public RenderJob getRenderJob() {
+	public RenderJob getRenderJob(Collection<RenderFilter> renderFilters) {
 		try {
 			Collection<Path> paths = getSubstitutePaths();
-			return new CopyRenderJob(paths.toArray(new Path[paths.size()]));
+			SingleGroup tempGroup = new SingleGroup(paths);
+			return tempGroup.getRenderJob(renderFilters);
 		} catch (IOException e) {
 			Logger.log("Error during creation of copy render job for substitute file " + rendersub, e);
 			return new NullRenderJob();

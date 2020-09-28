@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class CopyRenderJob extends RenderJob {
@@ -19,7 +20,7 @@ public class CopyRenderJob extends RenderJob {
 	}
 
 	@Override
-	public Set<Path> storeImpl(Path destination) throws IOException {
+	public Set<Path> storeImpl(Path destination, Collection<RenderFilter> renderFilters) throws IOException {
 		Set<Path> rendered = new HashSet<>();
 		for (Path current : source) {
 			Path destinationFile = destination;
@@ -34,7 +35,7 @@ public class CopyRenderJob extends RenderJob {
 	}
 
 	@Override
-	public Set<Path> getPredictedResultsImpl(Path destination) throws IOException {
+	public Set<Path> getPredictedResultsImpl(Path destination, Collection<RenderFilter> renderFilters) throws IOException {
 		Set<Path> rendered = new HashSet<>();
 		for (Path current : source) {
 			Path destinationFile = destination;

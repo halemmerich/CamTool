@@ -31,7 +31,9 @@ public class RenderJobFactory {
 
 	private static boolean hasPp3(Path[] helperFiles, Path mainFile) {
 		for (Path current : helperFiles) {
-			if (current.getFileName().toString().equals(mainFile.getFileName().toString() + ".pp3")) {
+			if (mainFile != null && current.getFileName().toString().equals(mainFile.getFileName().toString() + ".pp3")) {
+				return true;
+			} else if (current.getFileName().toString().endsWith(".pp3")) {
 				return true;
 			}
 		}

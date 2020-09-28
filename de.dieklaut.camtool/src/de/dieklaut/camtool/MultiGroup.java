@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
+import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderjob.MultiRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
 import de.dieklaut.camtool.util.FileUtils;
@@ -69,9 +70,9 @@ public class MultiGroup extends AbstractGroup {
 	}
 
 	@Override
-	public RenderJob getRenderJob() {
+	public RenderJob getRenderJob(Collection<RenderFilter> renderFilters) {
 		if (renderModifier != null) {
-			return renderModifier.getRenderJob();	
+			return renderModifier.getRenderJob(renderFilters);	
 		} else {
 			return new MultiRenderJob(groups);
 		}

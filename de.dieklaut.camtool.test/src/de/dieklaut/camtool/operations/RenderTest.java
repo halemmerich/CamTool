@@ -91,21 +91,21 @@ public class RenderTest extends FileBasedTest {
 						}
 
 						@Override
-						public RenderJob getRenderJob() {
+						public RenderJob getRenderJob(Collection<RenderFilter> filters) {
 							renderJobCounter.incrementAndGet();
-							RenderJob job = group.getRenderJob();
+							RenderJob job = group.getRenderJob(filters);
 							return new RenderJob() {
 
 								@Override
-								public Set<Path> storeImpl(Path destination) throws IOException {
+								public Set<Path> storeImpl(Path destination, Collection<RenderFilter> filters) throws IOException {
 									storeCounter.incrementAndGet();
-									return job.storeImpl(destination);
+									return job.storeImpl(destination, filters);
 								}
 
 								@Override
-								public Set<Path> getPredictedResultsImpl(Path destination) throws IOException {
+								public Set<Path> getPredictedResultsImpl(Path destination, Collection<RenderFilter> filters) throws IOException {
 									predictCounter.incrementAndGet();
-									return job.getPredictedResultsImpl(destination);
+									return job.getPredictedResultsImpl(destination, filters);
 								}
 								
 							};
@@ -282,10 +282,10 @@ public class RenderTest extends FileBasedTest {
 		Context context = TestFileHelper.createComplexContext(getTestFolder());
 		TestFileHelper.addFileToSorting(context, Paths.get("group/file1.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
 		TestFileHelper.addFileToSorting(context, Paths.get("group/file2.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+		TestFileHelper.addFileToSorting(context, Paths.get("group/file1.pp3"), TestFileHelper.getTestResource("neutral.pp3"));
 		Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("group").resolve("substitute"));
-		Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("group").resolve("substitute2"));
 		Path camtool_sub = Files.createFile(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("group").resolve("camtool_rendersubstitute"));
-		Files.write(camtool_sub, "substitute\nsubstitute2".getBytes());
+		Files.write(camtool_sub, "file1.ARW\nfile1.pp3".getBytes());
 
 		Sorter sorter = new DefaultSorter();		
 		RenderJobFactory.useRawtherapee = false;
@@ -298,7 +298,6 @@ public class RenderTest extends FileBasedTest {
 		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
 		assertTrue(Files.exists(results));
 		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME)));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group_substitute")));
-		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group_substitute2")));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group.jpg")));
 	}
 }

@@ -3,12 +3,14 @@ package de.dieklaut.camtool.renderjob;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import de.dieklaut.camtool.FileTypeHelper;
 import de.dieklaut.camtool.external.RawTherapeeWrapper;
 import de.dieklaut.camtool.external.RawTherapeeWrapper.FileType;
+import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class RawTherapeeRenderJob extends RenderJob {
@@ -26,7 +28,7 @@ public class RawTherapeeRenderJob extends RenderJob {
 
 	@Override
 	public
-	Set<Path> storeImpl(Path destination) throws IOException {
+	Set<Path> storeImpl(Path destination, Collection<RenderFilter> renderFilters) throws IOException {
 		if (Files.isDirectory(destination)) {
 			destination = destination.resolve(FileUtils.removeSuffix(mainFile.getFileName().toString()) + "." + DEFAULT_FILE_TYPE.getSuffix());
 		}
@@ -49,7 +51,7 @@ public class RawTherapeeRenderJob extends RenderJob {
 
 	@Override
 	public
-	Set<Path> getPredictedResultsImpl(Path destination) throws IOException {
+	Set<Path> getPredictedResultsImpl(Path destination, Collection<RenderFilter> renderFilters) throws IOException {
 		if (Files.isDirectory(destination)) {
 			destination = destination.resolve(FileUtils.removeSuffix(mainFile.getFileName().toString()) + "." + DEFAULT_FILE_TYPE.getSuffix());
 		}

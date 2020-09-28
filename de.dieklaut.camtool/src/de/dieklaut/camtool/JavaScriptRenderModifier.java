@@ -6,8 +6,9 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.dieklaut.camtool.renderjob.RenderJob;
+import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderjob.RenderJavaScriptScriptMultiRenderJob;
+import de.dieklaut.camtool.renderjob.RenderJob;
 
 public class JavaScriptRenderModifier implements RenderModifier {
 
@@ -20,7 +21,7 @@ public class JavaScriptRenderModifier implements RenderModifier {
 	}
 	
 	@Override
-	public RenderJob getRenderJob() {
+	public RenderJob getRenderJob(Collection<RenderFilter> renderFilters) {
 		return new RenderJavaScriptScriptMultiRenderJob(renderScript, group);
 	}
 

@@ -17,7 +17,7 @@ public class CamToolTest extends WorkingDirTest {
 	@Test
 	public void testRenderNoArgs() throws IOException {
 		String[] fileNames = new String[] { "NEX5R.ARW", "NEX5R.JPG", "A7II.ARW", "A7II.JPG", "noexif.png", "XAVC.MP4",
-				"AVCHD.MTS", "neutral.pp3", "neutral_deleted.pp3", "empty.file" };
+				"AVCHD.MTS", "neutral.pp3", "neutral_deleted.pp3", "neutral_rank3.pp3", "empty.file" };
 		Path[] paths = new Path[fileNames.length];
 		
 		Files.list(Paths.get("")).forEach(currentPath -> FileUtils.deleteRecursive(currentPath, false));
@@ -28,7 +28,7 @@ public class CamToolTest extends WorkingDirTest {
 		CamTool.main(new String[] { "init" });
 		CamTool.main(new String[] { "sort" });
 		CamTool.main(new String[] { "showGroups", "-n", Constants.DEFAULT_SORTING_NAME });
-		CamTool.main(new String[] { "render", "-n", Constants.DEFAULT_SORTING_NAME });
+		CamTool.main(new String[] { "render", "-n", Constants.DEFAULT_SORTING_NAME , "-r", "pp3minmax,Rank,3,3"});
 	}
 
 	@Test
@@ -65,12 +65,11 @@ public class CamToolTest extends WorkingDirTest {
 		CamTool.main(new String[] { "sort", "-s" });
 		
 		Path path = Paths.get(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve("20170915165451000_multi").resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
-		Files.write(path, "20170915165451000_series_06.JPG\n20170915165451000_series_08.JPG".getBytes());
+		Files.write(path, "20170915165451000_series_06.JPG".getBytes());
 		
 		CamTool.main(new String[] { "render", "-n", Constants.DEFAULT_SORTING_NAME });
 
-		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve("20170915165451000_series_06.jpg")));
-		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve("20170915165451000_series_08.jpg")));
-		assertEquals(3, Files.list(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME)).count());
+		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve("20170915165451000_multi.JPG")));
+		assertEquals(2, Files.list(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME)).count());
 	}
 }

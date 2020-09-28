@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import org.junit.Test;
@@ -50,7 +51,7 @@ public class RenderTestScriptMultiRenderJobTest extends FileBasedTest {
 		
 		Path dest = Files.createTempDirectory(Constants.TEMP_FOLDER_PREFIX);
 		
-		renderJob.store(dest);
+		renderJob.store(dest, Collections.emptySet());
 		
 		assertTrue(Files.exists(dest.resolve("summary.txt")));
 		FileUtils.deleteRecursive(dest, true);

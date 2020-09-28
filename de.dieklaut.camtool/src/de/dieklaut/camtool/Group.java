@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 
+import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderjob.RenderJob;
 
 /**
@@ -23,7 +24,7 @@ public interface Group{
 	/**
 	 * Perform all necessary steps for creating the final result of this group
 	 */
-	public RenderJob getRenderJob();
+	public RenderJob getRenderJob(Collection<RenderFilter> renderFilters);
 	
 	/**
 	 * @return true, iff this group has been marked as deleted

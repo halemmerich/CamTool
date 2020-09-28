@@ -2,17 +2,16 @@ package de.dieklaut.camtool;
  
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Test;
 
 import de.dieklaut.camtool.renderjob.RenderJavaScriptScriptMultiRenderJob;
@@ -61,7 +60,7 @@ public class DefaultSorterTest extends FileBasedTest {
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(3, sorting.size());
 		for (Group current : sorting) {
-			assertThat(current, new IsInstanceOf(SingleGroup.class));
+			assertTrue(current instanceof SingleGroup);
 		}
 	}
 
@@ -79,7 +78,7 @@ public class DefaultSorterTest extends FileBasedTest {
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(2, sorting.size());
 		for (Group current : sorting) {
-			assertThat(current, new IsInstanceOf(MultiGroup.class));
+			assertTrue(current instanceof MultiGroup);
 		}
 	}
 
@@ -176,7 +175,7 @@ public class DefaultSorterTest extends FileBasedTest {
 		assertEquals(1, sorting.size());
 		Group group = sorting.iterator().next();
 		
-		assertThat(group, new IsInstanceOf(MultiGroup.class));
+		assertTrue(group instanceof MultiGroup);
 		
 		MultiGroup seriesGroup = (MultiGroup) group;
 		assertEquals(4, seriesGroup.getAllFiles().size());
@@ -195,7 +194,7 @@ public class DefaultSorterTest extends FileBasedTest {
 		Group group = sorting.iterator().next();
 		Collection<Path> files = group.getAllFiles();
 		assertEquals(1, files.size());
-		assertThat(group, new IsInstanceOf(MultiGroup.class));
-		assertThat(group.getRenderJob(), new IsInstanceOf(RenderJavaScriptScriptMultiRenderJob.class));
+		assertTrue(group instanceof MultiGroup);
+		assertTrue(group.getRenderJob(Collections.emptySet()) instanceof RenderJavaScriptScriptMultiRenderJob);
 	}
 }

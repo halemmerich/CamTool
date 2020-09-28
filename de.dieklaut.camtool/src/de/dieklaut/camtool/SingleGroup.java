@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
 
+import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderjob.CopyRenderJob;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
@@ -48,20 +49,34 @@ public class SingleGroup extends AbstractGroup {
 	}
 
 	@Override
-	public RenderJob getRenderJob() {
-		if (isMarkedAsDeleted()) {
+	public RenderJob getRenderJob(Collection<RenderFilter> renderFilters) {
+		if (isMarkedAsDeleted() || isFiltered(renderFilters)) {
 			return new NullRenderJob();
 		}
-		Collection<Path> elements = getAllFiles();
-
 		Path toBeRendered = getPrimaryFile();
-
+		
 		if (toBeRendered != null) {
-			elements.remove(toBeRendered);
-			return forFile(toBeRendered, elements.toArray(new Path[elements.size()]));
+			return forFile(toBeRendered, getHelperFiles().toArray(new Path[0]));
 		}
 
 		return new CopyRenderJob(toBeRendered);
+	}
+	
+	private Collection<Path> getHelperFiles() {
+		Collection<Path> allFiles = getAllFiles();
+		allFiles.remove(getPrimaryFile());
+		return allFiles;
+	}
+	private boolean isFiltered(Collection<RenderFilter> renderFilters) {
+		if (renderFilters.size() == 0) {
+			return false;
+		}
+		for (RenderFilter filter : renderFilters) {
+			if (!filter.isFiltered(getPrimaryFile(), getHelperFiles())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private RenderJob forFile(Path mainFile, Path... helperFiles) {

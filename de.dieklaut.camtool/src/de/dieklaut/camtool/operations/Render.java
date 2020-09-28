@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,6 +38,12 @@ public class Render extends AbstractOperation {
 	private Sorter sorter;
 
 	private String groupName;
+	
+	private Collection<RenderFilter> renderFilters = Collections.emptySet();
+
+	public void setRenderFilters(Collection<RenderFilter> renderFilters) {
+		this.renderFilters = renderFilters;
+	}
 
 	private boolean force;
 
@@ -57,7 +64,16 @@ public class Render extends AbstractOperation {
 			throw new IllegalStateException("Could not read groups", e);
 		}
 
-		Path results_sorting = context.getRoot().resolve(Constants.FOLDER_RESULTS).resolve(sortingName);
+		Path results_sorting = context.getRoot().resolve(Constants.FOLDER_RESULTS);
+		if (renderFilters.size() == 0) {
+			results_sorting = results_sorting.resolve(sortingName);
+		} else {
+			String name = sortingName;
+			for (RenderFilter f : renderFilters) {
+				name += "_" + f.getShortString();
+			}
+			results_sorting = results_sorting.resolve(name);
+		}
 
 		Path destination_direct;
 		try {
@@ -66,6 +82,8 @@ public class Render extends AbstractOperation {
 			throw new IllegalStateException("Could not create direct result folder", e);
 		}
 
+		Logger.log("Rendering to " + destination_direct, Level.INFO);
+		
 		Properties sourceState = new Properties();
 
 		Path sourceStatePath = destination_direct.resolve(Constants.FILE_NAME_SOURCESTATE);
@@ -89,9 +107,9 @@ public class Render extends AbstractOperation {
 
 		for (Group group : groups) {
 			String newChecksum = hasChanges(group, sourceState);
-			RenderJob renderJob = group.getRenderJob();
+			RenderJob renderJob = group.getRenderJob(renderFilters);
 			try {
-				Collection<Path> predictedResults = renderJob.getPredictedResults(destination_direct);
+				Collection<Path> predictedResults = renderJob.getPredictedResults(destination_direct, renderFilters);
 				predictionFailed |= predictedResults == null;
 
 				
@@ -150,16 +168,18 @@ public class Render extends AbstractOperation {
 		for (RenderJob job : renderJobToGroupName.keySet()) {
 			try {
 				sourceState.setProperty(renderJobToGroupName.get(job), renderJobToChecksum.get(job));
-				Set<Path> jobResult = job.store(destination_direct);
+				Set<Path> jobResult = job.store(destination_direct, renderFilters);
 				
 				if (renderJobToNamePrefix.containsKey(job) && jobResult.size() == 1) {
 					Path result = jobResult.iterator().next();
 					Path newPath = destination_direct.resolve(renderJobToNamePrefix.get(job) + FileUtils.getSuffix(result));
-					Files.deleteIfExists(newPath);
-					Files.move(result, newPath);
-					jobResult.remove(result);
-					jobResult.add(newPath);
-					Logger.log("Renamed single Multigroup output " + result + " to " + newPath, Level.INFO);
+					if (!result.equals(newPath)) {
+						Files.deleteIfExists(newPath);
+						Files.move(result, newPath);
+						jobResult.remove(result);
+						jobResult.add(newPath);
+						Logger.log("Renamed single Multigroup output " + result + " to " + newPath, Level.INFO);	
+					}
 				} else if (renderJobToNamePrefix.containsKey(job) && jobResult.size() > 1) {
 					Set<Path> toBeRemoved = new HashSet<>();
 					Set<Path> toBeAdded = new HashSet<>();
@@ -167,11 +187,13 @@ public class Render extends AbstractOperation {
 					while (it.hasNext()) {
 						Path result = it.next();
 						Path newPath = destination_direct.resolve(renderJobToNamePrefix.get(job) + "_" + result.getFileName().toString());
-						Files.deleteIfExists(newPath);
-						Files.move(result, newPath);
-						toBeRemoved.add(result);
-						toBeAdded.add(newPath);
-						Logger.log("Prefixed single Multigroup output " + result + " to " + newPath, Level.INFO);
+						if (!result.equals(newPath)) {
+							Files.deleteIfExists(newPath);
+							Files.move(result, newPath);
+							toBeRemoved.add(result);
+							toBeAdded.add(newPath);
+							Logger.log("Prefixed single Multigroup output " + result + " to " + newPath, Level.INFO);
+						}
 					}
 					jobResult.removeAll(toBeRemoved);
 					jobResult.addAll(toBeAdded);

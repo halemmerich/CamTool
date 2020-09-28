@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import org.junit.Test;
@@ -51,9 +52,9 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		
 		Path dest = Files.createTempDirectory(Constants.TEMP_FOLDER_PREFIX);
 		
-		renderModifier.getRenderJob().store(dest);
+		renderModifier.getRenderJob(Collections.emptySet()).store(dest, Collections.emptySet());
 
-		assertTrue(Files.exists(dest.resolve("file1.arw")));
+		assertTrue(Files.exists(dest.resolve("file1.jpg")));
 		assertEquals(Files.list(dest).count(), 1);
 		FileUtils.deleteRecursive(dest, true);
 		

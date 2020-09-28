@@ -21,4 +21,15 @@ public class RawTherapeeParser {
 		return false;
 	}
 
+	public static String get(Path file, String propertyName) {
+		Properties profile = new Properties();
+		try (InputStream stream = Files.newInputStream(file)){
+			profile.load(stream);
+			return profile.getProperty(propertyName);
+		} catch (IOException e) {
+			Logger.log("Failure while parsing RawTherapee ini", e, Level.WARNING);
+		}
+		return null;
+	}
+
 }

@@ -3,6 +3,7 @@ package de.dieklaut.camtool.renderjob;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.Logger.Level;
+import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.util.FileUtils;
 
 /**
@@ -33,11 +35,11 @@ public class RenderJavaScriptScriptMultiRenderJob extends RenderJob {
 
 	@Override
 	public
-	Set<Path> storeImpl(Path destination) throws IOException {
+	Set<Path> storeImpl(Path destination, Collection<RenderFilter> renderFilters) throws IOException {
 		Path workDir = Files.createTempDirectory("camtool_workdir");
 
 		for (Group group : multiGroup.getGroups()) {
-			group.getRenderJob().store(workDir);
+			group.getRenderJob(renderFilters).store(workDir, renderFilters);
 		}
 
 		Path resultDir = Files.createTempDirectory("camtool_results");
@@ -57,7 +59,7 @@ public class RenderJavaScriptScriptMultiRenderJob extends RenderJob {
 
 	@Override
 	public
-	Set<Path> getPredictedResultsImpl(Path destination) throws IOException {
+	Set<Path> getPredictedResultsImpl(Path destination, Collection<RenderFilter> renderFilters) throws IOException {
 		return null;
 	}
 

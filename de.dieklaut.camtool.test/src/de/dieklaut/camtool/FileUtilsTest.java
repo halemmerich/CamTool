@@ -106,7 +106,7 @@ public class FileUtilsTest extends FileBasedTest {
 	
 	@Test
 	public void testGetInstant() throws ParseException {
-		Instant now = Instant.now();
+		Instant now = Instant.ofEpochMilli(123412341234l);
 		assertEquals(now, FileUtils.getInstant(FileUtils.getTimestamp(now)));
 	}
 	
