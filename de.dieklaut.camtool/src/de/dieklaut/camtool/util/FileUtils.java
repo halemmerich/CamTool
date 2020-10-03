@@ -76,10 +76,33 @@ public class FileUtils {
 		try (InputStream stream = Files.newInputStream(filePath)) {
 			Metadata metadata = ImageMetadataReader.readMetadata(stream);
 
-			Collection<ExifIFD0Directory> directories = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
+			Collection<ExifIFD0Directory> directoriesIfd0 = metadata.getDirectoriesOfType(ExifIFD0Directory.class);
+			Collection<ExifSubIFDDirectory> directories = metadata.getDirectoriesOfType(ExifSubIFDDirectory.class);
 
-			for (ExifIFD0Directory directory : directories) {
+			for (ExifIFD0Directory directory : directoriesIfd0) {
+				Date date = directory.getDate(ExifIFD0Directory.TAG_DATETIME_ORIGINAL);
+				if (date != null) {
+					return date.toInstant();
+				}
+			}
+			
+			for (ExifSubIFDDirectory directory : directories) {
+				Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+				if (date != null) {
+					return date.toInstant();
+				}
+			}
+
+
+			for (ExifIFD0Directory directory : directoriesIfd0) {
 				Date date = directory.getDate(ExifIFD0Directory.TAG_DATETIME);
+				if (date != null) {
+					return date.toInstant();
+				}
+			}
+			
+			for (ExifSubIFDDirectory directory : directories) {
+				Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME);
 				if (date != null) {
 					return date.toInstant();
 				}
