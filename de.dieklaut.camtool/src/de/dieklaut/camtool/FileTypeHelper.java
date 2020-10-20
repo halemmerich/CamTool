@@ -7,6 +7,7 @@ public class FileTypeHelper {
 	private static String [] rawFileSuffixes = new String [] {"arw", "nef"};
 	private static String [] videoFileSuffixes = new String [] {"mp4", "mpg", "avi", "avchd", "mkv", "mts"};
 	private static String [] imageFileSuffixes = new String [] {"jpg", "png", "gif", "tif", "tiff"};
+	private static String [] vectorFileSuffixes = new String [] {"svg", "pdf"};
 	private static String [] renderscriptFileSuffixes = new String [] { Constants.FILE_NAME_RENDERSCRIPT_SUFFIX };
 	
 	private static boolean endsWithOne(Path path, String ... strings) {
@@ -36,5 +37,13 @@ public class FileTypeHelper {
 
 	public static boolean isRenderscript(Path file) {
 		return endsWithOne(file, renderscriptFileSuffixes);
+	}
+
+	public static boolean isVectorFile(Path file) {
+		return endsWithOne(file, vectorFileSuffixes);
+	}
+
+	public static boolean isPdfFile(Path file) {
+		return endsWithOne(file, "pdf");
 	}
 }

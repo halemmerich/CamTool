@@ -4,6 +4,7 @@ import java.nio.file.Path;
 
 import de.dieklaut.camtool.FileTypeHelper;
 import de.dieklaut.camtool.external.RawTherapeeWrapper;
+import de.dieklaut.camtool.external.PdfRenderJob;
 
 public class RenderJobFactory {
 	/**
@@ -25,6 +26,8 @@ public class RenderJobFactory {
 			} else if (useDummyRawJob) {
 				return new DummyRawRenderJob(mainFile);
 			}
+		} else if (FileTypeHelper.isPdfFile(mainFile)) {
+			return new PdfRenderJob(mainFile);
 		}
 		return new CopyRenderJob(mainFile);
 	}
