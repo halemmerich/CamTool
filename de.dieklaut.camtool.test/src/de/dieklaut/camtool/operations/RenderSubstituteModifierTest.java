@@ -59,4 +59,42 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		FileUtils.deleteRecursive(dest, true);
 		
 	}
+	
+	@Test
+	public void testRenderWithSubstituteRegex() throws IOException {
+		Path source = TestFileHelper.getTestResource("A7II.ARW");
+		Path file1 = getTestFolder().resolve("file1.arw");
+		Files.copy(source, file1);
+		Path file2 = getTestFolder().resolve("file2.arw");
+		Files.copy(source, file2);
+		source = TestFileHelper.getTestResource("neutral.pp3");
+		Path pp3 = getTestFolder().resolve("file1.pp3");
+		Files.copy(source, pp3);
+		
+		Path renderscript = getTestFolder().resolve("test.camtool_rendersubstitute");
+		Files.write(renderscript, "file1.*".getBytes());
+		
+		Collection<Group> groups = new HashSet<>();
+		Collection<Group> multigroups = new HashSet<>();
+		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}));
+		groups.add(singleGroup);
+		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1 , pp3}));
+		multigroups.add(subGroup);
+		MultiGroup multiGroup = new MultiGroup(multigroups);
+		groups.add(multiGroup);
+
+		RenderJobFactory.useRawtherapee = false;
+		RenderSubstituteModifier renderModifier = new RenderSubstituteModifier(renderscript);
+		multiGroup.setRenderModifier(renderModifier);
+
+		
+		Path dest = Files.createTempDirectory(Constants.TEMP_FOLDER_PREFIX);
+		
+		renderModifier.getRenderJob(Collections.emptySet()).store(dest, Collections.emptySet());
+
+		assertTrue(Files.exists(dest.resolve("file1.jpg")));
+		assertEquals(Files.list(dest).count(), 1);
+		FileUtils.deleteRecursive(dest, true);
+		
+	}
 }

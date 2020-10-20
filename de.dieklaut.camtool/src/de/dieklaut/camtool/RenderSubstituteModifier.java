@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
@@ -37,8 +39,17 @@ public class RenderSubstituteModifier implements RenderModifier {
 			if (currentLine.trim().isEmpty()) {
 				continue;
 			}
+			
 			Path current = Paths.get(currentLine);
-			paths.add(rendersub.toAbsolutePath().getParent().resolve(current));
+			
+			if (Files.exists(current)) {
+				paths.add(rendersub.toAbsolutePath().getParent().resolve(current));
+			} else {
+				Pattern p = Pattern.compile(currentLine);
+				Collection<Path> matching = Files.list(rendersub.toAbsolutePath().getParent()).filter(f -> p.matcher(rendersub.toAbsolutePath().getParent().relativize(f).toString()).find()).collect(Collectors.toSet());
+				paths.addAll(matching);
+			}
+			
 		}
 	
 		return paths;
