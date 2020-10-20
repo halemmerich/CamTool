@@ -347,7 +347,7 @@ public class FileUtils {
 
 	public static String removeSuffix(String fileName) {
 		if (!fileName.contains(".")) {
-			throw new IllegalArgumentException("The given file name contains no '.', hence no suffix to remove");
+			return fileName;
 		}
 		return fileName.substring(0, fileName.lastIndexOf('.'));
 	}

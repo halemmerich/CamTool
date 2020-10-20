@@ -115,9 +115,8 @@ public class FileUtilsTest extends FileBasedTest {
 		assertEquals("test.jpg",FileUtils.removeSuffix("test.jpg.arw"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
 	public void testRemoveSuffixNoDot() {
-		FileUtils.removeSuffix("test");
+		assertEquals("test",FileUtils.removeSuffix("test"));
 	}
 	
 	@Test
