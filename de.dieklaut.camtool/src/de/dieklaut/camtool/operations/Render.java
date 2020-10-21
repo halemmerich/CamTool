@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
@@ -69,10 +70,11 @@ public class Render extends AbstractOperation {
 			results_sorting = results_sorting.resolve(sortingName);
 		} else {
 			String name = sortingName;
+			StringJoiner filterString = new StringJoiner("_");
 			for (RenderFilter f : renderFilters) {
-				name += "_" + f.getShortString();
+				filterString.add(f.getShortString());
 			}
-			results_sorting = results_sorting.resolve(name);
+			results_sorting = results_sorting.resolve(filterString.toString()).resolve(name);
 		}
 
 		Path destination_direct;
