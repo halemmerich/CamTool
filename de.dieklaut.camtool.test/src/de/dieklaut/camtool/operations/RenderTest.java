@@ -239,6 +239,29 @@ public class RenderTest extends FileBasedTest {
 	}
 
 	@Test
+	public void testPerformCleanup() throws IOException {
+		Context context = TestFileHelper.createComplexContext(getTestFolder());
+		TestFileHelper.addFileToSorting(context, Paths.get("group/file1.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
+
+		Sorter sorter = new DefaultSorter();		
+		RenderJobFactory.useRawtherapee = false;
+		
+		Render render = new Render(sorter);
+		render.setSortingName(Constants.DEFAULT_SORTING_NAME);
+		render.perform(context);
+
+		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
+		Files.createFile(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("file2.jpg"));
+		
+		render.perform(context);
+		
+		assertTrue(Files.exists(results));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME)));
+		assertTrue(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("group.jpg")));
+		assertFalse(Files.exists(results.resolve(Constants.DEFAULT_SORTING_NAME).resolve("file2.jpg")));
+	}
+
+	@Test
 	public void testPerformMultiGroup() throws IOException {
 		Context context = TestFileHelper.createComplexContext(getTestFolder());
 		Path file1 = TestFileHelper.addFileToSorting(context, Paths.get("group/file1.ARW"), TestFileHelper.getTestResource("A7II.ARW"));
