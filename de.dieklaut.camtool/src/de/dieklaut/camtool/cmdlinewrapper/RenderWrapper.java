@@ -16,6 +16,7 @@ import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderfilters.Pp3MaxIntRenderFilter;
 import de.dieklaut.camtool.renderfilters.Pp3MinIntRenderFilter;
 import de.dieklaut.camtool.renderfilters.Pp3MinMaxIntRenderFilter;
+import de.dieklaut.camtool.renderfilters.Pp3RatingFilter;
 import de.dieklaut.camtool.renderfilters.Pp3RenderFilter;
 
 public class RenderWrapper extends AbstractWrapper {
@@ -39,7 +40,7 @@ public class RenderWrapper extends AbstractWrapper {
 		Options options =  super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
 		options.addOption(Option.builder(OPT_FORCE_SHORT).longOpt(OPT_FORCE).desc("Forces overwriting ").build());
 		options.addOption(Option.builder(OPT_GROUP_SHORT).longOpt(OPT_GROUP).desc("Sets the group to be moved").hasArg().build());
-		options.addOption(Option.builder(OPT_RENDERFILTER_SHORT).longOpt(OPT_RENDERFILTER).desc("Sets the renderfilter string").hasArg().build());
+		options.addOption(Option.builder(OPT_RENDERFILTER_SHORT).longOpt(OPT_RENDERFILTER).desc("Sets the renderfilter string. The format is as follows:\nname1,param2,param2:name2,param1").hasArg().build());
 		return options;
 	}
 
@@ -76,6 +77,13 @@ public class RenderWrapper extends AbstractWrapper {
 					break;
 				case "pp3minmax":
 					renderFilters.add(new Pp3MinMaxIntRenderFilter(filterArray[1], Integer.parseInt(filterArray[2]), Integer.parseInt(filterArray[3])));
+					break;
+				case "pp3rate":
+					int [] ratings = new int [filterArray[1].length()];
+					for (int i = 0; i < filterArray[1].length(); i++) {
+						ratings[i] = Integer.parseInt(filterArray[1].substring(i, i+1));
+					}
+					renderFilters.add(new Pp3RatingFilter("Rank", ratings));
 					break;
 					default:
 						throw new RuntimeException("Unknown filter " + filterArray[0]);
