@@ -102,6 +102,7 @@ public class FileUtilsTest extends FileBasedTest {
 		assertEquals("20170708085315000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("NEX5R.ARW"))));
 		assertEquals("20190104091144948", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS"))));
 		assertEquals("20190104091144978", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("XAVC.MP4"))));
+		assertEquals("20200823125203000", FileUtils.getTimestamp(FileUtils.getCreationDate(TestFileHelper.getTestResource("DiffOrigDate.JPG"))));
 	}
 	
 	@Test
