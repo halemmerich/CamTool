@@ -40,6 +40,10 @@ public class RenderTest extends FileBasedTest {
 		Path source = TestFileHelper.getTestResource("A7II.ARW");
 		Files.copy(source, getTestFolder().resolve("file.arw"));
 		
+		Path sourcePdf = TestFileHelper.getTestResource("inkscape.pdf");
+		sourcePdf = Files.copy(sourcePdf, getTestFolder().resolve("inkscape.pdf"));
+		String timestampPdf = FileUtils.getTimestamp(FileUtils.getCreationDate(sourcePdf));
+		
 		new Init().perform(context);
 		Sorter sorter = new DefaultSorter();
 		Sort sort = new Sort(sorter);
@@ -52,13 +56,14 @@ public class RenderTest extends FileBasedTest {
 		render.setSortingName(TEST);
 		
 		render.perform(context);
-		
+
 		String timestamp = FileUtils.getTimestamp(FileUtils.getCreationDate(source));
 		
 		Path results = getTestFolder().resolve(Constants.FOLDER_RESULTS);
 		assertTrue(Files.exists(results));
 		assertTrue(Files.exists(results.resolve(TEST)));
 		assertTrue(Files.exists(results.resolve(TEST).resolve(timestamp + "_file.jpg")));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(timestampPdf + "_inkscape.png")));
 	}
 
 	@Test
