@@ -22,6 +22,8 @@ public class ExportWrapper extends AbstractWrapper {
 	private static final String OPT_TYPE = "type";
 	private static final String OPT_DESTINATION_SHORT = "d";
 	private static final String OPT_DESTINATION = "destination";
+	private static final String OPT_PREVENT_CLEANUP_SHORT = "p";
+	private static final String OPT_PREVENT_CLEANUP = "prevent-cleanup";
 
 	@Override
 	public Options getOptions() {
@@ -29,6 +31,7 @@ public class ExportWrapper extends AbstractWrapper {
 		options.addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("The name for the sorting that should be exported").hasArg().build());
 		options.addOption(Option.builder(OPT_TYPE_SHORT).longOpt(OPT_TYPE).desc("The type of the results that should be exported").hasArg().build());
 		options.addOption(Option.builder(OPT_DESTINATION_SHORT).longOpt(OPT_DESTINATION).desc("The destination folder for the export").hasArg().build());
+		options.addOption(Option.builder(OPT_PREVENT_CLEANUP_SHORT).longOpt(OPT_PREVENT_CLEANUP).desc("Do not cleanup the rendered files").build());
 		return options;
 	}
 
@@ -44,6 +47,9 @@ public class ExportWrapper extends AbstractWrapper {
 		}
 		if (cmdLine.hasOption(OPT_TYPE)) {
 			export.setType(ExportType.get(cmdLine.getOptionValue(OPT_TYPE)));
+		}
+		if (cmdLine.hasOption(OPT_PREVENT_CLEANUP)) {
+			export.setPreventCleanup(true);
 		}
 		if (cmdLine.hasOption(OPT_DESTINATION)) {
 			export.setDestination(Paths.get(cmdLine.getOptionValue(OPT_DESTINATION)));

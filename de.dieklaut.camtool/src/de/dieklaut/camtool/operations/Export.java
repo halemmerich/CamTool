@@ -31,6 +31,7 @@ public class Export extends AbstractOperation {
 	private ExportType type = ExportType.MEDIUM;
 	
 	private Path destination = null;
+	private boolean preventCleanup = false;
 
 	public void setName(String name) {
 		this.name = name;
@@ -94,7 +95,9 @@ public class Export extends AbstractOperation {
 					}
 				}
 			});
-			FileUtils.deleteAllFilesNotExistingIn(resultFolder, destination, true);
+			if (!preventCleanup) {
+				FileUtils.deleteAllFilesNotExistingIn(resultFolder, destination, true);
+			}
 		} catch (IOException e) {
 			throw new IllegalStateException("Creating full size results folder failed", e);
 		}
@@ -115,6 +118,10 @@ public class Export extends AbstractOperation {
 			}
 		}
 		return true;
+	}
+
+	public void setPreventCleanup(boolean preventCleanup) {
+		this.preventCleanup  = preventCleanup;
 	}
 
 }
