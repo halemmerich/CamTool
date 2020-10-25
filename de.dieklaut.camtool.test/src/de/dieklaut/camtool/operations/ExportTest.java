@@ -55,7 +55,7 @@ public class ExportTest extends FileBasedTest {
 		
 		Path results = getTestFolder().resolve(Constants.DEFAULT_EXPORT_NAME);
 		assertTrue(Files.exists(results));
-		Path exportDestination = results.resolve(context.getName());
+		Path exportDestination = results.resolve(ExportType.MEDIUM.name().toLowerCase()).resolve(TEST);
 		assertTrue(Files.exists(exportDestination));
 		assertTrue(Files.exists(exportDestination.resolve(timestamp + "_file.jpg")));
 	}
