@@ -40,6 +40,8 @@ public class Render extends AbstractOperation {
 
 	private String groupName;
 	
+	private boolean preventCleanup;
+	
 	private Collection<RenderFilter> renderFilters = Collections.emptySet();
 
 	public void setRenderFilters(Collection<RenderFilter> renderFilters) {
@@ -211,7 +213,7 @@ public class Render extends AbstractOperation {
 		
 		Logger.log("Rendered finished: " + (rendered.size() - 1) + " resulting artifacts.", Level.INFO); //-1 because of .sourcestate file
 
-		if (!errorDuringJobCreations && groupName == null) {
+		if (!errorDuringJobCreations && groupName == null && !preventCleanup) {
 			try {
 				FileUtils.deleteEverythingBut(destination_direct, rendered);
 			} catch (IOException e) {
@@ -258,6 +260,10 @@ public class Render extends AbstractOperation {
 
 	public void setForce(boolean hasOption) {
 		this.force = true;
+	}
+
+	public void setPreventCleanup(boolean preventCleanup) {
+		this.preventCleanup = preventCleanup;
 	}
 
 }

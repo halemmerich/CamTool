@@ -13,6 +13,7 @@ import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.operations.Operation;
 import de.dieklaut.camtool.operations.Render;
 import de.dieklaut.camtool.operations.RenderFilter;
+import de.dieklaut.camtool.renderfilters.FileTypeFilter;
 import de.dieklaut.camtool.renderfilters.Pp3MaxIntRenderFilter;
 import de.dieklaut.camtool.renderfilters.Pp3MinIntRenderFilter;
 import de.dieklaut.camtool.renderfilters.Pp3MinMaxIntRenderFilter;
@@ -29,6 +30,8 @@ public class RenderWrapper extends AbstractWrapper {
 	private static final String OPT_FORCE = "force";
 	private static final String OPT_RENDERFILTER_SHORT = "r";
 	private static final String OPT_RENDERFILTER = "renderfilter";
+	private static final String OPT_PREVENT_CLEANUP_SHORT = "p";
+	private static final String OPT_PREVENT_CLEANUP = "prevent-cleanup";
 	private Sorter sorter;
 	
 	public RenderWrapper(Sorter sorter) {
@@ -41,6 +44,7 @@ public class RenderWrapper extends AbstractWrapper {
 		options.addOption(Option.builder(OPT_FORCE_SHORT).longOpt(OPT_FORCE).desc("Forces overwriting ").build());
 		options.addOption(Option.builder(OPT_GROUP_SHORT).longOpt(OPT_GROUP).desc("Sets the group to be moved").hasArg().build());
 		options.addOption(Option.builder(OPT_RENDERFILTER_SHORT).longOpt(OPT_RENDERFILTER).desc("Sets the renderfilter string. The format is as follows:\nname1,param2,param2:name2,param1").hasArg().build());
+		options.addOption(Option.builder(OPT_PREVENT_CLEANUP_SHORT).longOpt(OPT_PREVENT_CLEANUP).desc("Do not cleanup the rendered files").build());
 		return options;
 	}
 
@@ -56,7 +60,10 @@ public class RenderWrapper extends AbstractWrapper {
 			render.setNameOfGroup(cmdLine.getOptionValue(OPT_GROUP));
 		}
 		if (cmdLine.hasOption(OPT_FORCE)) {
-			render.setForce(cmdLine.hasOption(OPT_FORCE));
+			render.setForce(true);
+		}
+		if (cmdLine.hasOption(OPT_PREVENT_CLEANUP)) {
+			render.setPreventCleanup(true);
 		}
 		if (cmdLine.hasOption(OPT_RENDERFILTER)) {
 			String renderFilterString = cmdLine.getOptionValue(OPT_RENDERFILTER);
@@ -66,6 +73,9 @@ public class RenderWrapper extends AbstractWrapper {
 			for (String currentFilterString : renderFilterString.split(":")) {
 				String[] filterArray = currentFilterString.split(",");
 				switch (filterArray[0]) {
+				case "type":
+					renderFilters.add(new FileTypeFilter(filterArray[1]));
+					break;
 				case "pp3":
 					renderFilters.add(new Pp3RenderFilter(filterArray[1], filterArray[2]));
 					break;
