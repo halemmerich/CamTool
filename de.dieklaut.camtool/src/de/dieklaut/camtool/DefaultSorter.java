@@ -30,7 +30,9 @@ public class DefaultSorter implements Sorter{
 
 		Files.list(path).forEach(current -> {
 			try {
-				if (Files.isDirectory(current) && !Files.exists(current.resolve(Constants.SORTED_FILE_NAME)) && Files.list(current).count() > 0) {
+				if (current.getFileName().toString().startsWith(".")) {
+					return;
+				} else if (Files.isDirectory(current) && Files.list(current).count() > 0) {
 					MultiGroup multiGroup;
 					try {
 						Collection<Group> groups = identifyGroups(current);
@@ -47,7 +49,7 @@ public class DefaultSorter implements Sorter{
 					} catch (IOException e) {
 						Logger.log("Error during group analysis of " + path, e);
 					}
-				} else if (!current.getFileName().toString().equals(Constants.SORTED_FILE_NAME) && !Files.isDirectory(current)){
+				} else if (!Files.isDirectory(current)){
 					String groupName = FileUtils.getNamePortion(current);
 					if (current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSCRIPT) || current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSUBSTITUTE) || current.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
 						return;

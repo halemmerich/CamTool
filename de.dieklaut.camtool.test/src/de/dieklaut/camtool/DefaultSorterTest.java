@@ -27,6 +27,14 @@ public class DefaultSorterTest extends FileBasedTest {
 		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
 		assertEquals(0, sorting.size());
 	}
+
+	@Test
+	public void testDotFolders() throws IOException {
+		Files.createDirectory(getTestFolder().resolve(".test"));
+
+		Collection<Group> sorting = SORTER.identifyGroups(getTestFolder());
+		assertEquals(0, sorting.size());
+	}
 	
 	@Test
 	public void testIdentifyGroupsComplexStructure() throws IOException {
@@ -38,6 +46,9 @@ public class DefaultSorterTest extends FileBasedTest {
 		Files.createFile(getTestFolder().resolve("file2.ARW"));
 		Files.createFile(getTestFolder().resolve("file3.ARW"));
 		Files.createFile(getTestFolder().resolve("file4.ARW"));
+
+		Path git = Files.createDirectory(getTestFolder().resolve(".git"));
+		Files.createFile(git.resolve("donotfind.ARW"));
 
 		Path subdir = Files.createDirectory(getTestFolder().resolve("subdir"));
 		Files.createFile(subdir.resolve("file5.ARW"));
