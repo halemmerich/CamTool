@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
@@ -25,6 +26,10 @@ public class RenderSubstituteModifier implements RenderModifier {
 	public RenderJob getRenderJob(Collection<RenderFilter> renderFilters) {
 		try {
 			Collection<Path> paths = getSubstitutePaths();
+			if (paths.isEmpty()) {
+				Logger.log("No valid paths for substitution found", Level.INFO);
+				return new NullRenderJob();
+			}
 			SingleGroup tempGroup = new SingleGroup(paths);
 			return tempGroup.getRenderJob(renderFilters);
 		} catch (IOException e) {

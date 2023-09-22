@@ -61,6 +61,40 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 	}
 	
 	@Test
+	public void testRenderWithSubstituteIncorrectContent() throws IOException {
+		Path source = TestFileHelper.getTestResource("A7II.ARW");
+		Path file1 = getTestFolder().resolve("file1.arw");
+		Files.copy(source, file1);
+		Path file2 = getTestFolder().resolve("file2.arw");
+		Files.copy(source, file2);
+		
+		Path renderscript = getTestFolder().resolve("test.camtool_rendersubstitute");
+		Files.write(renderscript, "nothere.arw".getBytes());
+		
+		Collection<Group> groups = new HashSet<>();
+		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}));
+		groups.add(singleGroup);
+		Collection<Group> multigroups = new HashSet<>();
+		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1}));
+		multigroups.add(subGroup);
+		MultiGroup multiGroup = new MultiGroup(multigroups);
+		groups.add(multiGroup);
+
+		RenderJobFactory.useRawtherapee = false;
+		RenderSubstituteModifier renderModifier = new RenderSubstituteModifier(renderscript);
+		multiGroup.setRenderModifier(renderModifier);
+
+		
+		Path dest = Files.createTempDirectory(Constants.TEMP_FOLDER_PREFIX);
+		
+		renderModifier.getRenderJob(Collections.emptySet()).store(dest, Collections.emptySet());
+
+		assertEquals(0, Files.list(dest).count());
+		FileUtils.deleteRecursive(dest, true);
+		
+	}
+	
+	@Test
 	public void testRenderWithSubstituteRegex() throws IOException {
 		Path source = TestFileHelper.getTestResource("A7II.ARW");
 		Path file1 = getTestFolder().resolve("file1.arw");

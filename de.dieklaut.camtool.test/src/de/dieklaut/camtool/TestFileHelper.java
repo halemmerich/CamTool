@@ -38,6 +38,10 @@ public class TestFileHelper {
 		Path origFile = Files.copy(source, context.getOriginals().resolve(file.getFileName()));
 		return addFileToSortingImpl(context, file, origFile);
 	}
+	
+	public static Path writeFileToSorting(Context context, Path file, byte [] content) throws IOException {
+		return Files.write(context.getRoot().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(file), content);
+	}
 
 	private static Path addFileToSortingImpl(Context context, Path file, Path origFile) throws IOException {
 		Path timelineLink = Files.createSymbolicLink(context.getTimeLine().resolve(FileUtils.buildFileName(FileUtils.getTimestamp(origFile), file.getFileName().toString())), context.getTimeLine().relativize(origFile));

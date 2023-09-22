@@ -85,34 +85,35 @@ public class SingleGroup extends AbstractGroup {
 
 	private Path getPrimaryFile() {
 		Path toBeRendered = null;
-		for (Path element : getAllFiles()) {
+		Collection<Path> allFiles = getAllFiles();
+		for (Path element : allFiles) {
 			if (FileTypeHelper.isRenderscript(element)) {
 				toBeRendered = element;
 				break;
 			}
 		}
 
-		for (Path element : getAllFiles()) {
+		for (Path element : allFiles) {
 			if (toBeRendered == null && FileTypeHelper.isRawImageFile(element)) {
 				toBeRendered = element;
 				break;
 			}
 		}
-		for (Path element : getAllFiles()) {
+		for (Path element : allFiles) {
 			if (toBeRendered == null && FileTypeHelper.isVideoFile(element)) {
 				toBeRendered = element;
 				break;
 			}
 		}
-		for (Path element : getAllFiles()) {
+		for (Path element : allFiles) {
 			if (toBeRendered == null && FileTypeHelper.isImageFile(element)) {
 				toBeRendered = element;
 				break;
 			}
 		}
 
-		if (toBeRendered == null) {
-			return getAllFiles().iterator().next();
+		if (toBeRendered == null && !allFiles.isEmpty()) {
+			return allFiles.iterator().next();
 		}
 
 		return toBeRendered;
