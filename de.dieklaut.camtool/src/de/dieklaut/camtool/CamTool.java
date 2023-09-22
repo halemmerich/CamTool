@@ -136,6 +136,7 @@ public class CamTool {
 				Operation operation = operationWrapper.getOperation(cmd, workingDir);
 				Logger.log("Performing operation " + operation.getName(), Level.INFO);
 				operation.perform(context);
+				Logger.log("Operation " + operation.getName() + " finished", Level.INFO);
 			} catch (ParseException e) {
 				showHelp();
 			} catch (NoContextFoundException e) {
