@@ -21,7 +21,9 @@ public interface Constants {
 	public static final String FILE_NAME_RENDERSCRIPT_SUFFIX = FILE_NAME_CAMTOOL_SUFFIX + RENDERSCRIPT_SUFFIX;
 	public static final String TEMP_FOLDER_PREFIX = "camtool_tmp";
 	public static final String RENDERSUBSTITUTE = "rendersubstitute";
+	public static final String RENDERSUBSTITUTE_EXTERNAL = "rendersubstitute_external";
 	public static final String FILE_NAME_RENDERSUBSTITUTE = FILE_NAME_CAMTOOL + RENDERSUBSTITUTE;
+	public static final String FILE_NAME_RENDERSUBSTITUTE_EXTERNAL = FILE_NAME_CAMTOOL + RENDERSUBSTITUTE_EXTERNAL;
 	public static final String FILE_NAME_SOURCESTATE = ".sourcestate";
 	public static final String UNKNOWN = "UNKNOWN";
 }

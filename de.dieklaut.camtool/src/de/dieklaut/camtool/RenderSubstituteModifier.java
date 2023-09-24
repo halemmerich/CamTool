@@ -17,15 +17,17 @@ import de.dieklaut.camtool.renderjob.RenderJob;
 public class RenderSubstituteModifier implements RenderModifier {
 
 	private Path rendersub;
+	private Path rendersubExt;
 
-	public RenderSubstituteModifier(Path rendersub) {
+	public RenderSubstituteModifier(Path rendersub, Path rendersubExt) {
 		this.rendersub = rendersub;
+		this.rendersubExt = rendersubExt;
 	}
 
 	@Override
 	public RenderJob getRenderJob(Collection<RenderFilter> renderFilters) {
 		try {
-			Collection<Path> paths = getSubstitutePaths();
+			Collection<Path> paths = getSubstitutePaths(rendersub, true);
 			if (paths.isEmpty()) {
 				Logger.log("No valid paths for substitution found", Level.INFO);
 				return new NullRenderJob();
@@ -38,9 +40,9 @@ public class RenderSubstituteModifier implements RenderModifier {
 		}
 	}
 
-	private Collection<Path> getSubstitutePaths() throws IOException {
+	private Collection<Path> getSubstitutePaths(Path sub, boolean allowRegex) throws IOException {
 		HashSet<Path> paths = new HashSet<>();
-		for (String currentLine : Files.readAllLines(rendersub)) {
+		for (String currentLine : Files.readAllLines(sub)) {
 			if (currentLine.trim().isEmpty()) {
 				continue;
 			}
@@ -48,10 +50,10 @@ public class RenderSubstituteModifier implements RenderModifier {
 			Path current = Paths.get(currentLine);
 			
 			if (Files.exists(current)) {
-				paths.add(rendersub.toAbsolutePath().getParent().resolve(current));
+				paths.add(sub.toAbsolutePath().getParent().resolve(current));
 			} else {
 				Pattern p = Pattern.compile(currentLine);
-				Collection<Path> matching = Files.list(rendersub.toAbsolutePath().getParent()).filter(f -> p.matcher(rendersub.toAbsolutePath().getParent().relativize(f).toString()).find()).collect(Collectors.toSet());
+				Collection<Path> matching = Files.list(sub.toAbsolutePath().getParent()).filter(f -> p.matcher(sub.toAbsolutePath().getParent().relativize(f).toString()).find()).collect(Collectors.toSet());
 				paths.addAll(matching);
 			}
 			
@@ -76,7 +78,8 @@ public class RenderSubstituteModifier implements RenderModifier {
 		Collection<Path> result = new HashSet<>();
 		result.add(rendersub);
 		try {
-			result.addAll(getSubstitutePaths());
+			result.addAll(getSubstitutePaths(rendersub, true));
+			if (rendersubExt != null && Files.exists(rendersubExt)) result.addAll(getSubstitutePaths(rendersubExt, false));
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}

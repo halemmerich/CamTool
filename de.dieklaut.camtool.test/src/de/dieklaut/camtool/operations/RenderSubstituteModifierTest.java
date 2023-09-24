@@ -46,7 +46,7 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		groups.add(multiGroup);
 
 		RenderJobFactory.useRawtherapee = false;
-		RenderSubstituteModifier renderModifier = new RenderSubstituteModifier(renderscript);
+		RenderSubstituteModifier renderModifier = new RenderSubstituteModifier(renderscript, null);
 		multiGroup.setRenderModifier(renderModifier);
 
 		
@@ -81,7 +81,7 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		groups.add(multiGroup);
 
 		RenderJobFactory.useRawtherapee = false;
-		RenderSubstituteModifier renderModifier = new RenderSubstituteModifier(renderscript);
+		RenderSubstituteModifier renderModifier = new RenderSubstituteModifier(renderscript, null);
 		multiGroup.setRenderModifier(renderModifier);
 
 		
@@ -118,7 +118,7 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		groups.add(multiGroup);
 
 		RenderJobFactory.useRawtherapee = false;
-		RenderSubstituteModifier renderModifier = new RenderSubstituteModifier(renderscript);
+		RenderSubstituteModifier renderModifier = new RenderSubstituteModifier(renderscript, null);
 		multiGroup.setRenderModifier(renderModifier);
 
 		
