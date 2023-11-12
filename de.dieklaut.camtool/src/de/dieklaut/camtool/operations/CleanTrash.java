@@ -9,6 +9,7 @@ import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.Logger;
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.MultiGroup;
 import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.util.FileUtils;
@@ -53,6 +54,8 @@ public class CleanTrash extends AbstractOperation {
 	private void recursiveDeleteGroups(Collection<Group> groups) {
 		for (Group group : groups) {
 			if (group instanceof MultiGroup) {
+				if (Files.exists(group.getContainingFolder().resolve(Constants.FILE_NAME_RENDERSUBSTITUTE)))
+					Logger.log("Multi group " + group.getName() + " has a substitution file, please check if still valid after deletion", Level.INFO);
 				recursiveDeleteGroups(((MultiGroup) group).getGroups());
 			} else if (group.isMarkedAsDeleted()) {
 				delete(group);
