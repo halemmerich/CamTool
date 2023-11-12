@@ -41,8 +41,12 @@ public class RenderTest extends FileBasedTest {
 		Files.copy(source, getTestFolder().resolve("file.arw"));
 		
 		Path sourcePdf = TestFileHelper.getTestResource("inkscape.pdf");
-		sourcePdf = Files.copy(sourcePdf, getTestFolder().resolve("inkscape.pdf"));
+		sourcePdf = Files.copy(sourcePdf, getTestFolder().resolve("inkscape_pdf.pdf"));
 		String timestampPdf = FileUtils.getTimestamp(FileUtils.getCreationDate(sourcePdf));
+		
+		Path sourceVector = TestFileHelper.getTestResource("inkscape.svg");
+		sourceVector = Files.copy(sourceVector, getTestFolder().resolve("inkscape_svg.svg"));
+		String timestampSvg = FileUtils.getTimestamp(FileUtils.getCreationDate(sourceVector));
 		
 		new Init().perform(context);
 		Sorter sorter = new DefaultSorter();
@@ -63,7 +67,8 @@ public class RenderTest extends FileBasedTest {
 		assertTrue(Files.exists(results));
 		assertTrue(Files.exists(results.resolve(TEST)));
 		assertTrue(Files.exists(results.resolve(TEST).resolve(timestamp + "_file.jpg")));
-		assertTrue(Files.exists(results.resolve(TEST).resolve(timestampPdf + "_inkscape.png")));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(timestampPdf + "_inkscape_pdf.png")));
+		assertTrue(Files.exists(results.resolve(TEST).resolve(timestampSvg + "_inkscape_svg.png")));
 	}
 
 	@Test
