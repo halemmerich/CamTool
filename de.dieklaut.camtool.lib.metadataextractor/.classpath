@@ -2,5 +2,6 @@
 <classpath>
 	<classpathentry exported="true" kind="lib" path="metadata-extractor-2.10.1.jar" sourcepath="metadata-extractor-2.10.1-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/de.dieklaut.camtool.lib.adobe.xmp"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

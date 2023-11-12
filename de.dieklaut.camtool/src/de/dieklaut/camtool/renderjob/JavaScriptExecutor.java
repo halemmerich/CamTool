@@ -38,15 +38,22 @@ public class JavaScriptExecutor {
 	public static boolean execRenderScript(Path script, String groupName, Path resultDir, Path workingDir,
 			Map<String, Object> globalVariables) {
 		ScriptEngineManager manager = new ScriptEngineManager();
-		ScriptEngine engine = manager.getEngineByName("JavaScript");
+		ScriptEngine engine = manager.getEngineByName("Graal.js");
 		ScriptContext context = engine.getContext();
 		Bindings binding = new SimpleBindings();
+		binding.put("polyglot.js.allowHostAccess", true);
+		binding.put("polyglot.js.allowNativeAccess", true);
+		binding.put("polyglot.js.allowCreateThread", true);
+		binding.put("polyglot.js.allowIO", true);
+		binding.put("polyglot.js.allowHostClassLookup", true);
+		binding.put("polyglot.js.allowHostClassLoading", true);
+		binding.put("polyglot.js.allowAllAccess", true);
 		context.setBindings(binding, ScriptContext.GLOBAL_SCOPE);
 		try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(script))) {
 			
 			binding.put("_groupName", groupName);
-			binding.put("_resultDir", resultDir.toAbsolutePath());
-			binding.put("_workingDir", workingDir.toAbsolutePath());
+			binding.put("_resultDir", resultDir.toAbsolutePath().toString());
+			binding.put("_workingDir", workingDir.toAbsolutePath().toString());
 			eval(engine, "var FilesApi = Java.type('" + FilesApi.class.getName() + "');", binding);
 			eval(engine, "var Paths = Java.type('" + Paths.class.getName() + "');", binding);
 			eval(engine, "var Combiner = Java.type('" + Combiner.class.getName() + "\');", binding);
