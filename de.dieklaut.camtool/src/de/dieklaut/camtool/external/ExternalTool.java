@@ -18,6 +18,8 @@ public abstract class ExternalTool {
 	
 	public abstract CommandLine getCommandLine();
 	
+	private String output;
+	
 	public boolean process() {
 		return process(null);
 	}
@@ -25,10 +27,11 @@ public abstract class ExternalTool {
 	/**
 	 * Executes the command line build by {@link #getCommandLine()}
 	 * @param workingDir 
+	 * @param keepStdOut
 	 * 
 	 * @return true, iff successfully processed
 	 */
-	public boolean process(Path workingDir) {
+	public boolean process(Path workingDir, boolean keepStdOut) {
 		Executor executor = new DefaultExecutor();
 		try (ByteArrayOutputStream stdout = new ByteArrayOutputStream()) {
 		    PumpStreamHandler psh = new PumpStreamHandler(stdout);
@@ -41,6 +44,9 @@ public abstract class ExternalTool {
 		    	CommandLine commandLine = getCommandLine();
 				Logger.log("Process command line: " + getAsString(commandLine), Level.TRACE);
 				executor.execute(commandLine);
+				if (keepStdOut){
+					this.output = stdout.toString();
+				}
 		    } catch (ExecuteException e) {
 		    	int exitValue = e.getExitValue();
 				Logger.log("Process return value: " + exitValue, Level.DEBUG);
@@ -53,6 +59,20 @@ public abstract class ExternalTool {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Executes the command line build by {@link #getCommandLine()}
+	 * @param workingDir 
+	 * 
+	 * @return true, iff successfully processed
+	 */
+	public boolean process(Path workingDir) {
+		return process(workingDir, false);
+	}
+
+	public String getOutput() {
+		return output;
 	}
 
 	private String getAsString(CommandLine commandLine) {
