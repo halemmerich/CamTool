@@ -18,6 +18,8 @@ public class ExportWrapper extends AbstractWrapper {
 
 	private static final String OPT_NAME_SHORT = "n";
 	private static final String OPT_NAME = "name";
+	private static final String OPT_NAME_PREFIX_SHORT = "r";
+	private static final String OPT_NAME_PREFIX = "prefix";
 	private static final String OPT_TYPE_SHORT = "t";
 	private static final String OPT_TYPE = "type";
 	private static final String OPT_DESTINATION_SHORT = "d";
@@ -29,6 +31,7 @@ public class ExportWrapper extends AbstractWrapper {
 	public Options getOptions() {
 		Options options = super.getOptions();
 		options.addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("The name for the sorting that should be exported").hasArg().build());
+		options.addOption(Option.builder(OPT_NAME_PREFIX_SHORT).longOpt(OPT_NAME_PREFIX).desc("The prefix for the result folder that should be exported").hasArg().build());
 		options.addOption(Option.builder(OPT_TYPE_SHORT).longOpt(OPT_TYPE).desc("The type of the results that should be exported").hasArg().build());
 		options.addOption(Option.builder(OPT_DESTINATION_SHORT).longOpt(OPT_DESTINATION).desc("The destination folder for the export").hasArg().build());
 		options.addOption(Option.builder(OPT_PREVENT_CLEANUP_SHORT).longOpt(OPT_PREVENT_CLEANUP).desc("Do not cleanup the rendered files").build());
@@ -40,6 +43,9 @@ public class ExportWrapper extends AbstractWrapper {
 		Export export = new Export();
 		export.setImageResizer(new ImagemagickResizer());
 		export.setVideoResizer(new FfmpegResizer());
+		if (cmdLine.hasOption(OPT_NAME_PREFIX)) {
+			export.setNamePrefix(cmdLine.getOptionValue(OPT_NAME_PREFIX));
+		} 
 		if (cmdLine.hasOption(OPT_NAME)) {
 			export.setName(cmdLine.getOptionValue(OPT_NAME));
 		} else {

@@ -3,6 +3,7 @@ package de.dieklaut.camtool.operations;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -28,6 +29,7 @@ public class Export extends AbstractOperation {
 	private VideoResizer videoResizer = new CopyVideoResizer();
 
 	private String name = Constants.DEFAULT_SORTING_NAME;
+	private String namePrefix = "";
 	private ExportType type = ExportType.MEDIUM;
 	
 	private Path destination = null;
@@ -35,6 +37,10 @@ public class Export extends AbstractOperation {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setNamePrefix(String namePrefix) {
+		this.namePrefix = namePrefix;
 	}
 
 	public void setType(ExportType type) {
@@ -55,7 +61,7 @@ public class Export extends AbstractOperation {
 
 	@Override
 	public void perform(Context context) {
-		Path resultFolder = context.getRoot().resolve(Constants.FOLDER_RESULTS).resolve(name);
+		Path resultFolder = context.getRoot().resolve(Constants.FOLDER_RESULTS).resolve(Paths.get(namePrefix)).resolve(name);
 		
 		if (!Files.exists(resultFolder) || (Files.exists(resultFolder) && !Files.isDirectory(resultFolder))) {
 			Logger.log("Result folder " + resultFolder + " does not exist or is not a directory.", Level.ERROR);
