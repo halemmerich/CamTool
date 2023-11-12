@@ -449,13 +449,15 @@ public class FileUtils {
 			Files.list(source).forEach(current -> {
 				try {
 					if (Files.isDirectory(current)) {
-						moveRecursive(current, destination.resolve(current.getFileName()));
+						Path newDir = destination.resolve(current.getFileName());
+						Files.createDirectories(newDir);
+						moveRecursive(current, newDir);
 					} else {
 						moveRecursive(current, destination);
 					}
 				} catch (IOException e) {
 					throw new IllegalStateException(
-							"Could not move recursively from " + current + " to " + destination);
+							"Could not move recursively from " + current + " to " + destination, e);
 				}
 			});
 		} else {
