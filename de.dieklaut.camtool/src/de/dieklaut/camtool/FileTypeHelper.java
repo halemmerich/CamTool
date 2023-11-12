@@ -31,6 +31,10 @@ public class FileTypeHelper {
 		return endsWithOne(path, "pp3");
 	}
 
+	public static boolean isRawTherapeeProfile(Path main, Path pp3) {
+		return isRawTherapeeProfile(pp3) && main.toFile().getName().startsWith(pp3.toFile().getName().replace(".pp3", ""));
+	}
+
 	public static boolean isImageFile(Path file) {
 		return endsWithOne(file, imageFileSuffixes);
 	}
