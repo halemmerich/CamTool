@@ -19,10 +19,6 @@ public abstract class ExternalTool {
 	public abstract CommandLine getCommandLine();
 	
 	private String output;
-	
-	public boolean process() {
-		return process(null);
-	}
 
 	/**
 	 * Executes the command line build by {@link #getCommandLine()}
@@ -69,6 +65,14 @@ public abstract class ExternalTool {
 	 */
 	public boolean process(Path workingDir) {
 		return process(workingDir, false);
+	}
+	
+	public boolean process(boolean keepStdOut) {
+		return process(null, keepStdOut);
+	}
+	
+	public boolean process() {
+		return process(null);
 	}
 
 	public String getOutput() {

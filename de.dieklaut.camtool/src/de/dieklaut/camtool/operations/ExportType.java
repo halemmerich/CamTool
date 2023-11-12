@@ -1,7 +1,7 @@
 package de.dieklaut.camtool.operations;
 
 public enum ExportType {
-	FULL(98,90,-1,-1), BIG(95,85,4000,2160), MEDIUM(90,80,2000,1080), SMALL(75,70,1000,480);
+	FULL(98,90,-1,-1), BIG(95,85,2160,2160), MEDIUM(90,80,1440,1080), SMALL(75,70,1080,480);
 
 	int imageQuality;
 	int videoQuality;

@@ -61,7 +61,10 @@ public class Export extends AbstractOperation {
 
 	@Override
 	public void perform(Context context) {
-		Path resultFolder = context.getRoot().resolve(Constants.FOLDER_RESULTS).resolve(Paths.get(namePrefix)).resolve(name);
+		Path resultBase = context.getRoot().resolve(Constants.FOLDER_RESULTS);
+		if (!namePrefix.isEmpty())
+			resultBase = resultBase.resolve(Paths.get(namePrefix));
+		Path resultFolder = resultBase.resolve(name);
 		
 		if (!Files.exists(resultFolder) || (Files.exists(resultFolder) && !Files.isDirectory(resultFolder))) {
 			Logger.log("Result folder " + resultFolder + " does not exist or is not a directory.", Level.ERROR);
@@ -69,7 +72,10 @@ public class Export extends AbstractOperation {
 		}
 		
 		if (destination == null) {
-			destination = context.getRoot().resolve(Constants.DEFAULT_EXPORT_NAME).resolve(type.name().toLowerCase()).resolve(name);
+			Path exportBase = context.getRoot().resolve(Constants.DEFAULT_EXPORT_NAME);
+			if (!namePrefix.isEmpty())
+				exportBase = exportBase.resolve(Paths.get(namePrefix));
+			destination = exportBase.resolve(type.name().toLowerCase()).resolve(name);
 		}
 		
 		if (!Files.exists(destination)) {
