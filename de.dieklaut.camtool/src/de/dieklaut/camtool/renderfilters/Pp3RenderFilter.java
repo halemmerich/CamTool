@@ -20,12 +20,15 @@ public class Pp3RenderFilter implements RenderFilter {
 	public boolean isFiltered(Path primaryFile, Collection<Path> collection) {
 		Path pp3 = null;
 		for (Path c : collection) {
-			if (c.getFileName().endsWith(".pp3")) {
+			if (c.getFileName().toString().endsWith(".pp3")) {
 				pp3 = c;
 				break;
 			}
 		}
-
+		
+		if (pp3==null)
+			return true;
+		
 		return RawTherapeeParser.get(pp3, key).equals(value);
 	}
 

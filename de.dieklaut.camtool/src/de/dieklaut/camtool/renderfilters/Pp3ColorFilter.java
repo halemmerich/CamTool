@@ -7,13 +7,13 @@ import java.util.StringJoiner;
 import de.dieklaut.camtool.RawTherapeeParser;
 import de.dieklaut.camtool.operations.RenderFilter;
 
-public class Pp3RatingFilter implements RenderFilter {
+public class Pp3ColorFilter implements RenderFilter {
 	
 	private String key;
 	private int [] allowedValues;
 
-	public Pp3RatingFilter(String key, int ... allowedValues) {
-		this.key = key;
+	public Pp3ColorFilter(int ... allowedValues) {
+		this.key = "ColorLabel";
 		this.allowedValues = allowedValues;
 	}
 

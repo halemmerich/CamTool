@@ -37,7 +37,7 @@ public class RawTherapeeRenderJob extends RenderJob {
 		processWrapper.setOutputFile(destination.toAbsolutePath().toString());
 		
 		for (Path currentFile : helperFiles) {
-			if (FileTypeHelper.isRawTherapeeProfile(currentFile)) {
+			if (FileTypeHelper.isRawTherapeeProfile(mainFile, currentFile)) {
 				processWrapper.addProfileOption(currentFile.toAbsolutePath().toString());
 			}
 		}
