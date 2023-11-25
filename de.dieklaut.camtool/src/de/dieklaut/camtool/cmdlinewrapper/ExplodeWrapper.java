@@ -1,5 +1,6 @@
 package de.dieklaut.camtool.cmdlinewrapper;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -52,7 +53,13 @@ public class ExplodeWrapper extends AbstractWrapper {
 				explode.setSortingName(optionValue);
 			}
 			if (cmdLine.hasOption(OPT_GROUP)) {
-				explode.setGroupName(cmdLine.getOptionValue(OPT_GROUP));
+				String optionValue = cmdLine.getOptionValue(OPT_GROUP);
+				Path pathCandidate = Paths.get(optionValue);
+				if (Files.exists(pathCandidate)) {
+					explode.setGroupPath(pathCandidate);
+				} else {
+					explode.setGroupName(optionValue);
+				}
 			}
 		}
 		
