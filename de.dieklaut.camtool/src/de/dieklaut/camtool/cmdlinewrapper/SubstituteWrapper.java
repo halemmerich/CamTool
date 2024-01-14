@@ -30,7 +30,7 @@ public class SubstituteWrapper extends AbstractWrapper {
 	public Options getOptions() {
 		Options options = super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
 		options.addOption(Option.builder(OPT_GROUP_SHORT).longOpt(OPT_GROUP).desc("Sets the group to be moved").hasArg().build());
-		options.addOption(Option.builder(OPT_SWITCH_SHORT).longOpt(OPT_SWITCH).desc("Switch between internal and external substitution").hasArg().build());
+		options.addOption(Option.builder(OPT_SWITCH_SHORT).longOpt(OPT_SWITCH).desc("Switch between internal and external substitution").build());
 		options.addOption(Option.builder(OPT_SUBSTITUTION_SHORT).longOpt(OPT_SUBSTITUTION).desc("Sets the files to be contained in the substitution file").hasArgs().build());
 		return options;
 	}
@@ -44,9 +44,11 @@ public class SubstituteWrapper extends AbstractWrapper {
 		}
 		if (cmdLine.hasOption(OPT_GROUP)) {
 			substitute.setNameOfGroup(cmdLine.getOptionValue(OPT_GROUP));
+		} else {			
+			substitute.setNameOfGroup(workingDir.getFileName().toString());
 		}
 		if (cmdLine.hasOption(OPT_SWITCH)) {
-			substitute.setSwitch(Boolean.getBoolean(cmdLine.getOptionValue(OPT_SWITCH)));
+			substitute.setSwitch(true);
 		}
 		if (cmdLine.hasOption(OPT_SUBSTITUTION)) {
 			substitute.setSubstitutions(cmdLine.getOptionValues(OPT_SUBSTITUTION));
