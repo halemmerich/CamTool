@@ -71,12 +71,16 @@ public class Substitute extends AbstractOperation{
 				}
 			} else {
 				if (Files.exists(renderSub)) Files.delete(renderSub);
-				StringJoiner joiner = new StringJoiner("\n");
+				StringJoiner joiner = new StringJoiner("\n");				
 				for (String c : substitutions) {
-					if (!Files.exists(groupFolder.resolve(c))) {
+					Path resolved = groupFolder.resolve(c);
+					if (resolved.isAbsolute()) {
+						resolved = groupFolder.relativize(resolved);
+					}
+					if (!Files.exists(resolved)) {
 						throw new FileNotFoundException("File " + c + " does not exist.");
 					}
-					joiner.add(c);
+					joiner.add(resolved.toString());
 				}
 				Files.write(renderSub, joiner.toString().getBytes());
 			}
