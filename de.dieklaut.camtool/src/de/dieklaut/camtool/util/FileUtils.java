@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
@@ -44,6 +45,9 @@ import de.dieklaut.camtool.Logger;
 import de.dieklaut.camtool.Logger.Level;
 
 public class FileUtils {
+	
+	private static Pattern DATE_FULL_MS = Pattern.compile(".*([0-9]{4}[0-9]{2}[0-9]{2})_([0-9]{2}[0-9]{2}[0-9]{2})_([0-9]{3}).*");
+	private static Pattern DATE_FULL = Pattern.compile(".*([0-9]{4}[0-9]{2}[0-9]{2})_([0-9]{2}[0-9]{2}[0-9]{2}).*");
 
 	public static String getCreator(Path filePath) {
 		try (InputStream stream = Files.newInputStream(filePath)) {
@@ -110,6 +114,17 @@ public class FileUtils {
 		} catch (ImageProcessingException | IOException e) {
 			Logger.log("Error during parsing of image file " + filePath
 					+ " for exif data for a creation date, falling back to file creation date", e, Level.DEBUG);
+		}
+
+		// try parsing from file name		
+		Matcher datePatternFullDateTimeMillisecondsMatcher = DATE_FULL_MS.matcher(filePath.getFileName().toString());
+		if (datePatternFullDateTimeMillisecondsMatcher.matches()) {
+			return FileUtils.getInstant(datePatternFullDateTimeMillisecondsMatcher.group(1) + datePatternFullDateTimeMillisecondsMatcher.group(2) + datePatternFullDateTimeMillisecondsMatcher.group(3));
+		}
+
+		Matcher datePatternFullDateTimeMatcher = DATE_FULL.matcher(filePath.getFileName().toString());
+		if (datePatternFullDateTimeMatcher.matches()) {
+			return FileUtils.getInstant(datePatternFullDateTimeMatcher.group(1) + datePatternFullDateTimeMatcher.group(2) + "000");
 		}
 
 		try {

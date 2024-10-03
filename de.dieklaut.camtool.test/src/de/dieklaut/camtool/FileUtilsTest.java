@@ -83,6 +83,8 @@ public class FileUtilsTest extends FileBasedTest {
 	
 	@Test
 	public void testGetCreationDate() {
+		assertEquals(1716840473703l, FileUtils.getCreationDate(Paths.get("IMG_20240527_200753_703.jpg")).toEpochMilli());
+		assertEquals(1716840473000l, FileUtils.getCreationDate(Paths.get("IMG_20240527_200753.jpg")).toEpochMilli());
 		assertEquals(1499505230000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("A7II.ARW")).toEpochMilli());
 		assertEquals(1499503995000l, FileUtils.getCreationDate(TestFileHelper.getTestResource("NEX5R.ARW")).toEpochMilli());
 		//assertEquals(1501103070993l, FileUtils.getCreationDate(TestFileHelper.getTestResource("AVCHD.MTS")).toEpochMilli());
