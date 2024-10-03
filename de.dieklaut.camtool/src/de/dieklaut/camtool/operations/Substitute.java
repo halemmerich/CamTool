@@ -17,6 +17,7 @@ public class Substitute extends AbstractOperation{
 	private String sortingName = Constants.DEFAULT_SORTING_NAME;
 	private String nameOfGroup;
 	private boolean switchExternal = false;
+	private boolean remove = false;
 	private String [] substitutions;
 	
 	public Substitute() {
@@ -33,6 +34,10 @@ public class Substitute extends AbstractOperation{
 
 	public void setSwitch(boolean switchExternal) {
 		this.switchExternal = switchExternal;
+	}
+
+	public void setRemove(boolean remove) {
+		this.remove = remove;
 	}
 
 	public void setSubstitutions(String [] substitutions) {
@@ -68,6 +73,20 @@ public class Substitute extends AbstractOperation{
 					}
 				} else {
 					Logger.log("Switching not possible, neither " + Constants.FILE_NAME_RENDERSUBSTITUTE + " nor " + Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL + " found.", Level.WARNING);
+				}
+			} else if (remove){
+				if (Files.exists(renderSub)) {
+					Files.delete(renderSub);
+				}
+				if (Files.exists(renderSubExt)) {
+					List<String> externalFiles = Files.readAllLines(renderSubExt);
+					for (String c : externalFiles) {
+						Path currentPath = sortingFolder.resolve(c);
+						if (Files.exists(currentPath) && Files.isSymbolicLink(currentPath)) {
+							Files.delete(currentPath);
+						}
+					}
+					Files.delete(renderSubExt);
 				}
 			} else {
 				if (Files.exists(renderSub)) Files.delete(renderSub);

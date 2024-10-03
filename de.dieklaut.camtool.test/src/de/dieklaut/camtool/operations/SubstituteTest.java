@@ -108,4 +108,32 @@ public class SubstituteTest extends FileBasedTest {
 		assertFalse(Files.exists(sorting.resolve(sorting.resolve("group").resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL))));
 		assertFalse(Files.exists(sorting.resolve(sorting.resolve(file1.getFileName().toString()))));
 	}
+	
+	@Test
+	public void testSubstituteRemove () throws IOException {
+		Context context = TestFileHelper.createComplexContext(getTestFolder());
+		
+		Path file1 = TestFileHelper.addFileToSorting(context, Paths.get("group/file1.arw"), TestFileHelper.getTestResource("A7II.ARW"));
+		
+		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
+		
+		Substitute sub = new Substitute();
+		sub.setNameOfGroup("group");
+		sub.setSubstitutions(new String [] { file1.getFileName().toString() });
+		sub.perform(context);
+
+		assertTrue(Files.exists(sorting.resolve(sorting.resolve("group").resolve(Constants.FILE_NAME_RENDERSUBSTITUTE))));
+		assertEquals(file1.getFileName().toString(), new String(Files.readAllBytes(sorting.resolve(sorting.resolve("group").resolve(Constants.FILE_NAME_RENDERSUBSTITUTE)))));
+		assertFalse(Files.exists(sorting.resolve(sorting.resolve("group").resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL))));
+
+		sub = new Substitute();
+		sub.setNameOfGroup("group");
+		sub.setRemove(true);
+		sub.perform(context);
+
+		assertFalse(Files.exists(sorting.resolve(sorting.resolve("group").resolve(Constants.FILE_NAME_RENDERSUBSTITUTE))));
+		assertFalse(Files.exists(sorting.resolve(sorting.resolve("group").resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL))));
+		assertFalse(Files.exists(sorting.resolve(sorting.resolve(file1.getFileName().toString()))));
+		assertTrue(Files.exists(sorting.resolve(sorting.resolve("group").resolve(file1.getFileName().toString()))));
+	}
 }
