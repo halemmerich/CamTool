@@ -117,7 +117,7 @@ public class Export extends AbstractOperation {
 
 	private boolean convertTo(Path file, Path destination, ExportType type) {
 		if (FileTypeHelper.isVideoFile(file)) {
-			videoResizer.resize(type.maxVideoDimension, file, destination.resolve(file.getFileName()), type.videoQuality);
+			videoResizer.resize(type.maxVideoDimension, file, destination.resolve(FileUtils.removeSuffix(file.getFileName().toString()) + ".mkv"), type.videoQuality);
 		} else if (FileTypeHelper.isImageFile(file) || FileTypeHelper.isVectorFile(file)) {
 			imageResizer.resize(type.maxImageDimension, file,
 					destination.resolve(FileUtils.removeSuffix(file.getFileName().toString()) + ".jpg"), type.imageQuality);
