@@ -30,6 +30,18 @@ public class FfmpegResizer implements VideoResizer {
 			commandline.addArgument("-filter:v");
 			commandline.addArgument("scale=" + maxDimension + ":trunc(ow/a/2)*2", false);
 		}
+		// encode video to av1
+		commandline.addArgument("-c:v");
+		commandline.addArgument("libsvtav1");
+		// encode audio to 96k opus
+		commandline.addArgument("-c:a");
+		commandline.addArgument("libopus");
+		commandline.addArgument("-b:a");
+		commandline.addArgument("96k");
+		// prefer quality
+		commandline.addArgument("-tune");
+		commandline.addArgument("0");
+		
 		commandline.addArgument(destinationFile.toAbsolutePath().toString(), false);
 		
 		ExternalTool ffmpeg = new ExternalTool() {
@@ -52,8 +64,8 @@ public class FfmpegResizer implements VideoResizer {
 		int percentageMax = 100;
 		int percentageMin = 0;
 		
-		int targetMin = 18;
-		int targetMax = 24;
+		int targetMin = 25;
+		int targetMax = 40;
 		
 		int percentageRange = percentageMax - percentageMin;
 		int targetRange = Math.max(targetMax, targetMin) - Math.min(targetMax, targetMin);
