@@ -30,7 +30,7 @@ public class ExplodeWrapper extends AbstractWrapper {
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
-		options.addOption(Option.builder(OPT_GROUP_SHORT).longOpt(OPT_GROUP).desc("Sets the group to be moved").hasArg().build());
+		options.addOption(Option.builder(OPT_GROUP_SHORT).longOpt(OPT_GROUP).desc("Sets the group to be exploded").hasArg().build());
 		return options;
 	}
 
