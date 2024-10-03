@@ -5,7 +5,7 @@ import java.nio.file.Path;
 public class FileTypeHelper {
 
 	private static String [] rawFileSuffixes = new String [] {"arw", "nef"};
-	private static String [] videoFileSuffixes = new String [] {"mp4", "mpg", "avi", "avchd", "mkv", "mts"};
+	private static String [] videoFileSuffixes = new String [] {"mp4", "mpg", "avi", "avchd", "mkv", "mts", "mov"};
 	private static String [] imageFileSuffixes = new String [] {"jpg", "jpeg", "png", "gif", "tif", "tiff"};
 	private static String [] vectorFileSuffixes = new String [] {"svg", "pdf"};
 	private static String [] renderscriptFileSuffixes = new String [] { Constants.FILE_NAME_RENDERSCRIPT_SUFFIX };
