@@ -75,7 +75,7 @@ public class FileUtils {
 				return Instant.ofEpochMilli(timestamp);
 			}
 		} catch (Exception e) {
-			Logger.log("No timestamp found in " + filePath, e, Level.TRACE);
+			Logger.log("No timestamp found in filename " + filePath, e, Level.TRACE);
 		}
 		try (InputStream stream = Files.newInputStream(filePath)) {
 			Metadata metadata = ImageMetadataReader.readMetadata(stream);

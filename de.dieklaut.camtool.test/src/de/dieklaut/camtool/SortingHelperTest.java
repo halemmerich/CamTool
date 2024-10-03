@@ -51,7 +51,7 @@ public class SortingHelperTest extends FileBasedTest{
 		source = TestFileHelper.getTestResource("series/series_08.ARW");
 		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_08.ARW"))));
 				
-		SortingHelper.combineSeries(groups, 5, 2);
+		SortingHelper.combineSeries(groups, 5, 5);
 		
 		assertEquals(4, groups.size());
 	}

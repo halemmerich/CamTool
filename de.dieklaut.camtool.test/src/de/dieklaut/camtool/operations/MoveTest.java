@@ -97,11 +97,11 @@ public class MoveTest extends FileBasedTest {
 	
 	@Test
 	public void testMoveSubSubFolderMultiGroup() throws IOException {
-		TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file1.ARW"), time);
+		String timestamp_file1 = FileUtils.getTimestamp(TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file1.ARW"), time));
 		TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file1.JPG"), time);
 		TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file2.ARW"), time + 2500);
 		String timestamp_file3 = FileUtils.getTimestamp(TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file3.JPG"), time + 5000));
-		FileUtils.getTimestamp(TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file4.JPG"), time + 6000));
+		TestFileHelper.createFileWithModifiedDate(getTestFolder().resolve("file4.JPG"), time + 6000);
 		
 		context = Context.create(getTestFolder());
 
@@ -115,7 +115,7 @@ public class MoveTest extends FileBasedTest {
 		String subfolder = "sub";
 		
 		Move move = new Move(SORTER);
-		move.setNameOfGroup(timestamp_file3 + "_multi");
+		move.setNameOfGroup(timestamp_file1 + "_multi");
 		move.setTargetPath(Paths.get("..").resolve(subfolder).resolve(testGroupName));
 		move.perform(context);
 
