@@ -77,7 +77,7 @@ public class Substitute extends AbstractOperation{
 					if (resolved.isAbsolute()) {
 						resolved = groupFolder.relativize(resolved);
 					}
-					if (!Files.exists(resolved)) {
+					if (!Files.exists(groupFolder.resolve(resolved))) {
 						throw new FileNotFoundException("File " + c + " does not exist.");
 					}
 					joiner.add(resolved.toString());
