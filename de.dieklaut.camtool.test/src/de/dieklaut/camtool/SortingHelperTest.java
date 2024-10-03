@@ -29,11 +29,31 @@ public class SortingHelperTest extends FileBasedTest{
 		source = TestFileHelper.getTestResource("series/series_08.ARW");
 		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_08.ARW"))));
 				
-		SortingHelper.combineSeries(groups, 2);
+		SortingHelper.combineSeries(groups, 4, 2);
 		
 		assertEquals(1, groups.size());
 		assertEquals(4, ((MultiGroup)groups.stream().findFirst().get()).getGroups().size());
 		
+	}
+	@Test
+	public void testCombineSeriesNotEnoughFiles() throws IOException {
+		Collection<Group> groups = new LinkedList<>();
+		
+		Path source = TestFileHelper.getTestResource("series/series_09.ARW");
+		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_09.ARW"))));
+		
+		source = TestFileHelper.getTestResource("series/series_07.ARW");
+		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_07.ARW"))));
+
+		source = TestFileHelper.getTestResource("series/series_06.ARW");
+		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_06.ARW"))));
+		
+		source = TestFileHelper.getTestResource("series/series_08.ARW");
+		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_08.ARW"))));
+				
+		SortingHelper.combineSeries(groups, 5, 2);
+		
+		assertEquals(4, groups.size());
 	}
 	
 	@Test
@@ -61,7 +81,7 @@ public class SortingHelperTest extends FileBasedTest{
 		source = TestFileHelper.getTestResource("stack/stack_03.jpg");
 		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("stack_03.jpg"))));
 				
-		SortingHelper.combineSeries(groups, 2);
+		SortingHelper.combineSeries(groups, 1, 2);
 		
 		assertEquals(2, groups.size());
 		

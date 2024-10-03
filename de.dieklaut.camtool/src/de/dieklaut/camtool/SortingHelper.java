@@ -16,7 +16,7 @@ import de.dieklaut.camtool.Logger.Level;
 
 public class SortingHelper {
 
-	public static void combineSeries(Collection<Group> sorting, int detectSeriesTimeDiff) {
+	public static void combineSeries(Collection<Group> sorting, int detectSeriesTimeDiff, int minimumNumberOfFiles) {
 		List<Group> sortedByTimestampGroups = new ArrayList<>(sorting);
 
 		sortedByTimestampGroups.sort(new GroupTimestampComparator());
@@ -29,15 +29,16 @@ public class SortingHelper {
 			if (!groupsByCreator.containsKey(creator)) {
 				groupsByCreator.put(creator, new LinkedList<>());
 			}
+			Logger.log(current.getName() + " has creator " + creator, Level.TRACE);
 			groupsByCreator.get(creator).add(current);
 		}
 
 		for (List<Group> current : groupsByCreator.values()) {
-			combine(sorting, detectSeriesTimeDiff, current);
+			combine(sorting, detectSeriesTimeDiff, minimumNumberOfFiles, current);
 		}
 	}
 
-	private static void combine(Collection<Group> sorting, int detectSeriesTimeDiff,
+	private static void combine(Collection<Group> sorting, int detectSeriesTimeDiff, int minimumNumberOfFiles,
 			List<Group> sortedByTimestampGroups) {
 		Instant lastTimestamp = null;
 		Duration lastDuration = null;
@@ -52,7 +53,7 @@ public class SortingHelper {
 			Logger.log(currentGroup.getName() + " - " + currentGroup.getTimestamp() + " " + currentGroup.getDuration(), Level.TRACE);
 			
 			if (lastTimestamp != null && !lastTimestamp.plusSeconds(detectSeriesTimeDiff).plus(lastDuration).isAfter(currentGroup.getTimestamp())) {
-				finishCurrentSeries(currentSeries, foundSeriesGroups, groupsToBeRemoved);
+				finishCurrentSeries(currentSeries, foundSeriesGroups, minimumNumberOfFiles, groupsToBeRemoved);
 				lastTimestamp = null;
 				lastDuration = null;
 			}
@@ -63,13 +64,13 @@ public class SortingHelper {
 				lastTimestamp = currentGroup.getTimestamp();
 				lastDuration = currentGroup.getDuration();
 			} else {
-				finishCurrentSeries(currentSeries, foundSeriesGroups, groupsToBeRemoved);
+				finishCurrentSeries(currentSeries, foundSeriesGroups, minimumNumberOfFiles, groupsToBeRemoved);
 				lastTimestamp = null;
 				lastDuration = null;
 			}
 		}
 		if (!currentSeries.isEmpty()) {
-			finishCurrentSeries(currentSeries, foundSeriesGroups, groupsToBeRemoved);
+			finishCurrentSeries(currentSeries, foundSeriesGroups, minimumNumberOfFiles, groupsToBeRemoved);
 		}
 
 		sorting.removeAll(groupsToBeRemoved);
@@ -77,9 +78,9 @@ public class SortingHelper {
 		sorting.addAll(foundSeriesGroups);
 	}
 
-	private static void finishCurrentSeries(List<Group> currentSeries, Collection<MultiGroup> foundSeriesGroups,
+	private static void finishCurrentSeries(List<Group> currentSeries, Collection<MultiGroup> foundSeriesGroups, int minimumNumberOfFiles,
 			Collection<Group> groupsToBeRemoved) {
-		if (currentSeries.size() > 1) {
+		if (currentSeries.size() >= minimumNumberOfFiles) {
 			Collection<Group> seriesGroupContents = new HashSet<>();
 			for (Group toBeMoved : currentSeries) {
 				groupsToBeRemoved.add(toBeMoved);

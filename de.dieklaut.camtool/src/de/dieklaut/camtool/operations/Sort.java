@@ -31,7 +31,8 @@ public class Sort extends AbstractOperation {
 	private String name = Constants.DEFAULT_SORTING_NAME;
 	private boolean detectSeries = false;
 	private Sorter sorter;
-	private int detectSeriesTimeDiff = 2;
+	private int detectSeriesTimeDiff = 10;
+	private int minimumNumberOfFiles = 3;
 
 	public Sort(Sorter sorter) {
 		this.sorter = sorter;
@@ -61,7 +62,7 @@ public class Sort extends AbstractOperation {
 			Collection<Group> sorting = sorter.identifyGroups(sortingFolder);
 
 			if (detectSeries) {
-				SortingHelper.combineSeries(sorting, detectSeriesTimeDiff);
+				SortingHelper.combineSeries(sorting, detectSeriesTimeDiff, minimumNumberOfFiles);
 			}
 
 			moveCollections(sorting, sortingFolder);
@@ -110,6 +111,10 @@ public class Sort extends AbstractOperation {
 
 	public void setDetectSeriesTime(int timeDiff) {
 		this.detectSeriesTimeDiff = timeDiff;
+	}
+
+	public void setMinimumNumberOfFiles(int minimumNumberOfFiles) {
+		this.minimumNumberOfFiles = minimumNumberOfFiles;
 	}
 
 }
