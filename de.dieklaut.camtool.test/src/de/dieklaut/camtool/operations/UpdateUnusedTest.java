@@ -47,7 +47,7 @@ public class UpdateUnusedTest extends FileBasedTest {
 		
 		Path unusedFolder = context.getRoot().resolve(Constants.FOLDER_UNUSED);
 		
-		assertEquals(1, Files.list(unusedFolder).count());
+		assertEquals(1, FileUtils.getFileCount(unusedFolder));
 		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_UNUSED).resolve(timestamp_file3 + "_file3.JPG")));
 	}
 }

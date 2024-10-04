@@ -88,18 +88,18 @@ public class Export extends AbstractOperation {
 		}
 		
 		
-		try {
+		try (var l = Files.list(resultFolder)){
 			Properties sourceStateFull = new Properties();
 			Path sourceStatePathFull = destination.resolve(Constants.FILE_NAME_SOURCESTATE);
 			Render.loadSourceState(sourceStateFull, sourceStatePathFull);
-			Files.list(resultFolder).forEach(file -> {
+			l.forEach(file -> {
 				if (!file.getFileName().toString().equals(Constants.SORTED_FILE_NAME)
 						&& !file.getFileName().toString().equals(Constants.FILE_NAME_SOURCESTATE)) {
 					String checksum = Render.hasChanges(file, sourceStateFull);
 					if (checksum != null && convertTo(file, destination, type)) {
 						sourceStateFull.setProperty(file.toString(), checksum);
-						try {
-							sourceStateFull.store(Files.newOutputStream(sourceStatePathFull),
+						try (var os = Files.newOutputStream(sourceStatePathFull)) {
+							sourceStateFull.store(os,
 									"Last update on " + Calendar.getInstance().getTime());
 						} catch (IOException e) {
 							Logger.log("Error during save of source state file for full size", e);

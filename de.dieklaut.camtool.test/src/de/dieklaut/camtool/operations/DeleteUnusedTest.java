@@ -51,7 +51,7 @@ public class DeleteUnusedTest extends FileBasedTest {
 		
 		new DeleteUnused().perform(context);
 		
-		assertEquals(0, Files.list(unusedFolder).count());
+		assertEquals(0, FileUtils.getFileCount(unusedFolder));
 		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_UNUSED).resolve(timestamp_file3 + "_file3.JPG")));
 		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_TIMELINE).resolve(timestamp_file3 + "_file3.JPG")));
 		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_ORIGINAL).resolve("file3.JPG")));

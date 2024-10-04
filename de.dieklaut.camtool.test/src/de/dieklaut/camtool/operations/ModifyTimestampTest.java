@@ -45,9 +45,11 @@ public class ModifyTimestampTest extends FileBasedTest {
 		assertTrue(Files.exists(file1));
 		
 		//file in timeline must be renamed with the same target
-		assertEquals(renamed_timeline, Files.list(getTestFolder().resolve(Constants.FOLDER_TIMELINE)).findFirst().get());
-		assertEquals(orig_file1, FileUtils.resolve(renamed_timeline));
-		assertEquals(renamed_timeline, FileUtils.resolve(file1));
+		try (var l = Files.list(getTestFolder().resolve(Constants.FOLDER_TIMELINE))){
+			assertEquals(renamed_timeline, l.findFirst().get());
+			assertEquals(orig_file1, FileUtils.resolve(renamed_timeline));
+			assertEquals(renamed_timeline, FileUtils.resolve(file1));
+		}
 	}
 	
 	@Test
@@ -72,8 +74,10 @@ public class ModifyTimestampTest extends FileBasedTest {
 		assertTrue(Files.exists(file1));
 		
 		//file in timeline must be renamed with the same target
-		assertEquals(renamed_timeline, Files.list(getTestFolder().resolve(Constants.FOLDER_TIMELINE)).findFirst().get());
-		assertEquals(orig_file1, FileUtils.resolve(renamed_timeline));
-		assertEquals(renamed_timeline, FileUtils.resolve(file1));
+		try (var l = Files.list(getTestFolder().resolve(Constants.FOLDER_TIMELINE))){
+			assertEquals(renamed_timeline, l.findFirst().get());
+			assertEquals(orig_file1, FileUtils.resolve(renamed_timeline));
+			assertEquals(renamed_timeline, FileUtils.resolve(file1));
+		}
 	}
 }

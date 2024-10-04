@@ -125,13 +125,11 @@ public class Render extends AbstractOperation {
 						modifiedPaths.add(newPath);
 						Logger.log("Modified predicted path of single Multigroup output " + result + " to " + newPath, Level.DEBUG);
 					} else if (predictedResults != null && predictedResults.size() > 1) {
-						Iterator<Path> it = predictedResults.iterator();
-						while (it.hasNext()) {
-							Path result = it.next();
-							Path newPath = destination_direct.resolve(group.getName() + "_" + result.getFileName().toString());
+						predictedResults.stream().forEach(r -> {
+							Path newPath = destination_direct.resolve(group.getName() + "_" + r.getFileName().toString());
 							modifiedPaths.add(newPath);
-							Logger.log("Modified predicted path of single Multigroup output " + result + " to " + newPath, Level.DEBUG);
-						}
+							Logger.log("Modified predicted path of single Multigroup output " + r + " to " + newPath, Level.DEBUG);
+						});
 					}
 					predictedResults = modifiedPaths;
 				}
@@ -204,8 +202,10 @@ public class Render extends AbstractOperation {
 				}
 				
 				rendered.addAll(jobResult);
-				sourceState.store(Files.newOutputStream(sourceStatePath),
+				try (var os = Files.newOutputStream(sourceStatePath)){
+					sourceState.store(os,
 						"Last update on " + Calendar.getInstance().getTime());
+				}
 			} catch (IOException e) {
 				Logger.log("Failed to execute render job " + job, e, Level.WARNING);
 			}
@@ -224,8 +224,8 @@ public class Render extends AbstractOperation {
 
 	public static void loadSourceState(Properties sourceState, Path sourceStatePath) {
 		if (Files.exists(sourceStatePath)) {
-			try {
-				sourceState.load(Files.newInputStream(sourceStatePath));
+			try (var is = Files.newInputStream(sourceStatePath)){
+				sourceState.load(is);
 			} catch (IOException e) {
 				Logger.log("Could not load source state file state for rendering", e);
 			}

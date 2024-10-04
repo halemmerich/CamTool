@@ -50,7 +50,7 @@ public class CamToolTest extends WorkingDirTest {
 		
 		CamTool.main(new String[] { "render", "-n", Constants.DEFAULT_SORTING_NAME });
 
-		assertEquals(1, Files.list(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME)).count());
+		assertEquals(1, FileUtils.getFileCount(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME)));
 	}
 
 	@Test
@@ -70,6 +70,6 @@ public class CamToolTest extends WorkingDirTest {
 		CamTool.main(new String[] { "render", "-n", Constants.DEFAULT_SORTING_NAME });
 
 		assertTrue(Files.exists(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME).resolve("20170915165451000_multi.JPG")));
-		assertEquals(2, Files.list(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME)).count());
+		assertEquals(2, FileUtils.getFileCount(Paths.get(Constants.FOLDER_RESULTS).resolve(Constants.DEFAULT_SORTING_NAME)));
 	}
 }

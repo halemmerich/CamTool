@@ -23,13 +23,13 @@ public class UpdateUnused extends AbstractOperation {
 	@Override
 	public void perform(Context context) {
 		Path sortingsFolder = context.getRoot().resolve(Constants.FOLDER_SORTED);
-		try {
-			Files.list(sortingsFolder).forEach(file -> {
+		try (var sortingsList = Files.list(sortingsFolder); var timelineList = Files.list(context.getRoot().resolve(Constants.FOLDER_TIMELINE))){
+			sortingsList.forEach(file -> {
 				identifyUsedTargets(file);
 			});
 
 			Set<Path> unused = new HashSet<>();
-			Files.list(context.getRoot().resolve(Constants.FOLDER_TIMELINE)).forEach(file -> {
+			timelineList.forEach(file -> {
 				Path timelineFile;
 				try {
 					timelineFile = file.toRealPath();
@@ -57,8 +57,8 @@ public class UpdateUnused extends AbstractOperation {
 	}
 
 	private void identifyUsedTargets(Path file) {
-		try {
-			Files.list(file).forEach(current -> {
+		try (var l = Files.list(file)) {
+			l.forEach(current -> {
 				try {
 					usedOriginalPaths.add(current.toRealPath());
 				} catch (IOException e) {

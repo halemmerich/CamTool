@@ -166,7 +166,7 @@ public class SingleGroup extends AbstractGroup {
 	public boolean hasOwnFolder() {
 		Path containing = getContainingFolder();
 		try {
-			return Files.list(containing).count() == getAllFiles().size();
+			return FileUtils.getFileCount(containing) == getAllFiles().size();
 		} catch (IOException e) {
 			throw new IllegalStateException("File listing failed", e);
 		}

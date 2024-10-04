@@ -43,7 +43,9 @@ public class RenderJavaScriptRenderJob extends RenderJob {
 		}
 
 		// FIXME: correctly handle recursive files/folders
-		return new HashSet<>(Files.list(destination).collect(Collectors.toSet()));
+		try (var l = Files.list(destination)){
+			return new HashSet<>(Files.list(destination).collect(Collectors.toSet()));
+		}
 	}
 
 	@Override

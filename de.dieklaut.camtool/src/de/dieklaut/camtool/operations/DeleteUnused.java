@@ -34,8 +34,8 @@ public class DeleteUnused extends AbstractOperation {
 			Logger.log("No unused folder, nothing to do", Level.WARNING);
 			return;
 		}
-		try {
-			Files.list(unusedFolder).forEach(file -> {
+		try (var unusedList = Files.list(unusedFolder)){
+			unusedList.forEach(file -> {
 				try {
 					FileUtils.deleteRecursive(file.toRealPath(), true);
 					FileUtils.deleteRecursive(file, true);
@@ -47,8 +47,8 @@ public class DeleteUnused extends AbstractOperation {
 			throw new IllegalStateException("Listing the files of the unused folder failed");
 		}
 		
-		try {
-			Files.list(context.getTimeLine()).forEach(file -> {
+		try (var timelineList = Files.list(context.getTimeLine())){
+			timelineList.forEach(file -> {
 				try {
 					if (!Files.exists(context.getTimeLine().resolve(Files.readSymbolicLink(file)))) {
 						FileUtils.deleteRecursive(file, false);

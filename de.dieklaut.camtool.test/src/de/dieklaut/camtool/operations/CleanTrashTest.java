@@ -249,7 +249,7 @@ public class CleanTrashTest extends FileBasedTest {
 		//group exists, only contains substitute file
 		assertTrue(Files.exists(sorting.resolve("group")));
 		assertTrue(Files.exists(filesub));
-		assertEquals(1, Files.list(sorting.resolve("group")).count());
+		assertEquals(1, FileUtils.getFileCount(sorting.resolve("group")));
 		
 	}
 }

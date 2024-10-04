@@ -182,8 +182,8 @@ public class FileUtils {
 		}
 
 		if (Files.isDirectory(path)) {
-			try {
-				Files.list(path).forEach(file -> deleteRecursive(file, force));
+			try (var l = Files.list(path)){
+				l.forEach(file -> deleteRecursive(file, force));
 			} catch (IOException e) {
 				throw new IllegalStateException("Could get delete contents of " + path + " recursive", e);
 			}
@@ -217,15 +217,17 @@ public class FileUtils {
 
 	public static void copyRecursive(Path source, Path destination) throws IOException {
 		if (Files.isDirectory(source)) {
-			Files.list(source).forEach(current -> {
-				try {
-					Files.createDirectories(destination);
-					copyRecursive(current, destination.resolve(current.getFileName()));
-				} catch (IOException e) {
-					throw new IllegalStateException(
-							"Could not copy recursively from " + current + " to " + destination);
-				}
-			});
+			try (var l = Files.list(source)){
+				l.forEach(current -> {
+					try {
+						Files.createDirectories(destination);
+						copyRecursive(current, destination.resolve(current.getFileName()));
+					} catch (IOException e) {
+						throw new IllegalStateException(
+								"Could not copy recursively from " + current + " to " + destination);
+					}
+				});
+			}
 		} else {
 			Path fileDest = destination;
 			if (Files.isDirectory(fileDest)) {
@@ -370,7 +372,7 @@ public class FileUtils {
 	public static void cleanUpEmptyParents(Path current) {
 		Path parent = current.getParent();
 		try {
-			if (Files.list(parent).count() == 0) {
+			if (getFileCount(parent) == 0) {
 				Files.delete(parent);
 				cleanUpEmptyParents(parent);
 			}
@@ -381,8 +383,8 @@ public class FileUtils {
 
 	public static void setReadOnlyRecursive(Path path) {
 		if (Files.isDirectory(path)) {
-			try {
-				Files.list(path).forEach(current -> {
+			try (var l = Files.list(path)){
+				l.forEach(current -> {
 					setReadOnlyRecursive(current);
 				});
 			} catch (IOException e) {
@@ -393,7 +395,18 @@ public class FileUtils {
 	}
 
 	public static String getSimplifiedStringRep(Path path) {
-		return path.toString().replaceAll(path.getFileSystem().getSeparator(), "");
+		String rep = null;
+		try (var fs = path.getFileSystem()){
+			rep = path.toString().replaceAll(fs.getSeparator(), "");
+		} catch (UnsupportedOperationException e) {
+			Logger.log("Unsupported operation", e, Level.DEBUG);
+		} catch (IOException e) {
+			throw new IllegalStateException("Could not get filesystem", e);
+		}
+		if (rep == null) {
+			throw new IllegalStateException("Could not get simplified string representation");
+		}
+		return rep;
 	}
 
 	public static String buildFileName(String timestamp, Path relativePath, String name) {
@@ -413,17 +426,19 @@ public class FileUtils {
 	}
 
 	public static void removeEmptyFolders(Path sortingFolder) throws IOException {
-		Path[] toBeDeleted = Files.list(sortingFolder).filter(current -> {
-			try {
-				return Files.isDirectory(current) && Files.list(current).count() == 0;
-			} catch (IOException e) {
-				Logger.log("Failure during listing of contents for " + current, Level.ERROR);
-				return false;
+		try (var s = Files.list(sortingFolder)){
+			Path[] toBeDeleted = s.filter(current -> {
+				try {
+					return Files.isDirectory(current) && FileUtils.getFileCount(current) == 0;
+				} catch (IOException e) {
+					Logger.log("Failure during listing of contents for " + current, Level.ERROR);
+					return false;
+				}
+			}).toArray(size -> new Path[size]);
+	
+			for (Path path : toBeDeleted) {
+				FileUtils.deleteRecursive(path, true);
 			}
-		}).toArray(size -> new Path[size]);
-
-		for (Path path : toBeDeleted) {
-			FileUtils.deleteRecursive(path, true);
 		}
 	}
 
@@ -461,20 +476,22 @@ public class FileUtils {
 
 	public static void moveRecursive(Path source, Path destination) throws IOException {
 		if (Files.isDirectory(source)) {
-			Files.list(source).forEach(current -> {
-				try {
-					if (Files.isDirectory(current)) {
-						Path newDir = destination.resolve(current.getFileName());
-						Files.createDirectories(newDir);
-						moveRecursive(current, newDir);
-					} else {
-						moveRecursive(current, destination);
+			try (var l = Files.list(source)){
+				l.forEach(current -> {
+					try {
+						if (Files.isDirectory(current)) {
+							Path newDir = destination.resolve(current.getFileName());
+							Files.createDirectories(newDir);
+							moveRecursive(current, newDir);
+						} else {
+							moveRecursive(current, destination);
+						}
+					} catch (IOException e) {
+						throw new IllegalStateException(
+								"Could not move recursively from " + current + " to " + destination, e);
 					}
-				} catch (IOException e) {
-					throw new IllegalStateException(
-							"Could not move recursively from " + current + " to " + destination, e);
-				}
-			});
+				});
+			}
 		} else {
 			Path fileDest = destination;
 			if (Files.isDirectory(fileDest)) {
@@ -494,15 +511,19 @@ public class FileUtils {
 			throw new IllegalArgumentException(destination_direct.toString() + " is not a directory");
 		}
 		Set<Path> absolutePaths = new HashSet<>();
-		absolutePaths = Files.list(destination_direct).map(path -> path.toAbsolutePath().normalize())
+		
+		try (var dd = Files.list(destination_direct)){
+			absolutePaths = dd.map(path -> path.toAbsolutePath().normalize())
 				.collect(Collectors.toSet());
+		}
 		for (Path p : keep) {
 			absolutePaths.remove(p.toAbsolutePath().normalize());
 		}
+		
 		Set<Path> cleanedPaths = new HashSet<>(absolutePaths);
 
-		try {
-			Files.list(destination_direct).forEach(current -> {
+		try (var dd2 = Files.list(destination_direct)) {
+			dd2.forEach(current -> {
 				current = current.toAbsolutePath().normalize();
 				if (Files.isDirectory(current)) {
 					try {
@@ -513,7 +534,7 @@ public class FileUtils {
 				}
 				if (cleanedPaths.contains(current)) {
 					try {
-						if ((Files.isDirectory(current) && Files.list(current).count() == 0)
+						if ((Files.isDirectory(current) && FileUtils.getFileCount(current) == 0)
 								|| !Files.isDirectory(current)) {
 							Files.deleteIfExists(current);
 						}
@@ -577,9 +598,11 @@ public class FileUtils {
 	public static Collection<Path> getByRegex(Path root, String selectingRegex) throws IOException {
 		Pattern pattern = Pattern.compile(selectingRegex);
 		Predicate<String> pred = pattern.asPredicate();
-		return Files.list(root).filter(p -> {
-			return pred.test(p.getFileName().toString());
-		}).collect(Collectors.toSet());
+		try (var r = Files.list(root)){
+			return Files.list(root).filter(p -> {
+				return pred.test(p.getFileName().toString());
+			}).collect(Collectors.toSet());
+		}
 	}
 
 	public static Path resolve(Path symlink) throws IOException {
@@ -594,14 +617,15 @@ public class FileUtils {
 
 	public static void deleteAllFilesNotExistingIn(Path referenceDir, Path pathToBeCleaned, boolean ignoreSuffix)
 			throws IOException {
-		Set<Path> sourcefiles = Files.list(referenceDir).map(p -> {
+		try (var lrd = Files.list(referenceDir); var lpc = Files.list(pathToBeCleaned)){
+		Set<Path> sourcefiles = lrd.map(p -> {
 			if (ignoreSuffix) {
 				return FileUtils.removeSuffix(p.getFileName());
 			} else {
 				return p.getFileName();
 			}
 		}).collect(Collectors.toSet());
-		Set<Path> targetfiles = Files.list(pathToBeCleaned).map(p -> {
+		Set<Path> targetfiles = lpc.map(p -> {
 			if (ignoreSuffix) {
 				return FileUtils.removeSuffix(p.getFileName());
 			} else {
@@ -610,8 +634,8 @@ public class FileUtils {
 		}).collect(Collectors.toSet());
 		targetfiles.removeAll(sourcefiles);
 		targetfiles.forEach(p -> {
-			try {
-				Files.list(pathToBeCleaned).filter(c -> {
+			try (var pl = Files.list(pathToBeCleaned)) {
+				pl.filter(c -> {
 					return FileUtils.removeSuffix(c.getFileName()).equals(p);
 				}).forEach(c -> {
 					try {
@@ -624,5 +648,12 @@ public class FileUtils {
 				Logger.log("Delete failed", e);
 			}
 		});
+		}
+	}
+	
+	public static long getFileCount(Path path) throws IOException {
+		try (var l = Files.list(path)){
+			return l.count();
+		}
 	}
 }

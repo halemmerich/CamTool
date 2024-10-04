@@ -53,8 +53,10 @@ public class RenderSubstituteModifier implements RenderModifier {
 				paths.add(sub.toAbsolutePath().getParent().resolve(current));
 			} else {
 				Pattern p = Pattern.compile(currentLine);
-				Collection<Path> matching = Files.list(sub.toAbsolutePath().getParent()).filter(f -> p.matcher(sub.toAbsolutePath().getParent().relativize(f).toString()).find()).collect(Collectors.toSet());
-				paths.addAll(matching);
+				try (var l = Files.list(sub.toAbsolutePath().getParent())){
+					Collection<Path> matching = l.filter(f -> p.matcher(sub.toAbsolutePath().getParent().relativize(f).toString()).find()).collect(Collectors.toSet());
+					paths.addAll(matching);
+				}
 			}
 			
 		}

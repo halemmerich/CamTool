@@ -49,12 +49,14 @@ public class RenderJavaScriptScriptMultiRenderJob extends RenderJob {
 		} else {
 			Logger.log("Render script execution failed", Level.ERROR);
 		}
-
-		Set<Path> rendered = Files.list(resultDir).collect(Collectors.toSet());
-		//FIXME: correctly handle recursive files/folders
-		FileUtils.deleteRecursive(workDir, true);
-		FileUtils.deleteRecursive(resultDir, true);
-		return rendered;
+		
+		try (var l = Files.list(resultDir)){
+			Set<Path> rendered = l.collect(Collectors.toSet());
+			//FIXME: correctly handle recursive files/folders
+			FileUtils.deleteRecursive(workDir, true);
+			FileUtils.deleteRecursive(resultDir, true);
+			return rendered;
+		}
 	}
 
 	@Override

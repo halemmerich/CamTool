@@ -32,8 +32,8 @@ public class Init extends AbstractOperation {
 	}
 
 	private void createTimeLineEntries(Path folder, Path timelineFolder, Context context) {
-		try {
-			Files.list(folder).forEach(current -> {
+		try (var l = Files.list(folder)){
+			l.forEach(current -> {
 				if (Files.isDirectory(current)) {
 					createTimeLineEntries(current, timelineFolder, context);
 				} else {

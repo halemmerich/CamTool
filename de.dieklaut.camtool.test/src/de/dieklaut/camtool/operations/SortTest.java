@@ -22,6 +22,7 @@ import de.dieklaut.camtool.Group;
 import de.dieklaut.camtool.SingleGroup;
 import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.TestFileHelper;
+import de.dieklaut.camtool.util.FileUtils;
 
 public class SortTest extends FileBasedTest {
 	private static final Sorter SORTER = new DefaultSorter();
@@ -43,7 +44,7 @@ public class SortTest extends FileBasedTest {
 		Sort sort = new Sort(SORTER);
 		sort.perform(context);
 
-		assertEquals(5, Files.list(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal")).count());
+		assertEquals(5, FileUtils.getFileCount(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal")));
 		
 	}
 	
@@ -115,7 +116,7 @@ public class SortTest extends FileBasedTest {
 		sort.perform(context);
 
 		Path sortingFolder = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve("normal");
-		assertEquals(3, Files.list(sortingFolder).count());
+		assertEquals(3, FileUtils.getFileCount(sortingFolder));
 		assertTrue(Files.exists(sortingFolder.resolve(Constants.SORTED_FILE_NAME)));
 		
 		assertContents(sortingFolder, 1, 2);
@@ -125,14 +126,15 @@ public class SortTest extends FileBasedTest {
 		int folders [] = new int [] { 0 };
 		int files [] = new int [] { 0 };
 		
-		Files.list(sortingFolder).forEach(file -> {
-			if (Files.isDirectory(file)) {
-				folders[0]++;
-			} else {
-				files[0]++;
-			}
-		});
-
+		try (var l = Files.list(sortingFolder)) {
+			l.forEach(file -> {
+				if (Files.isDirectory(file)) {
+					folders[0]++;
+				} else {
+					files[0]++;
+				}
+			});
+		}
 		assertEquals(numberOfFolders, folders[0]);
 		assertEquals(numberOfFiles, files[0]);
 	}

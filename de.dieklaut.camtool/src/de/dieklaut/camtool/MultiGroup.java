@@ -130,7 +130,7 @@ public class MultiGroup extends AbstractGroup {
 		}
 		
 		try {
-			if (Files.list(destination).count() != 0) {
+			if (FileUtils.getFileCount(destination) != 0) {
 				// Destination not empty, move to subfolder
 				destination = destination.resolve(getContainingFolder().getFileName().toString());
 			}

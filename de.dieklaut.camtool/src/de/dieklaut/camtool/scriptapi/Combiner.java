@@ -15,7 +15,9 @@ public class Combiner {
 	public static void combine(Path inputDir, Path outputDir, String groupName, EnfuseWrapper enfuse) {
 		try {
 			AlignImageStackWrapper aligner = new AlignImageStackWrapper();
-			aligner.setInputFile(Files.list(inputDir).toArray(size -> new Path [size]));
+			try (var l = Files.list(inputDir)){
+				aligner.setInputFile(l.toArray(size -> new Path [size]));
+			}
 			aligner.setPrefix("aligned");
 			aligner.setOptimizeFieldOfViewFirstImage(true);
 			

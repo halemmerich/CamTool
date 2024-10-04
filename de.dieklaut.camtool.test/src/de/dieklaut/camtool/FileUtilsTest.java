@@ -54,7 +54,7 @@ public class FileUtilsTest extends FileBasedTest {
 		Path subdir = Files.createDirectory(getTestFolder().resolve("subdir"));
 		Path link = Files.createSymbolicLink(subdir.resolve("link"), testfile);
 		
-		Path newLink = FileUtils.moveSymlink(link, getTestFolder());
+		Path newLink = FileUtils.moveSymlink(link, getTestFolder(), subdir);
 		
 		assertFalse(link.toFile().exists());
 		assertEquals(getTestFolder().resolve("link"), newLink);
@@ -161,8 +161,8 @@ public class FileUtilsTest extends FileBasedTest {
 		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
 		assertTrue(Files.exists(destination.resolve(subdir.getFileName())));
 		assertTrue(Files.exists(destination.resolve(subdir.getFileName()).resolve(subfile.getFileName())));
-		assertEquals(2, Files.list(destination).count());
-		assertEquals(1, Files.list(destination.resolve(subdir.getFileName())).count());
+		assertEquals(2, FileUtils.getFileCount(destination));
+		assertEquals(1, FileUtils.getFileCount(destination.resolve(subdir.getFileName())));
 	}
 	
 	@Test
@@ -174,7 +174,7 @@ public class FileUtilsTest extends FileBasedTest {
 		FileUtils.copyRecursive(source,destination);
 
 		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
-		assertEquals(1, Files.list(destination).count());
+		assertEquals(1, FileUtils.getFileCount(destination));
 	}
 	
 	@Test
@@ -186,7 +186,7 @@ public class FileUtilsTest extends FileBasedTest {
 		FileUtils.copyRecursive(testfile,destination);
 
 		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
-		assertEquals(1, Files.list(destination).count());
+		assertEquals(1, FileUtils.getFileCount(destination));
 	}
 	
 	@Test(expected = IllegalStateException.class)
@@ -211,7 +211,7 @@ public class FileUtilsTest extends FileBasedTest {
 		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
 		assertTrue(Files.exists(destination.resolve(subdir.getFileName())));
 		assertTrue(Files.exists(destination.resolve(subdir.getFileName()).resolve(subfile.getFileName())));
-		assertEquals(2, Files.list(destination).count());
+		assertEquals(2, FileUtils.getFileCount(destination));
 		assertEquals(1, Files.list(destination.resolve(subdir.getFileName())).count());
 	}
 	
@@ -224,7 +224,7 @@ public class FileUtilsTest extends FileBasedTest {
 		FileUtils.hardlinkOrCopy(testfile, destination);
 
 		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
-		assertEquals(1, Files.list(destination).count());
+		assertEquals(1, FileUtils.getFileCount(destination));
 	}
 	
 	@Test
@@ -236,7 +236,7 @@ public class FileUtilsTest extends FileBasedTest {
 		FileUtils.hardlinkOrCopy(testfile, destination);
 
 		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
-		assertEquals(1, Files.list(destination).count());
+		assertEquals(1, FileUtils.getFileCount(destination));
 	}
 	
 	@Test

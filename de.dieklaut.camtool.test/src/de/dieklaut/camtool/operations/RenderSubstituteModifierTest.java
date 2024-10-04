@@ -55,7 +55,7 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		renderModifier.getRenderJob(Collections.emptySet()).store(dest, Collections.emptySet());
 
 		assertTrue(Files.exists(dest.resolve("file1.jpg")));
-		assertEquals(Files.list(dest).count(), 1);
+		assertEquals(FileUtils.getFileCount(dest), 1);
 		FileUtils.deleteRecursive(dest, true);
 		
 	}
@@ -89,7 +89,7 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		
 		renderModifier.getRenderJob(Collections.emptySet()).store(dest, Collections.emptySet());
 
-		assertEquals(0, Files.list(dest).count());
+		assertEquals(0, FileUtils.getFileCount(dest));
 		FileUtils.deleteRecursive(dest, true);
 		
 	}
@@ -127,7 +127,7 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		renderModifier.getRenderJob(Collections.emptySet()).store(dest, Collections.emptySet());
 
 		assertTrue(Files.exists(dest.resolve("file1.jpg")));
-		assertEquals(Files.list(dest).count(), 1);
+		assertEquals(FileUtils.getFileCount(dest), 1);
 		FileUtils.deleteRecursive(dest, true);
 		
 	}

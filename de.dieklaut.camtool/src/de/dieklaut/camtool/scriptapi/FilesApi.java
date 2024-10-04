@@ -34,12 +34,14 @@ public class FilesApi {
 	}
 	
 	public static String [] getFiles(String path) throws IOException {
-		Object [] paths = Files.list(Paths.get(path)).toArray();
-		String [] results = new String [paths.length];
-		for (int i = 0; i < paths.length; i++) {
-			results[i] = ((Path)paths[i]).toAbsolutePath().toString();
+		try (var p = Files.list(Paths.get(path))){
+			Object [] paths = p.toArray();
+			String [] results = new String [paths.length];
+			for (int i = 0; i < paths.length; i++) {
+				results[i] = ((Path)paths[i]).toAbsolutePath().toString();
+			}
+			return results;
 		}
-		return results;
 	}
 	
 }

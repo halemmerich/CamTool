@@ -28,93 +28,98 @@ public class DefaultSorter implements Sorter{
 		HashMap<String, Set<Path>> nameToPaths = new HashMap<>();
 		HashMap<String, Group> nameToGroup = new HashMap<>();
 
-		Files.list(path).forEach(current -> {
-			try {
-				if (current.getFileName().toString().startsWith(".")) {
-					return;
-				} else if (Files.isDirectory(current) && Files.list(current).count() > 0) {
-					MultiGroup multiGroup;
-					try {
-						Collection<Group> groups = identifyGroups(current);
-						Path renderscript = current.resolve(Constants.FILE_NAME_RENDERSCRIPT);
-						Path rendersub = current.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
-						Path rendersubExt = current.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL);
-						multiGroup = new MultiGroup(groups);
-						if (Files.exists(renderscript)) {
-							multiGroup.setRenderModifier(new JavaScriptRenderModifier(multiGroup, renderscript));
-						} else if (Files.exists(rendersub)) {
-							multiGroup.setRenderModifier(new RenderSubstituteModifier(rendersub, rendersubExt));
-						}
-						result.add(multiGroup);
-						nameToGroup.put(multiGroup.getName(), multiGroup);
-					} catch (IOException e) {
-						Logger.log("Error during group analysis of " + path, e);
-					}
-				} else if (!Files.isDirectory(current)){
-					String groupName = FileUtils.getNamePortion(current);
-					if (current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSCRIPT) || current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSUBSTITUTE) || current.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
+		try (var l = Files.list(path)){
+			l.forEach(current -> {
+				try {
+					if (current.getFileName().toString().startsWith(".")) {
 						return;
+					} else if (Files.isDirectory(current) && FileUtils.getFileCount(current) > 0) {
+						MultiGroup multiGroup;
+						try {
+							Collection<Group> groups = identifyGroups(current);
+							Path renderscript = current.resolve(Constants.FILE_NAME_RENDERSCRIPT);
+							Path rendersub = current.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
+							Path rendersubExt = current.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL);
+							multiGroup = new MultiGroup(groups);
+							if (Files.exists(renderscript)) {
+								multiGroup.setRenderModifier(new JavaScriptRenderModifier(multiGroup, renderscript));
+							} else if (Files.exists(rendersub)) {
+								multiGroup.setRenderModifier(new RenderSubstituteModifier(rendersub, rendersubExt));
+							}
+							result.add(multiGroup);
+							nameToGroup.put(multiGroup.getName(), multiGroup);
+							}
+						} catch (IOException e) {
+							Logger.log("Error during group analysis of " + path, e);
+						}
+					} else if (!Files.isDirectory(current)){
+						String groupName = FileUtils.getNamePortion(current);
+						if (current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSCRIPT) || current.getFileName().toString().equals(Constants.FILE_NAME_RENDERSUBSTITUTE) || current.getFileName().toString().equals(Constants.SORTED_FILE_NAME)) {
+							return;
+						}
+						if (!nameToPaths.containsKey(groupName)) {
+							nameToPaths.put(groupName, new HashSet<>());
+						}
+						nameToPaths.get(groupName).add(current);
 					}
-					if (!nameToPaths.containsKey(groupName)) {
-						nameToPaths.put(groupName, new HashSet<>());
-					}
-					nameToPaths.get(groupName).add(current);
+				} catch (IOException e) {
+					Logger.log("Error during group analysis of " + path, e);
 				}
-			} catch (IOException e) {
-				Logger.log("Error during group analysis of " + path, e);
+			});
+			
+			//Creation of single groups
+			
+			for (String name : nameToPaths.keySet()) {
+				SingleGroup group = new SingleGroup(nameToPaths.get(name));
+				result.add(group);
+				nameToGroup.put(name, group);
 			}
-		});
-		
-		//Creation of single groups
-		
-		for (String name : nameToPaths.keySet()) {
-			SingleGroup group = new SingleGroup(nameToPaths.get(name));
-			result.add(group);
-			nameToGroup.put(name, group);
+			
+			return result;
 		}
-		
-		return result;
 	}
 
 	public static Map<String, Set<Path>> detectGroupNames(Path path, Collection<Path> camtoolFiles)
 			throws IOException {
 		Logger.log("Searching for group names in " + path ,Level.TRACE);
 		Map<String, Set<Path>> groupNamesToPaths = new HashMap<>();
-		Files.list(path).forEach(currentPath -> {
-			if (!Files.isDirectory(currentPath)) {
-				String currentFileName = currentPath.getFileName().toString();
-
-				if (currentFileName.equals(Constants.SORTED_FILE_NAME)) {
-					return;
-				}
-
-				String currentGroupName = null;
-				if (currentFileName.contains(Constants.FILE_NAME_CAMTOOL)) {
-					Logger.log("Found camtool file: " + currentFileName ,Level.TRACE);
-					camtoolFiles.add(currentPath);
-					currentGroupName = FileUtils.getGroupName(currentPath);
+		try (var p = Files.list(path)){
+			p.forEach(currentPath -> {
+				if (!Files.isDirectory(currentPath)) {
+					String currentFileName = currentPath.getFileName().toString();
+	
+					if (currentFileName.equals(Constants.SORTED_FILE_NAME)) {
+						return;
+					}
+	
+					String currentGroupName = null;
+					if (currentFileName.contains(Constants.FILE_NAME_CAMTOOL)) {
+						Logger.log("Found camtool file: " + currentFileName ,Level.TRACE);
+						camtoolFiles.add(currentPath);
+						currentGroupName = FileUtils.getGroupName(currentPath);
+						
+					} else {
+						currentGroupName = FileUtils.getGroupName(currentPath);
+					}
+					
+					if (!groupNamesToPaths.containsKey(currentGroupName)) {
+						Logger.log("Found new group name " + currentGroupName, Level.TRACE);
+						groupNamesToPaths.put(currentGroupName, new HashSet<>());
+					}
+					if (!currentFileName.contains(Constants.FILE_NAME_CAMTOOL)) {
+						groupNamesToPaths.get(currentGroupName).add(currentPath);
+					}
 					
 				} else {
-					currentGroupName = FileUtils.getGroupName(currentPath);
+					try {
+						groupNamesToPaths.putAll(detectGroupNames(currentPath, camtoolFiles));
+					} catch (IOException e) {
+						Logger.log("Failure during recursing into subfolders", e, Level.ERROR);
+					}
 				}
-				
-				if (!groupNamesToPaths.containsKey(currentGroupName)) {
-					Logger.log("Found new group name " + currentGroupName, Level.TRACE);
-					groupNamesToPaths.put(currentGroupName, new HashSet<>());
-				}
-				if (!currentFileName.contains(Constants.FILE_NAME_CAMTOOL)) {
-					groupNamesToPaths.get(currentGroupName).add(currentPath);
-				}
-				
-			} else {
-				try {
-					groupNamesToPaths.putAll(detectGroupNames(currentPath, camtoolFiles));
-				} catch (IOException e) {
-					Logger.log("Failure during recursing into subfolders", e, Level.ERROR);
-				}
-			}
-		});
-		return groupNamesToPaths;
+			});
+			return groupNamesToPaths;
+		}
 	}
 
 	public static void createSingleGroups(Collection<Group> groups, Map<String, Set<Path>> groupNamesToPaths,

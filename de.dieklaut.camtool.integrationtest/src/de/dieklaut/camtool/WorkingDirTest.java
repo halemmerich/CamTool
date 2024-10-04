@@ -27,6 +27,8 @@ public class WorkingDirTest {
 		}
 
 		Logger.log("Working in test folder " + Paths.get("").toAbsolutePath(), Level.DEBUG);
-		Files.list(Paths.get("")).forEach(currentPath -> FileUtils.deleteRecursive(currentPath, true));
+		try (var l = Files.list(Paths.get("").toAbsolutePath())){
+			l.forEach(currentPath -> FileUtils.deleteRecursive(currentPath, true));
+		}
 	}
 }

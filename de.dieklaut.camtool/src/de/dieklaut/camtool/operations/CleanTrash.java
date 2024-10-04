@@ -68,7 +68,7 @@ public class CleanTrash extends AbstractOperation {
 			try {
 				Files.delete(file);
 				Path parent = file.getParent();
-				if (Files.list(parent).count() == 0) {
+				if (FileUtils.getFileCount(parent) == 0) {
 					Files.delete(parent);
 				}
 			} catch (IOException e) {
