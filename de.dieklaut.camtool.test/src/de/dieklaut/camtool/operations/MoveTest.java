@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Calendar;
 
 import org.junit.Before;
@@ -44,12 +45,33 @@ public class MoveTest extends FileBasedTest {
 		String targetName = "target";
 		
 		Move move = new Move(SORTER);
-		move.setPathOfGroup(file1);
+		move.setIdentifiers(Arrays.asList(file1.toString()));
 		move.setTargetPath(sorting.resolve(targetName));
 		move.perform(context);
 
 		assertFalse(Files.exists(sorting.resolve(file1.getFileName())));
 		assertTrue(Files.exists(sorting.resolve(targetName).resolve(file1.getFileName())));
+	}
+	
+	@Test
+	public void testMoveToSubFolderWithSubfolders() throws IOException {
+		Context context = TestFileHelper.createComplexContext(getTestFolder());
+		
+		Path file1 = TestFileHelper.addFileToSorting(context, Paths.get("sub/sub2/file1.arw"), TestFileHelper.getTestResource("A7II.ARW"));
+		Files.createDirectories(file1.getParent().getParent().resolve("empty"));
+		
+		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
+
+		String targetName = "target";
+		
+		Move move = new Move(SORTER);
+		move.setIdentifiers(Arrays.asList("sub"));
+		move.setTargetPath(sorting.resolve(targetName));
+		move.perform(context);
+
+		assertFalse(Files.exists(file1.getFileName()));
+		assertTrue(Files.exists(sorting.resolve(targetName).resolve("sub2").resolve(file1.getFileName())));
+		assertTrue(Files.exists(sorting.resolve(targetName).resolve("empty")));
 	}
 	
 	@Test
@@ -63,7 +85,7 @@ public class MoveTest extends FileBasedTest {
 
 		
 		Move move = new Move(SORTER);
-		move.setPathOfGroup(file1);
+		move.setIdentifiers(Arrays.asList(file1.toString()));
 		move.setTargetPath(sorting);
 		move.perform(context);
 
@@ -85,10 +107,12 @@ public class MoveTest extends FileBasedTest {
 		
 		String testGroupName = "testgroupname";
 		String subfolder = "sub";
+
+		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
 		
 		Move move = new Move(SORTER);
-		move.setNameOfGroup(timestamp_file3 + "_file3");
-		move.setTargetPath(Paths.get(subfolder).resolve(testGroupName));
+		move.setIdentifiers(Arrays.asList(timestamp_file3 + "_file3"));
+		move.setTargetPath(sorting.resolve(subfolder).resolve(testGroupName));
 		move.perform(context);
 
 		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG")));
@@ -113,17 +137,19 @@ public class MoveTest extends FileBasedTest {
 		
 		String testGroupName = "testgroupname";
 		String subfolder = "sub";
+
+		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
 		
 		Move move = new Move(SORTER);
-		move.setNameOfGroup(timestamp_file1 + "_multi");
-		move.setTargetPath(Paths.get("..").resolve(subfolder).resolve(testGroupName));
+		move.setIdentifiers(Arrays.asList(timestamp_file1 + "_multi"));
+		move.setTargetPath(sorting.resolve(subfolder).resolve(testGroupName));
 		move.perform(context);
 
 		assertFalse(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(timestamp_file3 + "_file3.JPG")));
 		assertTrue(Files.exists(getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME).resolve(subfolder).resolve(testGroupName).resolve(timestamp_file3 + "_file3.JPG")));
 		
 	}
-	
+
 	@Test
 	public void testMoveFromMainToFolderAndBack() throws IOException {
 		Context context = TestFileHelper.createComplexContext(getTestFolder());
@@ -133,23 +159,45 @@ public class MoveTest extends FileBasedTest {
 		Path file3 = TestFileHelper.addFileToSorting(context, Paths.get("file3.JPG"), 9500);
 			
 		String testGroupName = "testgroupname";
-		
-		Move move = new Move(SORTER);
-		move.setNameOfGroup(FileUtils.buildFileName(9500, "file3"));
-		move.setTargetPath(Paths.get(testGroupName));
-		move.perform(context);
 
 		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
+		
+		Move move = new Move(SORTER);
+		move.setIdentifiers(Arrays.asList(FileUtils.buildFileName(9500, "file3")));
+		move.setTargetPath(sorting.resolve(testGroupName));
+		move.perform(context);
+
 		
 		assertFalse(Files.exists(sorting.resolve(file3.getFileName())));
 		assertTrue(Files.exists(sorting.resolve(testGroupName).resolve(file3.getFileName())));
 		
 		move = new Move(SORTER);
-		move.setNameOfGroup(FileUtils.buildFileName(9500, "file3"));
-		move.setTargetPath(Paths.get("../"));
+		move.setIdentifiers(Arrays.asList(FileUtils.buildFileName(9500, "file3")));
+		move.setTargetPath(sorting);
 		move.perform(context);
 
 		assertFalse(Files.exists(sorting.resolve(testGroupName).resolve(file3.getFileName())));
 		assertTrue(Files.exists(sorting.resolve(file3.getFileName())));
+	}
+	
+	@Test
+	public void testMoveFromMainRegex() throws IOException {
+		Context context = TestFileHelper.createComplexContext(getTestFolder());
+		TestFileHelper.addFileToSorting(context, Paths.get("file1.ARW"), 2000);
+		TestFileHelper.addFileToSorting(context, Paths.get("file1.JPG"), 2000);
+		TestFileHelper.addFileToSorting(context, Paths.get("file2.ARW"), 7000);
+		Path file3 = TestFileHelper.addFileToSorting(context, Paths.get("file3.JPG"), 9500);
+			
+		String testGroupName = "testgroupname";
+
+		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
+		
+		Move move = new Move(SORTER);
+		move.setRegex(".*file3.*");
+		move.setTargetPath(sorting.resolve(testGroupName));
+		move.perform(context);
+		
+		assertFalse(Files.exists(sorting.resolve(file3.getFileName())));
+		assertTrue(Files.exists(sorting.resolve(testGroupName).resolve(file3.getFileName())));
 	}
 }

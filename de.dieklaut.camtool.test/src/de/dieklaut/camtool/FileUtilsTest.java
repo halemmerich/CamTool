@@ -41,7 +41,7 @@ public class FileUtilsTest extends FileBasedTest {
 		Path subdir2 = Files.createDirectory(getTestFolder().resolve("subdir2"));
 		Path link = Files.createSymbolicLink(subdir.resolve("link"), testfile);
 		
-		Path newLink = FileUtils.moveSymlink(link, subdir2);
+		Path newLink = FileUtils.moveSymlink(link, subdir2, subdir);
 		
 		assertFalse(Files.exists(link));
 		assertEquals(subdir2.resolve("link"), newLink);
@@ -251,7 +251,7 @@ public class FileUtilsTest extends FileBasedTest {
 		Path subfile = Files.createFile(testdir.resolve("sub"));
 		Path sublink = Files.createSymbolicLink(testdir.resolve("sublink"), testdir.relativize(linktarget));
 		
-		FileUtils.moveRecursive(source, destination);
+		FileUtils.moveRecursive(source, destination, source.getParent());
 
 		assertTrue(Files.exists(destination.resolve(testfile.getFileName())));
 		assertTrue(Files.exists(destination.resolve(testdir.getFileName()).resolve(subfile.getFileName())));

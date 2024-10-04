@@ -135,7 +135,7 @@ public class MultiGroup extends AbstractGroup {
 				destination = destination.resolve(getContainingFolder().getFileName().toString());
 			}
 			
-			FileUtils.moveRecursive(getContainingFolder(), destination);
+			FileUtils.moveRecursive(getContainingFolder(), destination, getContainingFolder());
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

@@ -40,14 +40,15 @@ public class DefaultSorter implements Sorter{
 							Path renderscript = current.resolve(Constants.FILE_NAME_RENDERSCRIPT);
 							Path rendersub = current.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE);
 							Path rendersubExt = current.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL);
-							multiGroup = new MultiGroup(groups);
-							if (Files.exists(renderscript)) {
-								multiGroup.setRenderModifier(new JavaScriptRenderModifier(multiGroup, renderscript));
-							} else if (Files.exists(rendersub)) {
-								multiGroup.setRenderModifier(new RenderSubstituteModifier(rendersub, rendersubExt));
-							}
-							result.add(multiGroup);
-							nameToGroup.put(multiGroup.getName(), multiGroup);
+							if (groups.size() > 0 || Files.exists(renderscript) || Files.exists(rendersub) || Files.exists(rendersubExt)) {
+								multiGroup = new MultiGroup(groups);
+								if (Files.exists(renderscript)) {
+									multiGroup.setRenderModifier(new JavaScriptRenderModifier(multiGroup, renderscript));
+								} else if (Files.exists(rendersub) || Files.exists(rendersubExt)) {
+									multiGroup.setRenderModifier(new RenderSubstituteModifier(rendersub, rendersubExt));
+								}
+								result.add(multiGroup);
+								nameToGroup.put(multiGroup.getName(), multiGroup);
 							}
 						} catch (IOException e) {
 							Logger.log("Error during group analysis of " + path, e);

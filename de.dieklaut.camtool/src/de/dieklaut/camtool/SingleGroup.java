@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
 
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderjob.CopyRenderJob;
 import de.dieklaut.camtool.renderjob.NullRenderJob;
@@ -181,11 +182,12 @@ public class SingleGroup extends AbstractGroup {
 
 	@Override
 	public void moveToFolder(Path destination) {
+		Logger.log("Moving " + getName() + " to " + destination, Level.INFO);
 		getAllFiles().stream().forEach(current -> {
 			Path targetDestination = getTargetDestination(destination);
 			if (Files.isSymbolicLink(current)) {
 				try {
-					FileUtils.moveSymlink(current, targetDestination);
+					FileUtils.moveSymlink(current, targetDestination, getContainingFolder());
 				} catch (IOException e) {
 					throw new IllegalStateException("Moving a symlink failed", e);
 				}

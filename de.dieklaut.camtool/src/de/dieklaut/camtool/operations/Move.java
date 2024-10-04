@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 
 import de.dieklaut.camtool.Constants;
 import de.dieklaut.camtool.Context;
@@ -15,9 +17,9 @@ public class Move extends AbstractOperation{
 
 	private String sortingName = Constants.DEFAULT_SORTING_NAME;
 	private Sorter sorter;
-	private String nameOfGroup;
+	private String regex;
+	private List<String> identifiers;
 	private Path targetPath = Paths.get("../");
-	private Path groupPath;
 	
 	public Move(Sorter sorter) {
 		super();
@@ -28,11 +30,17 @@ public class Move extends AbstractOperation{
 		this.sortingName = sortingName;
 	}
 
-	public void setNameOfGroup(String nameOfGroup) {
-		this.nameOfGroup = nameOfGroup;
+	public void setIdentifiers(List<String> identifiers) {
+		this.identifiers = identifiers;
+	}
+
+	public void setRegex(String regex) {
+		this.regex = regex;
 	}
 
 	public void setTargetPath(Path targetPath) {
+		if (!targetPath.isAbsolute())
+			throw new IllegalArgumentException("Target path must be absolute");
 		this.targetPath = targetPath;
 	}
 
@@ -46,22 +54,19 @@ public class Move extends AbstractOperation{
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not read groups", e);
 		}
-		Group group = null;
-		if (groupPath != null) {
-			group = SortingHelper.findGroupByPath(groups, groupPath);
-		}
-		if (nameOfGroup != null) {
-			group = SortingHelper.findGroupByName(groups, nameOfGroup);
-		}
-		
-		if (group == null) {
-			throw new IllegalStateException("Could not find group for name " + nameOfGroup);
-		}
-		group.moveToFolder(targetPath);
-	}
 
-	public void setPathOfGroup(Path path) {
-		this.groupPath = path;
+		Stream<Group> filteredGroups;
+		if (regex != null) {
+			filteredGroups = groups.stream().filter(g -> g.getName().matches(regex));
+		} else {
+			filteredGroups = identifiers.stream().map(i -> {
+					var g = SortingHelper.findGroupByPath(groups, Paths.get(i));
+					if (g == null)
+						g = SortingHelper.findGroupByName(groups, i);
+					return g;
+				}).filter(g -> g != null);
+		}
+		filteredGroups.forEach(g -> g.moveToFolder(targetPath));
 	}
 
 	public void setDifference(String optionValue) {

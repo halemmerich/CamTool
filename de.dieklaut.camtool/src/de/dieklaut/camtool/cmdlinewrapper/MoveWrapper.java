@@ -2,7 +2,7 @@ package de.dieklaut.camtool.cmdlinewrapper;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -12,7 +12,6 @@ import org.apache.commons.cli.Options;
 import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.SortingHelper;
 import de.dieklaut.camtool.operations.Move;
-import de.dieklaut.camtool.operations.MultiOperation;
 import de.dieklaut.camtool.operations.Operation;
 import de.dieklaut.camtool.util.FileUtils;
 
@@ -21,11 +20,8 @@ public class MoveWrapper extends AbstractWrapper {
 	private static final String OPT_NAME_SHORT = "n";
 	private static final String OPT_NAME = "name";
 
-	private static final String OPT_TARGET_SHORT = "t";
-	private static final String OPT_TARGET = "target";
-
-	private static final String OPT_GROUP_SHORT = "g";
-	private static final String OPT_GROUP = "group";
+	private static final String OPT_REGEX_SHORT = "r";
+	private static final String OPT_REGEX = "regex";
 
 	private static final String OPT_COMBINE_SHORT = "c";
 	private static final String OPT_COMBINE = "combine";
@@ -39,20 +35,18 @@ public class MoveWrapper extends AbstractWrapper {
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions().addOption(Option.builder(OPT_NAME_SHORT).longOpt(OPT_NAME).desc("Sets the name for the sorting").hasArg().build());
-		options.addOption(Option.builder(OPT_GROUP_SHORT).longOpt(OPT_GROUP).desc("Sets the group to be moved").hasArg().build());
-		options.addOption(Option.builder(OPT_TARGET_SHORT).longOpt(OPT_TARGET).desc("Sets the target folder, relative to the groups containing folder").hasArg().build());
-		options.addOption(Option.builder(OPT_COMBINE_SHORT).longOpt(OPT_COMBINE).desc("Combine groups identified with given paths").build());
+		options.addOption(Option.builder(OPT_COMBINE_SHORT).longOpt(OPT_COMBINE).desc("Combine groups given into a new multi group with timestamp of the first").build());
+		options.addOption(Option.builder(OPT_REGEX_SHORT).longOpt(OPT_REGEX).desc("Identify groups to move by regex instead of arguments").hasArg().build());
 		return options;
 	}
 
 	@Override
 	public Operation getOperation(CommandLine cmdLine, Path workingDir) {		
-		if (cmdLine.getArgList().size() > 0) {
-			List<Operation> ops = new LinkedList<>();
-			
+		if (cmdLine.getArgList().size() > 0 || cmdLine.hasOption(OPT_COMBINE)) {
 			Path target = null;
 			int numberOfGroupsToMove = 0;
 			
+			//identify target for the moving operation
 			if (cmdLine.hasOption(OPT_COMBINE)) {
 				String firstFileName = Paths.get(cmdLine.getArgList().stream().findFirst().get()).getFileName().toString();
 				String timestamp = FileUtils.getTimestampPortion(firstFileName);
@@ -68,39 +62,32 @@ public class MoveWrapper extends AbstractWrapper {
 				numberOfGroupsToMove = cmdLine.getArgList().size() - 1;
 			}
 
-			String sortingNameFromWorkDir = SortingHelper.detectSortingFromDir(workingDir);
-			
-			for (int i = 0; i < numberOfGroupsToMove; i++) {
-				Move move = new Move(sorter);
-				if (cmdLine.hasOption(OPT_NAME)) {
-					String optionValue = cmdLine.getOptionValue(OPT_NAME);
-					move.setSortingName(optionValue);
-				}
-
-				move.setPathOfGroup(workingDir.resolve(cmdLine.getArgList().get(i)));
-				move.setTargetPath(target);
-				move.setSortingName(sortingNameFromWorkDir);
-				ops.add(move);
-			}
-			return new MultiOperation(ops.toArray(new Operation[ops.size()]));
-		} else {
 			Move move = new Move(sorter);
 			if (cmdLine.hasOption(OPT_NAME)) {
 				String optionValue = cmdLine.getOptionValue(OPT_NAME);
 				move.setSortingName(optionValue);
+			} else {
+				move.setSortingName(SortingHelper.detectSortingFromDir(workingDir));
 			}
-			if (cmdLine.hasOption(OPT_TARGET)) {
-				String optionValue = cmdLine.getOptionValue(OPT_TARGET);
-				move.setTargetPath(Paths.get("./" + optionValue + "/"));
-			}
-			if (cmdLine.hasOption(OPT_GROUP)) {
-				move.setNameOfGroup(cmdLine.getOptionValue(OPT_GROUP));
+			move.setTargetPath(target);
+			
+			if (numberOfGroupsToMove > 0) {
+				if (cmdLine.hasOption(OPT_REGEX)) {
+					throw new IllegalArgumentException("Use either regex or a list of group identifiers");
+				}
+				List<String> identifiers = new ArrayList<>();
+				for (int i = 0; i < numberOfGroupsToMove; i++) {
+					identifiers.add(cmdLine.getArgList().get(i));
+				}
+				move.setIdentifiers(identifiers);
+			} else {
+				if (cmdLine.hasOption(OPT_REGEX)) {
+					move.setRegex(cmdLine.getOptionValue(OPT_REGEX));
+				}
 			}
 			return move;
 		}
-		
-
-		
+		throw new IllegalArgumentException("At least a target must be given as an argument");
 	}
 
 	@Override
@@ -110,7 +97,7 @@ public class MoveWrapper extends AbstractWrapper {
 	
 	@Override
 	public String getUsage() {
-		return super.getUsage() + " <groups to be moved ...> <target group>";
+		return super.getUsage() + " <groups to be moved by path or name ...> <target group>";
 	}
 
 }

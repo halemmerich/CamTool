@@ -280,31 +280,48 @@ public class FileUtils {
 	 * 
 	 * @param current
 	 * @param destination
+	 * @param root destination needs to be inside of root
 	 * @return
 	 * @throws IOException
 	 */
-	public static Path moveSymlink(Path current, Path destination) throws IOException {
-		Path currentTarget = Files.readSymbolicLink(current);
-
+	public static Path moveSymlink(Path current, Path destination, Path root) throws IOException {
 		if (!Files.exists(destination)) {
 			Files.createDirectories(destination);
 		}
-
-		Path symlinkTarget = null;
-		if (currentTarget.isAbsolute()) {
-			symlinkTarget = destination.relativize(currentTarget);
-		} else {
-			symlinkTarget = current.getParent().resolve(currentTarget).toRealPath(LinkOption.NOFOLLOW_LINKS);
+		
+		Path currentTarget = Files.readSymbolicLink(current);
+		if (!currentTarget.isAbsolute())
+			currentTarget = current.getParent().resolve(currentTarget);
+		
+		try {
+			currentTarget = currentTarget.toRealPath(LinkOption.NOFOLLOW_LINKS);
+		} catch (IOException e) {
+			Logger.log("Could not simplify current target path", e, Level.WARNING);
 		}
+
+		boolean updateTarget = !currentTarget.startsWith(root.toRealPath(LinkOption.NOFOLLOW_LINKS));
+		
+		Path symlinkTargetRelativeToDestination = null;
+
+		if (updateTarget)
+			symlinkTargetRelativeToDestination = destination.relativize(currentTarget);
+		else
+			symlinkTargetRelativeToDestination = current.getParent().relativize(currentTarget);
+		
+		try {
+			symlinkTargetRelativeToDestination = symlinkTargetRelativeToDestination.toRealPath(LinkOption.NOFOLLOW_LINKS);
+		} catch (IOException e) {
+			Logger.log("Could not simplify target path", e, Level.WARNING);
+		}
+		
 
 		Path newSymlink = destination.toRealPath(LinkOption.NOFOLLOW_LINKS).resolve(current.getFileName());
 
-		Path relativeTarget = symlinkTarget;
-		if (relativeTarget.isAbsolute()) {
-			relativeTarget = newSymlink.getParent().relativize(symlinkTarget);
+		if (symlinkTargetRelativeToDestination.isAbsolute()) {
+			symlinkTargetRelativeToDestination = newSymlink.getParent().relativize(symlinkTargetRelativeToDestination);
 		}
 
-		Path newLink = Files.createSymbolicLink(newSymlink, relativeTarget);
+		Path newLink = Files.createSymbolicLink(newSymlink, symlinkTargetRelativeToDestination);
 		Files.delete(current);
 		return newLink;
 	}
@@ -474,7 +491,7 @@ public class FileUtils {
 		}
 	}
 
-	public static void moveRecursive(Path source, Path destination) throws IOException {
+	public static void moveRecursive(Path source, Path destination, Path root) throws IOException {
 		if (Files.isDirectory(source)) {
 			try (var l = Files.list(source)){
 				l.forEach(current -> {
@@ -482,9 +499,9 @@ public class FileUtils {
 						if (Files.isDirectory(current)) {
 							Path newDir = destination.resolve(current.getFileName());
 							Files.createDirectories(newDir);
-							moveRecursive(current, newDir);
+							moveRecursive(current, newDir, root);
 						} else {
-							moveRecursive(current, destination);
+							moveRecursive(current, destination, root);
 						}
 					} catch (IOException e) {
 						throw new IllegalStateException(
@@ -498,7 +515,7 @@ public class FileUtils {
 				fileDest = destination.resolve(source.getFileName());
 			}
 			if (Files.isSymbolicLink(source)) {
-				FileUtils.moveSymlink(source, destination);
+				FileUtils.moveSymlink(source, destination, root);
 			} else {
 				FileUtils.hardlinkOrCopy(source, fileDest);
 				Files.delete(source);
