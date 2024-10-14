@@ -37,10 +37,10 @@ public class RenderTestScriptMultiRenderJobTest extends FileBasedTest {
 		Files.copy(script, renderscript);
 		
 		Collection<Group> groups = new HashSet<>();
-		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}));
+		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}), getTestFolder());
 		groups.add(singleGroup);
 		Collection<Group> multigroups = new HashSet<>();
-		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1}));
+		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1}), getTestFolder());
 		multigroups.add(subGroup);
 		MultiGroup multiGroup = new MultiGroup(multigroups);
 		groups.add(multiGroup);

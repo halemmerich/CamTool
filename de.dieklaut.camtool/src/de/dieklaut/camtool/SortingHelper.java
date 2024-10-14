@@ -2,6 +2,7 @@ package de.dieklaut.camtool;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -125,20 +126,49 @@ public class SortingHelper {
 		}
 		return candidate;
 	}
+	
+	protected static boolean pathMatches(Group group, Path path, Path root) {
+		if (!path.isAbsolute())
+			path = root.resolve(path);
 
-	public static Group findGroupByPath(Collection<Group> groups, Path groupPath) {
+		Path groupContainingFolder = group.getContainingFolder();
+		
+		if (path.equals(root))
+			return false;
+		
+		boolean pathIsInRoot = path.startsWith(root);
+		boolean groupIsInRoot = groupContainingFolder.startsWith(root);
+		
+		if (!pathIsInRoot || !groupIsInRoot)
+			return false;
+
+		Path groupContainingFolderRelativeToRoot = root.relativize(groupContainingFolder);
+		Path pathRelativeToRoot = root.relativize(path);
+		Path pathRelativeToRootParent = pathRelativeToRoot.getParent();
+		if (pathRelativeToRootParent == null)
+			pathRelativeToRootParent = Paths.get("");
+		
+		boolean completePathMatches = groupContainingFolderRelativeToRoot.equals(pathRelativeToRoot);
+		boolean pathParentMatches = groupContainingFolderRelativeToRoot.equals(pathRelativeToRootParent);
+		boolean lastPathComponentIsGroupNameAndMatches = group.getName().equals(pathRelativeToRoot.getFileName().toString());
+		boolean lastPathComponentIsFileNameAndMatches = group.getAllFiles().stream().anyMatch(c -> c.getFileName().equals(pathRelativeToRoot.getFileName()));
+		
+		return completePathMatches || ( pathParentMatches && (lastPathComponentIsGroupNameAndMatches  || lastPathComponentIsFileNameAndMatches));
+	}
+
+	public static Group findGroupByPath(Collection<Group> groups, Path groupPath, Path root) {
 		for (Group group : groups) {
 			if (group instanceof MultiGroup) {
-				if (group.getContainingFolder().toAbsolutePath().equals(groupPath.toAbsolutePath())) {
+				if (group.getContainingFolder().toAbsolutePath().equals(root.resolve(groupPath).toAbsolutePath())) {
 					return group;
 				}
 				
-				Group result = findGroupByPath(((MultiGroup) group).getGroups(), groupPath);
+				Group result = findGroupByPath(((MultiGroup) group).getGroups(), groupPath, root);
 				if (result != null) {
 					return result;
 				}
 			}
-			if (group.getAllFiles().stream().anyMatch(path -> path.toAbsolutePath().equals(groupPath.toAbsolutePath()))) {
+			if (pathMatches(group, groupPath, root)) {
 				return group;
 			}
 		}
@@ -151,6 +181,18 @@ public class SortingHelper {
 		} else {
 			if (workingDir.getParent() != null) {
 				return detectSortingFromDir(workingDir.getParent());
+			} else {
+				throw new IllegalArgumentException("No sorting detecting in " + workingDir + " or parents");
+			}
+		}
+	}
+
+	public static Path detectSortingPathFromDir(Path workingDir) {
+		if (Files.exists(workingDir.resolve(Constants.SORTED_FILE_NAME))) {
+			return workingDir;
+		} else {
+			if (workingDir.getParent() != null) {
+				return detectSortingPathFromDir(workingDir.getParent());
 			} else {
 				throw new IllegalArgumentException("No sorting detecting in " + workingDir + " or parents");
 			}

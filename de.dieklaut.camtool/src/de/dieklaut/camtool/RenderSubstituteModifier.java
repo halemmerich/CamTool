@@ -32,7 +32,7 @@ public class RenderSubstituteModifier implements RenderModifier {
 				Logger.log("No valid paths for substitution found", Level.INFO);
 				return new NullRenderJob();
 			}
-			SingleGroup tempGroup = new SingleGroup(paths);
+			SingleGroup tempGroup = new SingleGroup(paths, Paths.get("/notexisting"));
 			return tempGroup.getRenderJob(renderFilters);
 		} catch (IOException e) {
 			Logger.log("Error during creation of copy render job for substitute file " + rendersub, e);

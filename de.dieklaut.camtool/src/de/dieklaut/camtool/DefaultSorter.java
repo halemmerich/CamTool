@@ -71,7 +71,7 @@ public class DefaultSorter implements Sorter{
 			//Creation of single groups
 			
 			for (String name : nameToPaths.keySet()) {
-				SingleGroup group = new SingleGroup(nameToPaths.get(name));
+				SingleGroup group = new SingleGroup(nameToPaths.get(name), path);
 				result.add(group);
 				nameToGroup.put(name, group);
 			}
@@ -120,23 +120,6 @@ public class DefaultSorter implements Sorter{
 				}
 			});
 			return groupNamesToPaths;
-		}
-	}
-
-	public static void createSingleGroups(Collection<Group> groups, Map<String, Set<Path>> groupNamesToPaths,
-			Map<String, Group> groupNamesToGroup, Collection<Path> camtoolFiles) {
-		for (String currentGroupName : groupNamesToPaths.keySet()) {
-			Set<Path> currentGroupPaths = groupNamesToPaths.get(currentGroupName);
-
-			for (Path current: camtoolFiles) {
-				if (currentGroupName.equals(FileUtils.getGroupName(current))) {
-					currentGroupPaths.add(current);
-				}
-			}
-			
-			SingleGroup newGroup = new SingleGroup(currentGroupPaths);
-			groups.add(newGroup);
-			groupNamesToGroup.put(currentGroupName, newGroup);
 		}
 	}
 

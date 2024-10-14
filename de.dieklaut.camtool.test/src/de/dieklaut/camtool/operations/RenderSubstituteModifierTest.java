@@ -37,10 +37,10 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		Files.write(renderscript, "file1.arw".getBytes());
 		
 		Collection<Group> groups = new HashSet<>();
-		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}));
+		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}), getTestFolder());
 		groups.add(singleGroup);
 		Collection<Group> multigroups = new HashSet<>();
-		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1}));
+		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1}), getTestFolder());
 		multigroups.add(subGroup);
 		MultiGroup multiGroup = new MultiGroup(multigroups);
 		groups.add(multiGroup);
@@ -72,10 +72,10 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		Files.write(renderscript, "nothere.arw".getBytes());
 		
 		Collection<Group> groups = new HashSet<>();
-		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}));
+		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}), getTestFolder());
 		groups.add(singleGroup);
 		Collection<Group> multigroups = new HashSet<>();
-		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1}));
+		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1}), getTestFolder());
 		multigroups.add(subGroup);
 		MultiGroup multiGroup = new MultiGroup(multigroups);
 		groups.add(multiGroup);
@@ -110,9 +110,9 @@ public class RenderSubstituteModifierTest extends FileBasedTest {
 		
 		Collection<Group> groups = new HashSet<>();
 		Collection<Group> multigroups = new HashSet<>();
-		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}));
+		SingleGroup singleGroup = new SingleGroup(Arrays.asList(new Path [] {file2}), getTestFolder());
 		groups.add(singleGroup);
-		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1 , pp3}));
+		SingleGroup subGroup = new SingleGroup(Arrays.asList(new Path [] {file1 , pp3}), getTestFolder());
 		multigroups.add(subGroup);
 		MultiGroup multiGroup = new MultiGroup(multigroups);
 		groups.add(multiGroup);

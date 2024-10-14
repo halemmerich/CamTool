@@ -16,22 +16,23 @@ public class GroupTimestampComparatorTest {
 		GroupTimestampComparator comp = new GroupTimestampComparator();
 
 		Collection<Path> elements = Arrays.asList(Paths.get("test.asdf"));
+		Path root = Paths.get("/testpath");
 		
-		Group earlier = new SingleGroup(elements) {
+		Group earlier = new SingleGroup(elements, root) {
 			@Override
 			public Instant getTimestamp() {
 				return Instant.ofEpochSecond(5);
 			}
 		};
 
-		Group same = new SingleGroup(elements) {
+		Group same = new SingleGroup(elements, root) {
 			@Override
 			public Instant getTimestamp() {
 				return Instant.ofEpochSecond(5);
 			}
 		};
 
-		Group later = new SingleGroup(elements) {
+		Group later = new SingleGroup(elements, root) {
 			@Override
 			public Instant getTimestamp() {
 				return Instant.ofEpochSecond(6);
@@ -50,14 +51,16 @@ public class GroupTimestampComparatorTest {
 		Collection<Path> elements1 = Arrays.asList(Paths.get("test1.asdf"));
 		Collection<Path> elements2 = Arrays.asList(Paths.get("test2.asdf"));
 		
-		Group earlier = new SingleGroup(elements1) {
+		Path root = Paths.get("/testpath");
+		
+		Group earlier = new SingleGroup(elements1, root) {
 			@Override
 			public Instant getTimestamp() {
 				return Instant.ofEpochSecond(5);
 			}
 		};
 
-		Group later = new SingleGroup(elements2) {
+		Group later = new SingleGroup(elements2, root) {
 			@Override
 			public Instant getTimestamp() {
 				return Instant.ofEpochSecond(5);

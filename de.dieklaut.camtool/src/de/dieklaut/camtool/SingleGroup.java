@@ -28,18 +28,13 @@ import de.dieklaut.camtool.util.FileUtils;
 public class SingleGroup extends AbstractGroup {
 
 	private Collection<Path> elements;
+	private Path containingFolder;
 	private Instant cachedTimestamp;
 	private Duration cachedDuration;
 
-	public SingleGroup(Collection<Path> elements) {
+	public SingleGroup(Collection<Path> elements, Path containingFolder) {
 		this.elements = elements;
-	}
-
-	public SingleGroup(Path... elements) {
-		this.elements = new HashSet<Path>();
-		for (Path e : elements) {
-			this.elements.add(e);
-		}
+		this.containingFolder = containingFolder;
 	}
 
 	@Override
@@ -175,9 +170,7 @@ public class SingleGroup extends AbstractGroup {
 
 	@Override
 	public Path getContainingFolder() {
-		// This only works, because groups are expected to reside on one file system
-		// hierarchy level
-		return getAllFiles().iterator().next().toAbsolutePath().getParent();
+		return containingFolder;
 	}
 
 	@Override

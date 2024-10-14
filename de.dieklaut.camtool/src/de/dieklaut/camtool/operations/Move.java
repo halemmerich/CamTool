@@ -60,7 +60,7 @@ public class Move extends AbstractOperation{
 			filteredGroups = groups.stream().filter(g -> g.getName().matches(regex));
 		} else {
 			filteredGroups = identifiers.stream().map(i -> {
-					var g = SortingHelper.findGroupByPath(groups, Paths.get(i));
+					var g = SortingHelper.findGroupByPath(groups, Paths.get(i), sortingFolder);
 					if (g == null)
 						g = SortingHelper.findGroupByName(groups, i);
 					return g;

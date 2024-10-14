@@ -19,7 +19,6 @@ import de.dieklaut.camtool.Context;
 import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.Group;
-import de.dieklaut.camtool.SingleGroup;
 import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.TestFileHelper;
 import de.dieklaut.camtool.util.FileUtils;
@@ -55,19 +54,19 @@ public class SortTest extends FileBasedTest {
 		Collection<Group> groups = new LinkedList<>();
 		
 		Path source = TestFileHelper.getTestResource("A7II.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("A7II.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("A7II.ARW")), getTestFolder()));
 		
 		source = TestFileHelper.getTestResource("series/series_09.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_09.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("series_09.ARW")), getTestFolder()));
 		
 		source = TestFileHelper.getTestResource("series/series_07.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_07.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("series_07.ARW")), getTestFolder()));
 
 		source = TestFileHelper.getTestResource("series/series_06.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_06.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("series_06.ARW")), getTestFolder()));
 		
 		source = TestFileHelper.getTestResource("series/series_08.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_08.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("series_08.ARW")), getTestFolder()));
 		
 		Context context = Context.create(getTestFolder());
 		new Init().perform(context);
@@ -93,19 +92,19 @@ public class SortTest extends FileBasedTest {
 		Collection<Group> groups = new LinkedList<>();
 		
 		Path source = TestFileHelper.getTestResource("A7II.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("A7II.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("A7II.ARW")), getTestFolder()));
 		
 		source = TestFileHelper.getTestResource("series/series_09.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_09.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("series_09.ARW")), getTestFolder()));
 		
 		source = TestFileHelper.getTestResource("series/series_07.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_07.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("series_07.ARW")), getTestFolder()));
 
 		source = TestFileHelper.getTestResource("series/series_06.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_06.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("series_06.ARW")), getTestFolder()));
 		
 		source = TestFileHelper.getTestResource("series/series_08.ARW");
-		groups.add(new SingleGroup(Files.copy(source, getTestFolder().resolve("series_08.ARW"))));
+		groups.add(getGroupWithFile(Files.copy(source, getTestFolder().resolve("series_08.ARW")), getTestFolder()));
 		
 		Context context = Context.create(getTestFolder());
 		new Init().perform(context);

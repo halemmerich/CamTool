@@ -52,7 +52,7 @@ public class Explode extends AbstractOperation {
 			g = SortingHelper.findGroupByName(groups, groupName);
 		}
 		if (groupPath != null) {
-			g = SortingHelper.findGroupByPath(groups, groupPath);
+			g = SortingHelper.findGroupByPath(groups, groupPath, sortingFolder);
 		}
 		
 		if (g != null) {

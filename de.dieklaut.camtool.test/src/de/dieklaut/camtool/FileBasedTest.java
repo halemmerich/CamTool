@@ -3,6 +3,7 @@ package de.dieklaut.camtool;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,5 +28,9 @@ public class FileBasedTest {
 	
 	public Path getTestFolder() {
 		return testFolder;
+	}
+
+	public static SingleGroup getGroupWithFile(Path file, Path root) {
+		return new SingleGroup(Arrays.asList(new Path [] { file }), root);
 	}
 }
