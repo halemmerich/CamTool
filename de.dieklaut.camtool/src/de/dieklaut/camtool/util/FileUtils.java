@@ -298,8 +298,14 @@ public class FileUtils {
 		} catch (IOException e) {
 			Logger.log("Could not simplify current target path", e, Level.WARNING);
 		}
+		
+		try {
+			root = root.toRealPath(LinkOption.NOFOLLOW_LINKS);
+		} catch (IOException e) {
+			Logger.log("Could not simplify root path", e, Level.WARNING);
+		}
 
-		boolean updateTarget = !currentTarget.startsWith(root.toRealPath(LinkOption.NOFOLLOW_LINKS));
+		boolean updateTarget = !currentTarget.startsWith(root);
 		
 		Path symlinkTargetRelativeToDestination = null;
 

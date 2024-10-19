@@ -2,15 +2,19 @@ package de.dieklaut.camtool;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import de.dieklaut.camtool.Logger.Level;
 import de.dieklaut.camtool.operations.RenderFilter;
 import de.dieklaut.camtool.renderjob.MultiRenderJob;
 import de.dieklaut.camtool.renderjob.RenderJob;
@@ -116,8 +120,9 @@ public class MultiGroup extends AbstractGroup {
 	
 	@Override
 	public void moveToFolder(Path destination) {
+		Path containingFolderPreMove = getContainingFolder();
 		if (!destination.isAbsolute()) {
-			destination = getContainingFolder().resolve(destination).toAbsolutePath().normalize();
+			destination = containingFolderPreMove.resolve(destination).toAbsolutePath().normalize();
 		}
 		
 		if (!Files.exists(destination)) {
@@ -132,13 +137,43 @@ public class MultiGroup extends AbstractGroup {
 		try {
 			if (FileUtils.getFileCount(destination) != 0) {
 				// Destination not empty, move to subfolder
-				destination = destination.resolve(getContainingFolder().getFileName().toString());
+				destination = destination.resolve(containingFolderPreMove.getFileName().toString());
+			}
+			List<String> subs = Collections.emptyList();
+			if (Files.exists(containingFolderPreMove.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL))) {
+				subs = Files.readAllLines(containingFolderPreMove.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL));
 			}
 			
-			FileUtils.moveRecursive(getContainingFolder(), destination, getContainingFolder());
+			FileUtils.moveRecursive(containingFolderPreMove, destination, containingFolderPreMove);
+			
+			Path subLinkContainingFolder = containingFolderPreMove.getParent();
+
+			Path subDest = destination.getParent();
+			Path dest = destination;
+			if (subDest != null) {
+				subs.forEach(sub -> {
+					Path subPath = subLinkContainingFolder.resolve(sub);
+					if (Files.exists(subPath, LinkOption.NOFOLLOW_LINKS) && Files.isSymbolicLink(subPath))
+						try {
+							Path subTarget = Files.readSymbolicLink(subPath);
+							Path reparentedSubTarget = dest.getFileName().resolve(subTarget.subpath(1, subTarget.getNameCount()));
+							Files.createSymbolicLink(subDest.resolve(subPath.getFileName()), reparentedSubTarget);
+							Files.delete(subPath);
+						} catch (IOException e) {
+							Logger.log("Failed to move substitution symlink", e);
+						}
+					});	
+			} else {
+				Logger.log("Could not move substitution files, check manually", Level.WARNING);
+			}
+			
+			if (Files.exists(subLinkContainingFolder) && FileUtils.getFileCount(subLinkContainingFolder) == 0) {
+				Files.delete(subLinkContainingFolder);
+			}
+			
+			
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Logger.log("Failure to move multigroup" + getName(), e1);
 		}
 	}
 	

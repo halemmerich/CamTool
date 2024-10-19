@@ -19,6 +19,7 @@ import de.dieklaut.camtool.DefaultSorter;
 import de.dieklaut.camtool.FileBasedTest;
 import de.dieklaut.camtool.Sorter;
 import de.dieklaut.camtool.TestFileHelper;
+import de.dieklaut.camtool.operations.Substitute.Mode;
 import de.dieklaut.camtool.util.FileUtils;
 
 public class MoveTest extends FileBasedTest {
@@ -209,16 +210,29 @@ public class MoveTest extends FileBasedTest {
 		var notempty = Files.createDirectories(testgroup.resolve("notempty"));
 		var testfile = Files.createFile(testgroup.resolve("notempty").resolve("testfile"));
 		
+		var substitute = new Substitute();
+		substitute.setSortingName(Constants.DEFAULT_SORTING_NAME);
+		substitute.setMode(Mode.INTERNAL);
+		substitute.setSubstitutions(new String[] { file3.getFileName().toString() });
+		substitute.setNameOfGroup(testgroup.toString());
+		substitute.perform(context);
+		substitute.setMode(Mode.SWITCH);
+		substitute.perform(context);
+		
 		move = new Move(SORTER);
 		move.setIdentifiers(Arrays.asList(testGroupName));
 		move.setTargetPath(target);
 		move.perform(context);
 
 		assertFalse(Files.exists(testgroup.resolve(file3.getFileName())));
+		assertFalse(Files.exists(testgroup.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL)));
 		assertFalse(Files.exists(testgroup.resolve(empty.getFileName())));
 		assertFalse(Files.exists(testgroup.resolve(notempty.getFileName())));
 		assertFalse(Files.exists(testgroup));
+		assertFalse(Files.exists(sub.resolve(file3.getFileName())));
+		assertTrue(Files.exists(sorting.resolve(file3.getFileName())));
 		assertTrue(Files.exists(target.resolve(file3.getFileName())));
+		assertTrue(Files.exists(target.resolve(Constants.FILE_NAME_RENDERSUBSTITUTE_EXTERNAL)));
 		assertTrue(Files.exists(target.resolve(empty.getFileName())));
 		assertTrue(Files.exists(target.resolve(notempty.getFileName())));
 		assertTrue(Files.exists(target.resolve(notempty.getFileName()).resolve(testfile.getFileName())));
