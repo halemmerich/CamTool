@@ -179,6 +179,50 @@ public class MoveTest extends FileBasedTest {
 		assertFalse(Files.exists(sorting.resolve(testGroupName).resolve(file3.getFileName())));
 		assertTrue(Files.exists(sorting.resolve(file3.getFileName())));
 	}
+
+	@Test
+	public void testMoveFromMainToFolderAndOneLevelBackWithExtraFiles() throws IOException {
+		Context context = TestFileHelper.createComplexContext(getTestFolder());
+		TestFileHelper.addFileToSorting(context, Paths.get("file1.ARW"), 2000);
+		TestFileHelper.addFileToSorting(context, Paths.get("file1.JPG"), 2000);
+		TestFileHelper.addFileToSorting(context, Paths.get("file2.ARW"), 7000);
+		Path file3 = TestFileHelper.addFileToSorting(context, Paths.get("file3.JPG"), 9500);
+			
+		String testGroupName = "testgroupname";
+
+		Path sorting = getTestFolder().resolve(Constants.FOLDER_SORTED).resolve(Constants.DEFAULT_SORTING_NAME);
+
+		Path sub = sorting.resolve("sub");
+		Path target = sorting.resolve("target");
+		Path testgroup = sub.resolve(testGroupName);
+		
+		Move move = new Move(SORTER);
+		move.setIdentifiers(Arrays.asList(FileUtils.buildFileName(9500, "file3")));
+		move.setTargetPath(testgroup);
+		move.perform(context);
+		
+		assertFalse(Files.exists(sorting.resolve(file3.getFileName())));
+		assertTrue(Files.exists(testgroup.resolve(file3.getFileName())));
+		
+		//create the additional files
+		var empty = Files.createDirectories(testgroup.resolve("empty"));
+		var notempty = Files.createDirectories(testgroup.resolve("notempty"));
+		var testfile = Files.createFile(testgroup.resolve("notempty").resolve("testfile"));
+		
+		move = new Move(SORTER);
+		move.setIdentifiers(Arrays.asList(testGroupName));
+		move.setTargetPath(target);
+		move.perform(context);
+
+		assertFalse(Files.exists(testgroup.resolve(file3.getFileName())));
+		assertFalse(Files.exists(testgroup.resolve(empty.getFileName())));
+		assertFalse(Files.exists(testgroup.resolve(notempty.getFileName())));
+		assertFalse(Files.exists(testgroup));
+		assertTrue(Files.exists(target.resolve(file3.getFileName())));
+		assertTrue(Files.exists(target.resolve(empty.getFileName())));
+		assertTrue(Files.exists(target.resolve(notempty.getFileName())));
+		assertTrue(Files.exists(target.resolve(notempty.getFileName()).resolve(testfile.getFileName())));
+	}
 	
 	@Test
 	public void testMoveFromMainRegex() throws IOException {
