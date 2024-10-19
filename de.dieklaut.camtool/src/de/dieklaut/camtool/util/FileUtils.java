@@ -509,6 +509,8 @@ public class FileUtils {
 					}
 				});
 			}
+			if (FileUtils.getFileCount(source) == 0)
+				Files.delete(source);
 		} else {
 			Path fileDest = destination;
 			if (Files.isDirectory(fileDest)) {
